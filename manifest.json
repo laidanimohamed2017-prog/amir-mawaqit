@@ -10,7 +10,7 @@
   "orientation": "portrait",
   "theme_color": "#071a12",
   "background_color": "#020b07",
-  "icons": [
+ 
     {
       "src": "./icon-192.png",
       "sizes": "192x192",
