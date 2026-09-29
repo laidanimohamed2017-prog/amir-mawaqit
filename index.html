@@ -1,0 +1,1683 @@
+```html
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>أمير مواقيت | مواقيت الصلاة</title>
+
+  <meta
+    name="description"
+    content="أمير مواقيت - مواقيت الصلاة الحقيقية، الصلاة القادمة، التاريخ الهجري واتجاه القبلة."
+  >
+
+  <meta name="theme-color" content="#07111f">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Tahoma, Arial, sans-serif;
+      min-height: 100vh;
+      color: #fff;
+
+      background:
+        radial-gradient(
+          circle at top right,
+          #164d58 0%,
+          transparent 35%
+        ),
+        radial-gradient(
+          circle at bottom left,
+          #123d30 0%,
+          transparent 35%
+        ),
+        linear-gradient(
+          135deg,
+          #040b14,
+          #0a1d2d 55%,
+          #06131e
+        );
+    }
+
+    .container {
+      width: min(1050px, 94%);
+      margin: auto;
+      padding: 22px 0 35px;
+    }
+
+    /* HEADER */
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      font-size: 30px;
+      font-weight: 900;
+    }
+
+    .logo span {
+      color: #43e29a;
+    }
+
+    .subtitle {
+      color: #91a7b7;
+      margin-top: 5px;
+      font-size: 13px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    select,
+    button {
+      background: #102b40;
+      color: white;
+      border: 1px solid #29516a;
+      border-radius: 14px;
+      padding: 12px 15px;
+      font-size: 14px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    button:hover,
+    select:hover {
+      border-color: #43e29a;
+    }
+
+    /* HERO */
+
+    .hero {
+      margin-top: 25px;
+      padding: 30px 20px;
+      text-align: center;
+      border-radius: 30px;
+
+      background: rgba(8, 28, 43, 0.84);
+
+      border: 1px solid #23455b;
+
+      box-shadow:
+        0 20px 60px rgba(0,0,0,.3);
+
+      backdrop-filter: blur(12px);
+    }
+
+    .location-status {
+      color: #58e8a1;
+      font-size: 14px;
+      margin-bottom: 7px;
+    }
+
+    .city {
+      color: #fff;
+      font-size: 19px;
+      font-weight: bold;
+    }
+
+    .clock {
+      font-size: clamp(45px, 9vw, 72px);
+      font-weight: 900;
+      margin: 8px 0;
+
+      direction: ltr;
+      letter-spacing: 2px;
+    }
+
+    .date {
+      color: #a6b8c4;
+      font-size: 15px;
+    }
+
+    .next-prayer {
+      margin: 22px auto 0;
+      max-width: 650px;
+
+      padding: 17px;
+
+      border-radius: 18px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #0c3b2b,
+          #0c2d31
+        );
+
+      border: 1px solid #246d50;
+
+      font-size: 17px;
+      line-height: 1.8;
+    }
+
+    .next-prayer strong {
+      color: #59e69f;
+    }
+
+    /* PRAYER CARDS */
+
+    .prayers {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+
+      margin-top: 18px;
+    }
+
+    .prayer {
+      padding: 22px;
+
+      border-radius: 22px;
+
+      background:
+        rgba(10, 31, 47, .9);
+
+      border: 1px solid #1d3d52;
+
+      transition: .25s;
+    }
+
+    .prayer:hover {
+      transform: translateY(-3px);
+      border-color: #3fdc96;
+    }
+
+    .prayer.active {
+      background:
+        linear-gradient(
+          145deg,
+          #0d3b2b,
+          #0a2532
+        );
+
+      border-color: #48dc98;
+
+      box-shadow:
+        0 0 25px rgba(60,220,145,.08);
+    }
+
+    .prayer-icon {
+      font-size: 25px;
+      margin-bottom: 8px;
+    }
+
+    .prayer-name {
+      color: #9eb0bd;
+      font-size: 15px;
+    }
+
+    .prayer-time {
+      margin-top: 7px;
+
+      font-size: 30px;
+      font-weight: 900;
+
+      direction: ltr;
+      text-align: right;
+    }
+
+    /* INFO */
+
+    .info {
+      display: grid;
+
+      grid-template-columns: 1fr 1fr;
+
+      gap: 15px;
+
+      margin-top: 18px;
+    }
+
+    .info-card {
+      padding: 24px;
+
+      border-radius: 23px;
+
+      background:
+        rgba(10, 31, 47, .9);
+
+      border: 1px solid #1d3d52;
+    }
+
+    .info-title {
+      color: #58e8a1;
+
+      font-size: 17px;
+
+      font-weight: bold;
+
+      margin-bottom: 13px;
+    }
+
+    .qibla-arrow {
+      font-size: 58px;
+
+      margin: 5px 0;
+
+      text-align: center;
+
+      transition: transform .5s;
+    }
+
+    .qibla-text,
+    .hijri-text {
+      color: #c0ccd4;
+
+      line-height: 1.8;
+
+      text-align: center;
+    }
+
+    /* STATUS */
+
+    .status {
+      margin-top: 18px;
+
+      padding: 14px;
+
+      border-radius: 15px;
+
+      background: #10283a;
+
+      color: #a9bbc7;
+
+      text-align: center;
+
+      display: none;
+    }
+
+    .status.show {
+      display: block;
+    }
+
+    /* FOOTER */
+
+    footer {
+      text-align: center;
+
+      color: #718592;
+
+      font-size: 13px;
+
+      margin-top: 30px;
+
+      line-height: 2;
+    }
+
+    footer strong {
+      color: #43d995;
+    }
+
+    /* MOBILE */
+
+    @media (max-width: 700px) {
+
+      .prayers {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .info {
+        grid-template-columns: 1fr;
+      }
+
+      .logo {
+        font-size: 25px;
+      }
+
+      header {
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 430px) {
+
+      .container {
+        width: 92%;
+      }
+
+      .prayer {
+        padding: 17px;
+      }
+
+      .prayer-time {
+        font-size: 25px;
+      }
+
+      .hero {
+        padding: 25px 15px;
+      }
+
+      .controls {
+        width: 100%;
+      }
+
+      select,
+      button {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+
+  <header>
+
+    <div>
+
+      <div class="logo">
+        🕌 أمير <span>مواقيت</span>
+      </div>
+
+      <div class="subtitle">
+        صلاتك في وقتها، أينما كنت
+      </div>
+
+    </div>
+
+    <div class="controls">
+
+      <select id="citySelect">
+
+        <option value="Algiers">
+          الجزائر العاصمة
+        </option>
+
+        <option value="Oran">
+          وهران
+        </option>
+
+        <option value="Constantine">
+          قسنطينة
+        </option>
+
+        <option value="Annaba">
+          عنابة
+        </option>
+
+        <option value="Blida">
+          البليدة
+        </option>
+
+        <option value="Setif">
+          سطيف
+        </option>
+
+        <option value="Tlemcen">
+          تلمسان
+        </option>
+
+      </select>
+
+      <button id="locationButton">
+        📍 موقعي
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <!-- HERO -->
+
+  <section class="hero">
+
+    <div
+      class="location-status"
+      id="locationStatus"
+    >
+      🌍 مواقيت الصلاة
+    </div>
+
+    <div
+      class="city"
+      id="cityName"
+    >
+      الجزائر العاصمة 🇩🇿
+    </div>
+
+    <div
+      class="clock"
+      id="clock"
+    >
+      00:00:00
+    </div>
+
+    <div
+      class="date"
+      id="date"
+    >
+      جاري تحميل التاريخ...
+    </div>
+
+    <div
+      class="next-prayer"
+      id="nextPrayer"
+    >
+      جاري تحميل مواقيت الصلاة...
+    </div>
+
+  </section>
+
+
+  <!-- STATUS -->
+
+  <div
+    class="status"
+    id="status"
+  ></div>
+
+
+  <!-- PRAYER TIMES -->
+
+  <section
+    class="prayers"
+    id="prayers"
+  >
+  </section>
+
+
+  <!-- INFORMATION -->
+
+  <section class="info">
+
+    <!-- QIBLA -->
+
+    <div class="info-card">
+
+      <div class="info-title">
+        🕋 اتجاه القبلة
+      </div>
+
+      <div
+        class="qibla-arrow"
+        id="qiblaArrow"
+      >
+        🕋
+      </div>
+
+      <div
+        class="qibla-text"
+        id="qiblaText"
+      >
+        جاري حساب اتجاه القبلة...
+      </div>
+
+    </div>
+
+
+    <!-- HIJRI -->
+
+    <div class="info-card">
+
+      <div class="info-title">
+        📅 التاريخ الهجري
+      </div>
+
+      <div
+        class="hijri-text"
+        id="hijriDate"
+      >
+        جاري تحميل التاريخ الهجري...
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- FOOTER -->
+
+  <footer>
+
+    <strong>
+      أمير مواقيت
+    </strong>
+
+    © 2026
+
+    <br>
+
+    جزء من مشروع
+    <strong>
+      Amir Store
+    </strong>
+
+    <br>
+
+    🤲 اللهم تقبل منا ومنكم
+
+  </footer>
+
+</div>
+
+
+<script>
+
+  /*
+   ==========================================
+   أمير مواقيت
+   Prayer Times API
+   ==========================================
+
+   Calculation method:
+   19 = Algeria
+
+   API:
+   https://api.aladhan.com
+
+   Qibla:
+   https://api.aladhan.com/v1/qibla/
+  */
+
+
+  const API =
+    "https://api.aladhan.com/v1";
+
+
+  /*
+    المدن الافتراضية
+
+    الإحداثيات تستخدم فقط
+    عندما يختار المستخدم مدينة.
+  */
+
+  const cities = {
+
+    Algiers: {
+      name: "الجزائر العاصمة 🇩🇿",
+      latitude: 36.7538,
+      longitude: 3.0588
+    },
+
+    Oran: {
+      name: "وهران 🇩🇿",
+      latitude: 35.6971,
+      longitude: -0.6308
+    },
+
+    Constantine: {
+      name: "قسنطينة 🇩🇿",
+      latitude: 36.3650,
+      longitude: 6.6147
+    },
+
+    Annaba: {
+      name: "عنابة 🇩🇿",
+      latitude: 36.9000,
+      longitude: 7.7667
+    },
+
+    Blida: {
+      name: "البليدة 🇩🇿",
+      latitude: 36.4700,
+      longitude: 2.8300
+    },
+
+    Setif: {
+      name: "سطيف 🇩🇿",
+      latitude: 36.1900,
+      longitude: 5.4100
+    },
+
+    Tlemcen: {
+      name: "تلمسان 🇩🇿",
+      latitude: 34.8828,
+      longitude: -1.3167
+    }
+
+  };
+
+
+  /*
+    أسماء الصلوات
+  */
+
+  const prayerInfo = [
+
+    {
+      key: "Fajr",
+      name: "الفجر",
+      icon: "🌙"
+    },
+
+    {
+      key: "Sunrise",
+      name: "الشروق",
+      icon: "🌅"
+    },
+
+    {
+      key: "Dhuhr",
+      name: "الظهر",
+      icon: "☀️"
+    },
+
+    {
+      key: "Asr",
+      name: "العصر",
+      icon: "🌤️"
+    },
+
+    {
+      key: "Maghrib",
+      name: "المغرب",
+      icon: "🌇"
+    },
+
+    {
+      key: "Isha",
+      name: "العشاء",
+      icon: "🌙"
+    }
+
+  ];
+
+
+  let selectedCity =
+    localStorage.getItem("amirCity")
+    || "Algiers";
+
+
+  let currentLocation =
+    null;
+
+
+  let prayerTimes =
+    null;
+
+
+  let qiblaDirection =
+    null;
+
+
+  /*
+    العناصر
+  */
+
+  const citySelect =
+    document.getElementById(
+      "citySelect"
+    );
+
+  const cityName =
+    document.getElementById(
+      "cityName"
+    );
+
+  const clock =
+    document.getElementById(
+      "clock"
+    );
+
+  const dateElement =
+    document.getElementById(
+      "date"
+    );
+
+  const nextPrayer =
+    document.getElementById(
+      "nextPrayer"
+    );
+
+  const prayersElement =
+    document.getElementById(
+      "prayers"
+    );
+
+  const qiblaText =
+    document.getElementById(
+      "qiblaText"
+    );
+
+  const qiblaArrow =
+    document.getElementById(
+      "qiblaArrow"
+    );
+
+  const hijriDate =
+    document.getElementById(
+      "hijriDate"
+    );
+
+  const statusElement =
+    document.getElementById(
+      "status"
+    );
+
+  const locationStatus =
+    document.getElementById(
+      "locationStatus"
+    );
+
+  const locationButton =
+    document.getElementById(
+      "locationButton"
+    );
+
+
+  /*
+    التاريخ بصيغة API
+    DD-MM-YYYY
+  */
+
+  function apiDate(date) {
+
+    const day =
+      String(
+        date.getDate()
+      ).padStart(2, "0");
+
+    const month =
+      String(
+        date.getMonth() + 1
+      ).padStart(2, "0");
+
+    const year =
+      date.getFullYear();
+
+    return `${day}-${month}-${year}`;
+
+  }
+
+
+  /*
+    عرض رسالة
+  */
+
+  function showStatus(message) {
+
+    statusElement.textContent =
+      message;
+
+    statusElement.classList.add(
+      "show"
+    );
+
+  }
+
+
+  function hideStatus() {
+
+    statusElement.classList.remove(
+      "show"
+    );
+
+  }
+
+
+  /*
+    تحميل المواقيت من API
+  */
+
+  async function loadPrayerTimes(
+    latitude,
+    longitude,
+    title
+  ) {
+
+    try {
+
+      showStatus(
+        "⏳ جاري تحميل مواقيت الصلاة الحقيقية..."
+      );
+
+
+      const today =
+        apiDate(
+          new Date()
+        );
+
+
+      const url =
+        `${API}/timings/${today}` +
+        `?latitude=${latitude}` +
+        `&longitude=${longitude}` +
+        `&method=19` +
+        `&school=0` +
+        `&iso8601=false`;
+
+
+      const response =
+        await fetch(url);
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          "API Error"
+        );
+
+      }
+
+
+      const result =
+        await response.json();
+
+
+      if (
+        result.code !== 200 ||
+        !result.data
+      ) {
+
+        throw new Error(
+          "Invalid API response"
+        );
+
+      }
+
+
+      prayerTimes =
+        result.data.timings;
+
+
+      currentLocation = {
+        latitude,
+        longitude
+      };
+
+
+      cityName.textContent =
+        title;
+
+
+      locationStatus.textContent =
+        "🌍 مواقيت حقيقية حسب موقعك";
+
+
+      /*
+        التاريخ الميلادي
+      */
+
+      if (result.data.date) {
+
+        const readable =
+          result.data.date.readable;
+
+        dateElement.textContent =
+          readable;
+
+      }
+
+
+      /*
+        التاريخ الهجري
+      */
+
+      if (
+        result.data.date &&
+        result.data.date.hijri
+      ) {
+
+        const hijri =
+          result.data.date.hijri;
+
+
+        hijriDate.innerHTML = `
+          ${hijri.day}
+          ${hijri.month.ar}
+          ${hijri.year}
+          هـ
+          <br>
+          ${hijri.weekday.ar}
+        `;
+
+      }
+
+
+      renderPrayerTimes();
+
+
+      await loadQibla(
+        latitude,
+        longitude
+      );
+
+
+      hideStatus();
+
+
+    } catch (error) {
+
+      console.error(error);
+
+
+      showStatus(
+        "⚠️ تعذر تحميل المواقيت. تأكد من اتصال الإنترنت."
+      );
+
+    }
+
+  }
+
+
+  /*
+    عرض المواقيت
+  */
+
+  function renderPrayerTimes() {
+
+    if (!prayerTimes) {
+      return;
+    }
+
+
+    prayersElement.innerHTML =
+      "";
+
+
+    prayerInfo.forEach(
+      prayer => {
+
+        const value =
+          cleanTime(
+            prayerTimes[
+              prayer.key
+            ]
+          );
+
+
+        const card =
+          document.createElement(
+            "div"
+          );
+
+
+        card.className =
+          "prayer";
+
+
+        card.dataset.key =
+          prayer.key;
+
+
+        card.innerHTML = `
+
+          <div class="prayer-icon">
+            ${prayer.icon}
+          </div>
+
+          <div class="prayer-name">
+            ${prayer.name}
+          </div>
+
+          <div class="prayer-time">
+            ${value}
+          </div>
+
+        `;
+
+
+        prayersElement.appendChild(
+          card
+        );
+
+      }
+    );
+
+
+    updateNextPrayer();
+
+  }
+
+
+  /*
+    إزالة معلومات إضافية من الوقت
+    مثل +01:00
+  */
+
+  function cleanTime(value) {
+
+    if (!value) {
+      return "--:--";
+    }
+
+
+    return value
+      .toString()
+      .split(" ")[0]
+      .substring(0, 5);
+
+  }
+
+
+  /*
+    تحويل الوقت إلى دقائق
+  */
+
+  function timeToMinutes(
+    time
+  ) {
+
+    const parts =
+      time
+        .split(":")
+        .map(Number);
+
+
+    return (
+      parts[0] * 60 +
+      parts[1]
+    );
+
+  }
+
+
+  /*
+    الصلاة القادمة
+  */
+
+  function updateNextPrayer() {
+
+    if (!prayerTimes) {
+      return;
+    }
+
+
+    const now =
+      new Date();
+
+
+    const currentMinutes =
+      now.getHours() * 60 +
+      now.getMinutes();
+
+
+    let next = null;
+
+
+    /*
+      نتجاهل الشروق
+      لأنه ليس صلاة.
+    */
+
+    const prayers =
+      prayerInfo.filter(
+        p =>
+          p.key !== "Sunrise"
+      );
+
+
+    for (
+      const prayer of prayers
+    ) {
+
+      const time =
+        cleanTime(
+          prayerTimes[
+            prayer.key
+          ]
+        );
+
+
+      if (
+        timeToMinutes(time) >
+        currentMinutes
+      ) {
+
+        next = {
+          ...prayer,
+          time
+        };
+
+        break;
+
+      }
+
+    }
+
+
+    /*
+      إذا انتهت الصلوات
+      ننتقل إلى فجر الغد.
+    */
+
+    if (!next) {
+
+      const fajr =
+        cleanTime(
+          prayerTimes.Fajr
+        );
+
+
+      next = {
+
+        key: "Fajr",
+
+        name: "الفجر",
+
+        icon: "🌙",
+
+        time: fajr,
+
+        tomorrow: true
+
+      };
+
+    }
+
+
+    /*
+      إزالة التحديد
+    */
+
+    document
+      .querySelectorAll(
+        ".prayer"
+      )
+      .forEach(
+        card =>
+          card.classList.remove(
+            "active"
+          )
+      );
+
+
+    /*
+      تحديد البطاقة
+    */
+
+    const activeCard =
+      document.querySelector(
+        `.prayer[data-key="${next.key}"]`
+      );
+
+
+    if (activeCard) {
+
+      activeCard.classList.add(
+        "active"
+      );
+
+    }
+
+
+    /*
+      حساب الوقت المتبقي
+    */
+
+    const [
+      hours,
+      minutes
+    ] =
+      next.time
+        .split(":")
+        .map(Number);
+
+
+    const target =
+      new Date();
+
+
+    target.setHours(
+      hours,
+      minutes,
+      0,
+      0
+    );
+
+
+    if (
+      next.tomorrow ||
+      target <= now
+    ) {
+
+      target.setDate(
+        target.getDate() + 1
+      );
+
+    }
+
+
+    const difference =
+      target.getTime() -
+      now.getTime();
+
+
+    const h =
+      Math.floor(
+        difference / 3600000
+      );
+
+
+    const m =
+      Math.floor(
+        (
+          difference %
+          3600000
+        ) / 60000
+      );
+
+
+    const s =
+      Math.floor(
+        (
+          difference %
+          60000
+        ) / 1000
+      );
+
+
+    nextPrayer.innerHTML = `
+
+      الصلاة القادمة:
+      <strong>
+        ${next.name}
+      </strong>
+
+      — الساعة
+
+      <strong>
+        ${next.time}
+      </strong>
+
+      <br>
+
+      متبقي:
+
+      <strong>
+        ${h} ساعة
+        ${m} دقيقة
+        ${s} ثانية
+      </strong>
+
+    `;
+
+  }
+
+
+  /*
+    تحميل اتجاه القبلة
+  */
+
+  async function loadQibla(
+    latitude,
+    longitude
+  ) {
+
+    try {
+
+      const url =
+        `${API}/qibla/` +
+        `${latitude}/` +
+        `${longitude}`;
+
+
+      const response =
+        await fetch(url);
+
+
+      const result =
+        await response.json();
+
+
+      if (
+        result.code !== 200
+      ) {
+
+        throw new Error(
+          "Qibla error"
+        );
+
+      }
+
+
+      qiblaDirection =
+        Number(
+          result.data.direction
+        );
+
+
+      qiblaText.innerHTML = `
+
+        اتجاه القبلة:
+
+        <strong>
+          ${qiblaDirection.toFixed(1)}°
+        </strong>
+
+        <br>
+
+        من اتجاه الشمال
+
+      `;
+
+
+      /*
+        تدوير سهم القبلة
+      */
+
+      qiblaArrow.style.transform =
+        `rotate(${qiblaDirection}deg)`;
+
+
+    } catch (error) {
+
+      console.error(error);
+
+
+      qiblaText.textContent =
+        "تعذر حساب اتجاه القبلة.";
+
+    }
+
+  }
+
+
+  /*
+    اختيار مدينة
+  */
+
+  citySelect.addEventListener(
+    "change",
+    function() {
+
+      selectedCity =
+        this.value;
+
+
+      localStorage.setItem(
+        "amirCity",
+        selectedCity
+      );
+
+
+      const city =
+        cities[selectedCity];
+
+
+      loadPrayerTimes(
+        city.latitude,
+        city.longitude,
+        city.name
+      );
+
+    }
+  );
+
+
+  /*
+    تحديد الموقع تلقائيًا
+  */
+
+  function detectLocation() {
+
+    if (
+      !navigator.geolocation
+    ) {
+
+      showStatus(
+        "المتصفح لا يدعم تحديد الموقع. سيتم استخدام الجزائر العاصمة."
+      );
+
+      loadDefaultCity();
+
+      return;
+
+    }
+
+
+    showStatus(
+      "📍 اسمح بالوصول إلى موقعك للحصول على مواقيت منطقتك."
+    );
+
+
+    navigator.geolocation.getCurrentPosition(
+
+      position => {
+
+        const latitude =
+          position.coords.latitude;
+
+        const longitude =
+          position.coords.longitude;
+
+
+        locationStatus.textContent =
+          "📍 مواقيت حسب موقعك الحالي";
+
+
+        loadPrayerTimes(
+          latitude,
+          longitude,
+          "موقعك الحالي 📍"
+        );
+
+      },
+
+      error => {
+
+        console.log(
+          "Location denied or unavailable:",
+          error
+        );
+
+
+        showStatus(
+          "لم يتم السماح بالموقع. سيتم استخدام الجزائر العاصمة."
+        );
+
+
+        loadDefaultCity();
+
+      },
+
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000
+      }
+
+    );
+
+  }
+
+
+  /*
+    الجزائر العاصمة كخيار افتراضي
+  */
+
+  function loadDefaultCity() {
+
+    const city =
+      cities.Algiers;
+
+
+    citySelect.value =
+      "Algiers";
+
+
+    loadPrayerTimes(
+      city.latitude,
+      city.longitude,
+      city.name
+    );
+
+  }
+
+
+  /*
+    زر موقعي
+  */
+
+  locationButton.addEventListener(
+    "click",
+    function() {
+
+      detectLocation();
+
+    }
+  );
+
+
+  /*
+    الساعة
+  */
+
+  function updateClock() {
+
+    const now =
+      new Date();
+
+
+    const hours =
+      String(
+        now.getHours()
+      ).padStart(2, "0");
+
+
+    const minutes =
+      String(
+        now.getMinutes()
+      ).padStart(2, "0");
+
+
+    const seconds =
+      String(
+        now.getSeconds()
+      ).padStart(2, "0");
+
+
+    clock.textContent =
+      `${hours}:${minutes}:${seconds}`;
+
+
+    /*
+      التاريخ المحلي
+    */
+
+    dateElement.textContent =
+      now.toLocaleDateString(
+        "ar-DZ",
+        {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        }
+      );
+
+
+    /*
+      التاريخ الهجري من الجهاز
+      إذا كانت بيانات API غير موجودة.
+    */
+
+    if (
+      !hijriDate.textContent ||
+      hijriDate.textContent.includes(
+        "جاري"
+      )
+    ) {
+
+      try {
+
+        const hijri =
+          new Intl.DateTimeFormat(
+            "ar-SA-u-ca-islamic",
+            {
+              day: "numeric",
+              month: "long",
+              year: "numeric"
+            }
+          ).format(now);
+
+
+        hijriDate.textContent =
+          hijri;
+
+      } catch (error) {
+
+        hijriDate.textContent =
+          "التاريخ الهجري غير متاح";
+
+      }
+
+    }
+
+
+    updateNextPrayer();
+
+  }
+
+
+  /*
+    التشغيل
+  */
+
+  citySelect.value =
+    selectedCity;
+
+
+  updateClock();
+
+
+  /*
+    تحميل الجزائر أولاً
+    ثم محاولة تحديد الموقع.
+  */
+
+  loadDefaultCity();
+
+
+  setTimeout(
+    detectLocation,
+    700
+  );
+
+
+  /*
+    تحديث الساعة والعداد كل ثانية
+  */
+
+  setInterval(
+    updateClock,
+    1000
+  );
+
+
+  /*
+    إعادة تحميل المواقيت
+    كل ساعة للتأكد من البيانات.
+  */
+
+  setInterval(
+    () => {
+
+      if (currentLocation) {
+
+        loadPrayerTimes(
+          currentLocation.latitude,
+          currentLocation.longitude,
+          cityName.textContent
+        );
+
+      }
+
+    },
+    60 * 60 * 1000
+  );
+
+</script>
+
+</body>
+</html>
+```
