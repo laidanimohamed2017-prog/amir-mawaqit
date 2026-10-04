@@ -1,942 +1,877 @@
-/* =========================================================
-   أمير مواقيت V2
-   adhan.js
-   نظام الأذان والتنبيهات
-   ========================================================= */
+"use strict";
 
-(() => {
-  "use strict";
+/*
+=========================================================
+  أمير مواقيت V2
+  Adhan Engine
+=========================================================
+*/
 
-  const ADHAN_AUDIO =
-    "./audio/adhan1.mp3";
+(function () {
 
-  const BEFORE_MINUTES = 10;
+    const AUDIO_PATH = "./adhan1.mp3";
 
-  let audio = null;
-  let scheduleTimer = null;
-  let scheduledEvents = [];
-  let lastTriggered = {};
+    let audio = null;
+    let scheduler = null;
+    let scheduledKeys = new Set();
 
-  /* =========================================================
-     إنشاء مشغل الأذان
-     ========================================================= */
-
-  function createAudio() {
-    if (!audio) {
-      audio = new Audio(ADHAN_AUDIO);
-
-      audio.preload = "auto";
-
-      audio.addEventListener(
-        "ended",
-        () => {
-          updateAdhanStatus(
-            "انتهى الأذان"
-          );
-        }
-      );
-
-      audio.addEventListener(
-        "error",
-        () => {
-          updateAdhanStatus(
-            "تعذر تشغيل ملف الأذان"
-          );
-        }
-      );
-    }
-
-    return audio;
-  }
-
-  /* =========================================================
-     إعدادات الأذان
-     ========================================================= */
-
-  function getSettings() {
-    if (
-      window.AmirStorage &&
-      typeof window.AmirStorage.getAdhanSettings ===
-        "function"
-    ) {
-      return (
-        window.AmirStorage.getAdhanSettings() || {
-          enabled: true,
-          timing: "at",
-          sound: "adhan1",
-          volume: 0.8
-        }
-      );
-    }
-
-    return {
-      enabled:
-        localStorage.getItem(
-          "amirAdhanEnabled"
-        ) !== "false",
-
-      timing:
-        localStorage.getItem(
-          "amirAdhanTiming"
-        ) || "at",
-
-      sound:
-        localStorage.getItem(
-          "amirAdhanSound"
-        ) || "adhan1",
-
-      volume: Number(
-        localStorage.getItem(
-          "amirAdhanVolume"
-        ) || 0.8
-      )
+    const DEFAULT_SETTINGS = {
+        enabled: true,
+        timing: "at",
+        sound: "adhan1",
+        volume: 1
     };
-  }
 
-  function saveSettings(
-    settings
-  ) {
-    if (
-      window.AmirStorage &&
-      typeof window.AmirStorage.setAdhanSettings ===
-        "function"
-    ) {
-      window.AmirStorage.setAdhanSettings(
-        settings
-      );
-      return;
-    }
 
-    localStorage.setItem(
-      "amirAdhanEnabled",
-      String(settings.enabled)
-    );
+    /* =====================================================
+       AUDIO
+       ===================================================== */
 
-    localStorage.setItem(
-      "amirAdhanTiming",
-      settings.timing
-    );
+    function getAudio() {
 
-    localStorage.setItem(
-      "amirAdhanSound",
-      settings.sound
-    );
-
-    localStorage.setItem(
-      "amirAdhanVolume",
-      String(settings.volume)
-    );
-  }
-
-  /* =========================================================
-     التحكم في الصوت
-     ========================================================= */
-
-  async function playAdhan(reason = "at") {
-    const settings =
-      getSettings();
-
-    if (!settings.enabled) {
-      updateAdhanStatus(
-        "الأذان متوقف"
-      );
-      return false;
-    }
-
-    const player =
-      createAudio();
-
-    try {
-      player.pause();
-
-      player.currentTime = 0;
-
-      const volume =
-        Number(settings.volume);
-
-      player.volume =
-        Math.max(
-          0,
-          Math.min(
-            1,
-            Number.isFinite(volume)
-              ? volume
-              : 0.8
-          )
-        );
-
-      await player.play();
-
-      updateAdhanStatus(
-        reason === "before"
-          ? "حان تنبيه الأذان بعد 10 دقائق"
-          : "يُرفع الأذان الآن"
-      );
-
-      return true;
-    } catch (error) {
-      console.warn(
-        "Adhan playback blocked:",
-        error
-      );
-
-      updateAdhanStatus(
-        "اضغط زر اختبار الأذان للسماح بتشغيل الصوت"
-      );
-
-      /*
-        المتصفحات، وخاصة iPhone/iPad،
-        قد تمنع تشغيل الصوت تلقائيًا
-        دون تفاعل المستخدم.
-      */
-
-      return false;
-    }
-  }
-
-  function stopAdhan() {
-    if (!audio) {
-      updateAdhanStatus(
-        "لا يوجد أذان يعمل حاليًا"
-      );
-      return;
-    }
-
-    audio.pause();
-    audio.currentTime = 0;
-
-    updateAdhanStatus(
-      "تم إيقاف الأذان"
-    );
-  }
-
-  async function testAdhan() {
-    const settings =
-      getSettings();
-
-    settings.enabled = true;
-
-    saveSettings(settings);
-
-    return playAdhan("test");
-  }
-
-  function setVolume(value) {
-    const volume =
-      Math.max(
-        0,
-        Math.min(
-          1,
-          Number(value)
-        )
-      );
-
-    const settings =
-      getSettings();
-
-    settings.volume =
-      Number.isFinite(volume)
-        ? volume
-        : 0.8;
-
-    saveSettings(settings);
-
-    if (audio) {
-      audio.volume =
-        settings.volume;
-    }
-  }
-
-  /* =========================================================
-     حساب وقت الصلاة
-     ========================================================= */
-
-  function prayerTimeToDate(
-    time,
-    baseDate
-  ) {
-    if (!time || time === "--:--") {
-      return null;
-    }
-
-    const match =
-      String(time).match(
-        /^(\d{1,2}):(\d{2})/
-      );
-
-    if (!match) return null;
-
-    const date =
-      new Date(baseDate);
-
-    date.setHours(
-      Number(match[1]),
-      Number(match[2]),
-      0,
-      0
-    );
-
-    return date;
-  }
-
-  /* =========================================================
-     إشعارات النظام
-     ========================================================= */
-
-  function notificationsEnabled() {
-    try {
-      if (
-        window.AmirStorage &&
-        typeof window.AmirStorage.getNotifications ===
-          "function"
-      ) {
-        return window.AmirStorage.getNotifications();
-      }
-
-      return (
-        localStorage.getItem(
-          "amirNotifications"
-        ) === "true"
-      );
-    } catch {
-      return false;
-    }
-  }
-
-  async function requestNotificationPermission() {
-    if (
-      !("Notification" in window)
-    ) {
-      updateAdhanStatus(
-        "هذا المتصفح لا يدعم الإشعارات"
-      );
-      return false;
-    }
-
-    if (
-      Notification.permission ===
-      "granted"
-    ) {
-      saveNotificationSetting(
-        true
-      );
-
-      return true;
-    }
-
-    if (
-      Notification.permission ===
-      "denied"
-    ) {
-      updateAdhanStatus(
-        "الإشعارات محظورة من إعدادات المتصفح"
-      );
-
-      return false;
-    }
-
-    try {
-      const permission =
-        await Notification.requestPermission();
-
-      const granted =
-        permission === "granted";
-
-      saveNotificationSetting(
-        granted
-      );
-
-      if (granted) {
-        updateAdhanStatus(
-          "تم تفعيل الإشعارات"
-        );
-      } else {
-        updateAdhanStatus(
-          "لم يتم تفعيل الإشعارات"
-        );
-      }
-
-      return granted;
-    } catch (error) {
-      console.warn(
-        "Notification permission error:",
-        error
-      );
-
-      return false;
-    }
-  }
-
-  function saveNotificationSetting(
-    enabled
-  ) {
-    if (
-      window.AmirStorage &&
-      typeof window.AmirStorage.setNotifications ===
-        "function"
-    ) {
-      window.AmirStorage.setNotifications(
-        enabled
-      );
-      return;
-    }
-
-    localStorage.setItem(
-      "amirNotifications",
-      String(enabled)
-    );
-  }
-
-  function showNotification(
-    title,
-    body
-  ) {
-    if (
-      !notificationsEnabled()
-    ) {
-      return;
-    }
-
-    if (
-      !("Notification" in window) ||
-      Notification.permission !==
-        "granted"
-    ) {
-      return;
-    }
-
-    try {
-      new Notification(
-        title,
-        {
-          body,
-          icon:
-            "./icons/icon-192.png",
-          badge:
-            "./icons/icon-192.png",
-          dir: "rtl",
-          lang: "ar"
+        if (audio) {
+            return audio;
         }
-      );
-    } catch (error) {
-      console.warn(
-        "Notification error:",
-        error
-      );
-    }
-  }
 
-  /* =========================================================
-     تنفيذ حدث الأذان
-     ========================================================= */
+        audio = document.getElementById("adhanAudio");
 
-  function triggerAdhan(
-    prayer,
-    type
-  ) {
-    const now =
-      new Date();
+        if (!audio) {
 
-    const key =
-      `${now.toDateString()}_${prayer.key}_${type}`;
+            audio = document.createElement("audio");
 
-    /*
-      منع تكرار نفس الحدث أكثر من مرة
-    */
-    if (
-      lastTriggered[key]
-    ) {
-      return;
-    }
+            audio.id = "adhanAudio";
+            audio.preload = "auto";
 
-    lastTriggered[key] =
-      Date.now();
-
-    if (
-      type === "before"
-    ) {
-      showNotification(
-        `أمير مواقيت — ${prayer.name}`,
-        `تبقى 10 دقائق على أذان ${prayer.name}`
-      );
-
-      playAdhan("before");
-    } else {
-      showNotification(
-        `أمير مواقيت — حان وقت ${prayer.name}`,
-        `حان الآن وقت صلاة ${prayer.name}`
-      );
-
-      playAdhan("at");
-    }
-  }
-
-  /* =========================================================
-     جدولة الأذان
-     ========================================================= */
-
-  function clearSchedule() {
-    scheduledEvents.forEach(
-      event => {
-        if (event.timer) {
-          clearTimeout(
-            event.timer
-          );
+            document.body.appendChild(audio);
         }
-      }
-    );
 
-    scheduledEvents = [];
-  }
 
-  function scheduleEvent(
-    date,
-    prayer,
-    type
-  ) {
-    const delay =
-      date.getTime() -
-      Date.now();
+        /*
+        إذا كان المصدر الموجود في HTML خاطئًا،
+        نفرض المسار الصحيح من جذر المشروع.
+        */
 
-    /*
-      لا نبرمج أحداثًا قديمة
-    */
-    if (delay <= 0) {
-      return;
-    }
+        let source =
+            audio.querySelector("source");
 
-    /*
-      setTimeout له حدود في المتصفحات،
-      لذلك نرفض الأحداث البعيدة جدًا.
-    */
-    if (
-      delay >
-      2147483647
-    ) {
-      return;
-    }
 
-    const timer =
-      setTimeout(
-        () => {
-          triggerAdhan(
-            prayer,
-            type
-          );
+        if (!source) {
 
-          /*
-            بعد التنفيذ نعيد الجدولة
-            حتى يستمر النظام طوال اليوم.
-          */
-          reschedule();
-        },
-        delay
-      );
+            source =
+                document.createElement("source");
 
-    scheduledEvents.push({
-      date,
-      prayer,
-      type,
-      timer
-    });
-  }
+            source.type = "audio/mpeg";
 
-  function reschedule() {
-    clearSchedule();
-
-    const settings =
-      getSettings();
-
-    if (!settings.enabled) {
-      updateAdhanStatus(
-        "الأذان متوقف"
-      );
-      return;
-    }
-
-    const schedule =
-      window.AmirPrayer &&
-      typeof window.AmirPrayer.getTodaySchedule ===
-        "function"
-        ? window.AmirPrayer.getTodaySchedule()
-        : null;
-
-    if (
-      !schedule ||
-      !schedule.prayers
-    ) {
-      return;
-    }
-
-    const now =
-      new Date();
-
-    const timing =
-      settings.timing || "at";
-
-    const prayerDefinitions = [
-      {
-        key: "Fajr",
-        name: "الفجر"
-      },
-      {
-        key: "Dhuhr",
-        name: "الظهر"
-      },
-      {
-        key: "Asr",
-        name: "العصر"
-      },
-      {
-        key: "Maghrib",
-        name: "المغرب"
-      },
-      {
-        key: "Isha",
-        name: "العشاء"
-      }
-    ];
-
-    prayerDefinitions.forEach(
-      prayer => {
-        const prayerDate =
-          prayerTimeToDate(
-            schedule.prayers[
-              prayer.key
-            ],
-            now
-          );
-
-        if (!prayerDate) {
-          return;
+            audio.appendChild(source);
         }
+
+
+        source.src = AUDIO_PATH;
+
+        audio.src = AUDIO_PATH;
+
+        audio.preload = "auto";
+
+
+        return audio;
+    }
+
+
+    /* =====================================================
+       SETTINGS
+       ===================================================== */
+
+    function getSettings() {
 
         if (
-          timing === "before" ||
-          timing === "both"
+            window.AmirStorage &&
+            typeof window.AmirStorage.getAdhanSettings === "function"
         ) {
-          const beforeDate =
-            new Date(
-              prayerDate.getTime() -
-                BEFORE_MINUTES *
-                  60 *
-                  1000
+
+            const saved =
+                window.AmirStorage.getAdhanSettings();
+
+            return {
+                ...DEFAULT_SETTINGS,
+                ...(saved || {})
+            };
+        }
+
+
+        return {
+            enabled:
+                localStorage.getItem(
+                    "amirAdhanEnabled"
+                ) !== "false",
+
+            timing:
+                localStorage.getItem(
+                    "amirAdhanTiming"
+                ) || "at",
+
+            sound:
+                localStorage.getItem(
+                    "amirAdhanSound"
+                ) || "adhan1",
+
+            volume:
+                parseFloat(
+                    localStorage.getItem(
+                        "amirAdhanVolume"
+                    ) || "1"
+                )
+        };
+    }
+
+
+    function saveSettings(settings) {
+
+        if (
+            window.AmirStorage &&
+            typeof window.AmirStorage.setAdhanSettings === "function"
+        ) {
+
+            window.AmirStorage.setAdhanSettings(
+                settings
             );
 
-          scheduleEvent(
-            beforeDate,
-            prayer,
-            "before"
-          );
+            return;
         }
 
-        if (
-          timing === "at" ||
-          timing === "both"
-        ) {
-          scheduleEvent(
-            prayerDate,
-            prayer,
-            "at"
-          );
-        }
-      }
-    );
 
-    /*
-      إعادة المحاولة كل دقيقة،
-      تحسبًا لتغير اليوم أو تعديل الإعدادات.
-    */
-    setTimeout(
-      () => {
-        reschedule();
-      },
-      60 * 1000
-    );
-  }
-
-  /* =========================================================
-     حالة الأذان في الواجهة
-     ========================================================= */
-
-  function updateAdhanStatus(
-    message
-  ) {
-    const elements =
-      document.querySelectorAll(
-        "[data-adhan-status]"
-      );
-
-    elements.forEach(
-      element => {
-        element.textContent =
-          message;
-      }
-    );
-
-    const status =
-      document.getElementById(
-        "adhanStatus"
-      );
-
-    if (status) {
-      status.textContent =
-        message;
-    }
-  }
-
-  /* =========================================================
-     تشغيل / إيقاف الأذان
-     ========================================================= */
-
-  function setEnabled(
-    enabled
-  ) {
-    const settings =
-      getSettings();
-
-    settings.enabled =
-      Boolean(enabled);
-
-    saveSettings(settings);
-
-    if (!settings.enabled) {
-      stopAdhan();
-      clearSchedule();
-
-      updateAdhanStatus(
-        "الأذان متوقف"
-      );
-    } else {
-      updateAdhanStatus(
-        "تم تفعيل الأذان"
-      );
-
-      reschedule();
-    }
-  }
-
-  function setTiming(
-    timing
-  ) {
-    const valid = [
-      "off",
-      "before",
-      "at",
-      "both"
-    ];
-
-    if (
-      !valid.includes(timing)
-    ) {
-      timing = "at";
-    }
-
-    const settings =
-      getSettings();
-
-    settings.timing =
-      timing;
-
-    saveSettings(settings);
-
-    reschedule();
-  }
-
-  /* =========================================================
-     الأحداث من الواجهة
-     ========================================================= */
-
-  function bindUI() {
-    const testButton =
-      document.getElementById(
-        "testAdhan"
-      );
-
-    if (testButton) {
-      testButton.addEventListener(
-        "click",
-        async () => {
-          await testAdhan();
-        }
-      );
-    }
-
-    const stopButton =
-      document.getElementById(
-        "stopAdhan"
-      );
-
-    if (stopButton) {
-      stopButton.addEventListener(
-        "click",
-        () => {
-          stopAdhan();
-        }
-      );
-    }
-
-    const volume =
-      document.getElementById(
-        "adhanVolume"
-      );
-
-    if (volume) {
-      const settings =
-        getSettings();
-
-      volume.value =
-        Math.round(
-          Number(settings.volume) *
-            100
+        localStorage.setItem(
+            "amirAdhanEnabled",
+            settings.enabled
         );
 
-      volume.addEventListener(
-        "input",
-        event => {
-          setVolume(
+        localStorage.setItem(
+            "amirAdhanTiming",
+            settings.timing
+        );
+
+        localStorage.setItem(
+            "amirAdhanSound",
+            settings.sound
+        );
+
+        localStorage.setItem(
+            "amirAdhanVolume",
+            settings.volume
+        );
+    }
+
+
+    /* =====================================================
+       PLAY
+       ===================================================== */
+
+    async function play() {
+
+        const settings =
+            getSettings();
+
+
+        const player =
+            getAudio();
+
+
+        try {
+
+            player.pause();
+
+            player.currentTime = 0;
+
+            player.volume =
+                Math.max(
+                    0,
+                    Math.min(
+                        1,
+                        Number(
+                            settings.volume
+                        ) || 1
+                    )
+                );
+
+
+            /*
+            إعادة تحميل المصدر إذا لزم
+            */
+
+            if (
+                !player.src ||
+                !player.src.endsWith("adhan1.mp3")
+            ) {
+
+                player.src =
+                    AUDIO_PATH;
+
+                player.load();
+            }
+
+
+            await player.play();
+
+
+            console.log(
+                "🔊 أمير مواقيت: بدأ تشغيل الأذان"
+            );
+
+
+            return true;
+
+        } catch (error) {
+
+            console.warn(
+                "تعذر تشغيل الأذان:",
+                error
+            );
+
+
+            showMessage(
+                "اضغط زر اختبار الأذان مرة واحدة للسماح بتشغيل الصوت."
+            );
+
+
+            return false;
+        }
+    }
+
+
+    /* =====================================================
+       STOP
+       ===================================================== */
+
+    function stop() {
+
+        const player =
+            getAudio();
+
+
+        try {
+
+            player.pause();
+
+            player.currentTime = 0;
+
+        } catch (error) {
+
+            console.warn(
+                "خطأ في إيقاف الأذان:",
+                error
+            );
+        }
+
+
+        console.log(
+            "⏹ أمير مواقيت: تم إيقاف الأذان"
+        );
+    }
+
+
+    /* =====================================================
+       TEST
+       ===================================================== */
+
+    async function test() {
+
+        const player =
+            getAudio();
+
+
+        player.volume =
             Number(
-              event.target.value
-            ) / 100
-          );
-        }
-      );
+                getSettings().volume
+            ) || 1;
+
+
+        return await play();
     }
 
-    const timing =
-      document.getElementById(
-        "adhanTiming"
-      );
 
-    if (timing) {
-      timing.value =
-        getSettings().timing ||
-        "at";
+    /* =====================================================
+       VOLUME
+       ===================================================== */
 
-      timing.addEventListener(
-        "change",
-        event => {
-          setTiming(
-            event.target.value
-          );
+    function setVolume(value) {
+
+        let volume =
+            parseFloat(value);
+
+
+        if (Number.isNaN(volume)) {
+            volume = 1;
         }
-      );
-    }
 
-    const enabled =
-      document.getElementById(
-        "adhanEnabled"
-      );
 
-    if (enabled) {
-      enabled.checked =
-        Boolean(
-          getSettings().enabled
-        );
-
-      enabled.addEventListener(
-        "change",
-        event => {
-          setEnabled(
-            event.target.checked
-          );
-        }
-      );
-    }
-
-    const notificationButton =
-      document.getElementById(
-        "enableNotifications"
-      );
-
-    if (notificationButton) {
-      notificationButton.addEventListener(
-        "click",
-        async () => {
-          await requestNotificationPermission();
-        }
-      );
-    }
-  }
-
-  /* =========================================================
-     عند تغير مواقيت الصلاة
-     ========================================================= */
-
-  function watchPrayerModule() {
-    /*
-      ننتظر حتى تصبح مواقيت الصلاة
-      متاحة ثم نبدأ الجدولة.
-    */
-
-    const interval =
-      setInterval(
-        () => {
-          if (
-            window.AmirPrayer &&
-            typeof window.AmirPrayer.getTodaySchedule ===
-              "function" &&
-            window.AmirPrayer.getTodaySchedule()
-          ) {
-            clearInterval(
-              interval
+        volume =
+            Math.max(
+                0,
+                Math.min(
+                    1,
+                    volume
+                )
             );
 
-            reschedule();
-          }
-        },
-        1000
-      );
-  }
 
-  /* =========================================================
-     API عام
-     ========================================================= */
+        const settings =
+            getSettings();
 
-  window.AmirAdhan = {
-    play: playAdhan,
 
-    stop: stopAdhan,
+        settings.volume =
+            volume;
 
-    test: testAdhan,
 
-    setEnabled,
+        saveSettings(settings);
 
-    setTiming,
 
-    setVolume,
+        const player =
+            getAudio();
 
-    getSettings,
 
-    requestNotificationPermission,
-
-    reschedule,
-
-    clearSchedule
-  };
-
-  /* =========================================================
-     التشغيل
-     ========================================================= */
-
-  document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-      bindUI();
-
-      watchPrayerModule();
-
-      /*
-        تحديث الجدولة كل 5 دقائق
-        للتأكد من استمرار النظام.
-      */
-      setInterval(
-        () => {
-          reschedule();
-        },
-        5 * 60 * 1000
-      );
+        player.volume =
+            volume;
     }
-  );
+
+
+    /* =====================================================
+       NOTIFICATIONS
+       ===================================================== */
+
+    async function requestNotificationPermission() {
+
+        if (
+            !("Notification" in window)
+        ) {
+
+            showMessage(
+                "المتصفح لا يدعم الإشعارات."
+            );
+
+            return "unsupported";
+        }
+
+
+        try {
+
+            const permission =
+                await Notification.requestPermission();
+
+
+            if (
+                permission === "granted"
+            ) {
+
+                showMessage(
+                    "تم تفعيل الإشعارات 🔔"
+                );
+
+            } else if (
+                permission === "denied"
+            ) {
+
+                showMessage(
+                    "تم رفض الإشعارات من المتصفح."
+                );
+
+            } else {
+
+                showMessage(
+                    "لم يتم اختيار السماح بالإشعارات."
+                );
+            }
+
+
+            return permission;
+
+        } catch (error) {
+
+            console.warn(
+                "Notification permission error:",
+                error
+            );
+
+
+            return "error";
+        }
+    }
+
+
+    function notify(title, body) {
+
+        if (
+            !("Notification" in window)
+        ) {
+            return false;
+        }
+
+
+        if (
+            Notification.permission !==
+            "granted"
+        ) {
+            return false;
+        }
+
+
+        try {
+
+            new Notification(
+                title,
+                {
+                    body: body || "",
+                    icon: "./icon-192.png",
+                    badge: "./icon-192.png",
+                    dir: "rtl",
+                    lang: "ar"
+                }
+            );
+
+
+            return true;
+
+        } catch (error) {
+
+            console.warn(
+                "Notification error:",
+                error
+            );
+
+
+            return false;
+        }
+    }
+
+
+    /* =====================================================
+       PRAYER NAME
+       ===================================================== */
+
+    const prayerNames = {
+        Fajr: "الفجر",
+        Sunrise: "الشروق",
+        Dhuhr: "الظهر",
+        Asr: "العصر",
+        Maghrib: "المغرب",
+        Isha: "العشاء"
+    };
+
+
+    function getPrayerArabicName(name) {
+
+        return (
+            prayerNames[name] ||
+            name ||
+            "الصلاة"
+        );
+    }
+
+
+    /* =====================================================
+       SCHEDULER
+       ===================================================== */
+
+    function clearScheduler() {
+
+        if (scheduler) {
+
+            clearInterval(
+                scheduler
+            );
+
+            scheduler = null;
+        }
+
+
+        scheduledKeys.clear();
+    }
+
+
+    function schedulePrayer(
+        prayerName,
+        prayerTime,
+        type
+    ) {
+
+        if (!prayerTime) {
+            return;
+        }
+
+
+        const now =
+            Date.now();
+
+
+        const prayerDate =
+            new Date();
+
+
+        const parts =
+            String(prayerTime)
+                .split(":");
+
+
+        if (
+            parts.length < 2
+        ) {
+            return;
+        }
+
+
+        prayerDate.setHours(
+            parseInt(parts[0], 10),
+            parseInt(parts[1], 10),
+            0,
+            0
+        );
+
+
+        let target =
+            prayerDate.getTime();
+
+
+        /*
+        before = قبل الصلاة بـ10 دقائق
+        at     = عند الصلاة
+        */
+
+        if (
+            type === "before"
+        ) {
+
+            target -=
+                10 * 60 * 1000;
+        }
+
+
+        if (
+            target <= now
+        ) {
+            return;
+        }
+
+
+        const key =
+            prayerName +
+            "_" +
+            type +
+            "_" +
+            prayerDate
+                .toISOString()
+                .slice(0, 10);
+
+
+        if (
+            scheduledKeys.has(key)
+        ) {
+            return;
+        }
+
+
+        scheduledKeys.add(key);
+
+
+        const delay =
+            target - now;
+
+
+        setTimeout(
+            () => {
+
+                const settings =
+                    getSettings();
+
+
+                if (
+                    !settings.enabled
+                ) {
+                    return;
+                }
+
+
+                const arabicName =
+                    getPrayerArabicName(
+                        prayerName
+                    );
+
+
+                if (
+                    type === "before"
+                ) {
+
+                    notify(
+                        "أمير مواقيت 🕌",
+                        `بقي 10 دقائق على صلاة ${arabicName}`
+                    );
+
+                } else {
+
+                    notify(
+                        "أمير مواقيت 🕌",
+                        `حان الآن وقت صلاة ${arabicName}`
+                    );
+
+
+                    /*
+                    تشغيل الأذان عند دخول الوقت
+                    */
+
+                    play();
+                }
+
+            },
+            delay
+        );
+    }
+
+
+    function reschedule() {
+
+        clearScheduler();
+
+
+        const settings =
+            getSettings();
+
+
+        if (
+            !settings.enabled ||
+            settings.timing === "off"
+        ) {
+
+            return;
+        }
+
+
+        if (
+            !window.AmirPrayer ||
+            typeof window.AmirPrayer.getTodaySchedule !== "function"
+        ) {
+
+            console.warn(
+                "AmirPrayer غير جاهز بعد."
+            );
+
+            return;
+        }
+
+
+        const schedule =
+            window.AmirPrayer.getTodaySchedule();
+
+
+        if (!schedule) {
+            return;
+        }
+
+
+        const prayers = [
+            "Fajr",
+            "Dhuhr",
+            "Asr",
+            "Maghrib",
+            "Isha"
+        ];
+
+
+        prayers.forEach(
+            prayerName => {
+
+                const prayerTime =
+                    schedule[prayerName];
+
+
+                if (!prayerTime) {
+                    return;
+                }
+
+
+                if (
+                    settings.timing === "before" ||
+                    settings.timing === "both"
+                ) {
+
+                    schedulePrayer(
+                        prayerName,
+                        prayerTime,
+                        "before"
+                    );
+                }
+
+
+                if (
+                    settings.timing === "at" ||
+                    settings.timing === "both"
+                ) {
+
+                    schedulePrayer(
+                        prayerName,
+                        prayerTime,
+                        "at"
+                    );
+                }
+
+            }
+        );
+
+
+        console.log(
+            "🔔 تم تحديث جدول تنبيهات الأذان"
+        );
+    }
+
+
+    /* =====================================================
+       REFRESH
+       ===================================================== */
+
+    function refresh() {
+
+        reschedule();
+    }
+
+
+    /* =====================================================
+       MESSAGE
+       ===================================================== */
+
+    function showMessage(message) {
+
+        const toast =
+            document.getElementById(
+                "amirToast"
+            );
+
+
+        if (toast) {
+
+            toast.textContent =
+                message;
+
+            toast.classList.add(
+                "show"
+            );
+
+
+            clearTimeout(
+                toast._timer
+            );
+
+
+            toast._timer =
+                setTimeout(
+                    () => {
+
+                        toast.classList.remove(
+                            "show"
+                        );
+
+                    },
+                    3500
+                );
+
+
+            return;
+        }
+
+
+        /*
+        احتياط إذا لم يكن Toast موجودًا
+        */
+
+        console.log(
+            message
+        );
+    }
+
+
+    /* =====================================================
+       INITIALIZE AUDIO
+       ===================================================== */
+
+    function initializeAudio() {
+
+        const player =
+            getAudio();
+
+
+        const settings =
+            getSettings();
+
+
+        player.volume =
+            Math.max(
+                0,
+                Math.min(
+                    1,
+                    Number(
+                        settings.volume
+                    ) || 1
+                )
+            );
+
+
+        /*
+        تحميل الصوت مسبقًا
+        */
+
+        try {
+
+            player.load();
+
+        } catch {}
+    }
+
+
+    /* =====================================================
+       PUBLIC API
+       ===================================================== */
+
+    window.AmirAdhan = {
+
+        play,
+        stop,
+        test,
+
+        getSettings,
+        saveSettings,
+
+        setVolume,
+
+        requestNotificationPermission,
+        notify,
+
+        reschedule,
+        refresh,
+
+        clearScheduler,
+
+        getAudio
+
+    };
+
+
+    /* =====================================================
+       INITIALIZATION
+       ===================================================== */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        () => {
+
+            initializeAudio();
+
+            /*
+            لا نضيف هنا مستمعات الأزرار.
+            settings.js هو المسؤول عنها،
+            لتجنب تشغيل الأذان مرتين.
+            */
+
+            console.log(
+                "🔊 Amir Adhan V2 loaded"
+            );
+
+        }
+    );
+
 
 })();
