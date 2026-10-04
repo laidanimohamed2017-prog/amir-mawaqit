@@ -1,10 +1,9 @@
 /* =========================================================
    أمير مواقيت V2
    Service Worker
-   Offline + Cache + Updates
    ========================================================= */
 
-const CACHE_NAME = "amir-mawaqit-v4";
+const CACHE_NAME = "amir-mawaqit-v5";
 
 const APP_FILES = [
     "./",
@@ -23,10 +22,10 @@ const APP_FILES = [
     "./js/settings.js",
     "./js/storage.js",
 
-    "./audio/adhan1.mp3",
+    "./adhan1.mp3",
 
-    "./icons/icon-192.png",
-    "./icons/icon-512.png"
+    "./icon-192.png",
+    "./icon-512.png"
 ];
 
 
@@ -37,19 +36,13 @@ const APP_FILES = [
 self.addEventListener("install", event => {
 
     console.log(
-        "📦 Amir Mawaqit V2 Service Worker installing..."
+        "📦 Amir Mawaqit V2 installing..."
     );
 
     event.waitUntil(
 
         caches.open(CACHE_NAME)
             .then(async cache => {
-
-                /*
-                 * نحاول تحميل الملفات واحدًا واحدًا
-                 * حتى لا يفشل تثبيت التطبيق بالكامل
-                 * بسبب ملف واحد غير موجود.
-                 */
 
                 for (const file of APP_FILES) {
 
@@ -58,14 +51,14 @@ self.addEventListener("install", event => {
                         await cache.add(file);
 
                         console.log(
-                            "Cached:",
+                            "✅ Cached:",
                             file
                         );
 
                     } catch (error) {
 
                         console.warn(
-                            "Could not cache:",
+                            "⚠️ Could not cache:",
                             file
                         );
                     }
@@ -84,7 +77,7 @@ self.addEventListener("install", event => {
 self.addEventListener("activate", event => {
 
     console.log(
-        "⚡ Amir Mawaqit V2 Service Worker activated"
+        "⚡ Amir Mawaqit V2 activated"
     );
 
     event.waitUntil(
@@ -104,7 +97,7 @@ self.addEventListener("activate", event => {
                         ) {
 
                             console.log(
-                                "🗑️ Removing old cache:",
+                                "🗑️ Delete old cache:",
                                 cacheName
                             );
 
@@ -132,9 +125,6 @@ self.addEventListener("fetch", event => {
 
     const request = event.request;
 
-    /*
-     * نريد فقط GET
-     */
     if (request.method !== "GET") {
         return;
     }
@@ -143,7 +133,7 @@ self.addEventListener("fetch", event => {
 
 
     /* =====================================================
-       API مواقيت الصلاة
+       Aladhan API
        Network First
        ===================================================== */
 
@@ -166,10 +156,12 @@ self.addEventListener("fetch", event => {
 
                         caches.open(CACHE_NAME)
                             .then(cache => {
+
                                 cache.put(
                                     request,
                                     copy
                                 );
+
                             });
                     }
 
@@ -191,7 +183,7 @@ self.addEventListener("fetch", event => {
 
 
     /* =====================================================
-       الملفات المحلية
+       ملفات التطبيق
        Cache First
        ===================================================== */
 
@@ -207,8 +199,9 @@ self.addEventListener("fetch", event => {
                     if (cachedResponse) {
 
                         /*
-                         * تحديث نسخة الكاش في الخلفية
+                         * تحديث الملف في الخلفية
                          */
+
                         fetch(request)
                             .then(networkResponse => {
 
@@ -224,7 +217,7 @@ self.addEventListener("fetch", event => {
 
                                             cache.put(
                                                 request,
-                                                networkResponse
+                                                networkResponse.clone()
                                             );
 
                                         });
@@ -237,10 +230,9 @@ self.addEventListener("fetch", event => {
                     }
 
 
-                    /* ==============================
-                       إذا لم يوجد الملف في الكاش
-                       نحاول من الإنترنت
-                       ============================== */
+                    /* =================================================
+                       الملف غير موجود في الكاش
+                       ================================================= */
 
                     return fetch(request)
                         .then(response => {
@@ -272,8 +264,8 @@ self.addEventListener("fetch", event => {
                         .catch(() => {
 
                             /*
-                             * إذا كان المستخدم بدون إنترنت
-                             * نحاول إرجاع الصفحة الرئيسية.
+                             * إذا فتح المستخدم التطبيق
+                             * بدون إنترنت.
                              */
 
                             if (
@@ -283,7 +275,6 @@ self.addEventListener("fetch", event => {
                                 return caches.match(
                                     "./index.html"
                                 );
-
                             }
 
                             return new Response(
@@ -308,7 +299,7 @@ self.addEventListener("fetch", event => {
 
 
     /* =====================================================
-       الطلبات الخارجية الأخرى
+       الطلبات الخارجية
        ===================================================== */
 
     event.respondWith(
@@ -322,7 +313,7 @@ self.addEventListener("fetch", event => {
 
 
 /* =========================================================
-   MESSAGE
+   الرسائل
    ========================================================= */
 
 self.addEventListener(
@@ -335,7 +326,6 @@ self.addEventListener(
         ) {
 
             self.skipWaiting();
-
         }
 
     }
