@@ -1,1141 +1,40 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
+
     <meta charset="UTF-8">
 
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
     <meta name="theme-color" content="#071a12">
+
     <meta name="description"
-          content="أمير مواقيت - مواقيت الصلاة، الأذان، القبلة، الأذكار والتاريخ الهجري">
+          content="أمير مواقيت - تطبيق احترافي لمواقيت الصلاة والأذان والقبلة والأذكار والقرآن الكريم">
+
+    <meta name="mobile-web-app-capable" content="yes">
 
     <!-- iPhone / iPad -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="أمير مواقيت">
 
-    <meta name="mobile-web-app-capable" content="yes">
-
     <title>أمير مواقيت</title>
 
     <!-- PWA -->
     <link rel="manifest" href="./manifest.json">
 
-    <!-- iOS -->
-    <link rel="apple-touch-icon" href="./icons/icon-192.png">
+    <!-- iOS Icon -->
+    <link rel="apple-touch-icon" href="./icon-192.png">
 
-    <!-- Main CSS -->
+    <!-- CSS -->
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/responsive.css">
     <link rel="stylesheet" href="./css/animations.css">
 
-    <style>
-        /* =====================================================
-           أمير مواقيت V2
-           Base fallback styles
-           ===================================================== */
-
-        :root {
-            --amir-green: #0b6b45;
-            --amir-green-dark: #071a12;
-            --amir-green-light: #14a66b;
-            --amir-gold: #d4af37;
-            --amir-white: #ffffff;
-            --amir-text: #17231d;
-            --amir-muted: #718078;
-            --amir-card: rgba(255,255,255,.92);
-            --amir-border: rgba(0,0,0,.07);
-            --amir-shadow: 0 15px 45px rgba(0,0,0,.10);
-            --radius: 24px;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-            -webkit-text-size-adjust: 100%;
-        }
-
-        body {
-            min-height: 100vh;
-            font-family:
-                "Segoe UI",
-                Tahoma,
-                Arial,
-                sans-serif;
-            background:
-                radial-gradient(
-                    circle at top right,
-                    rgba(20,166,107,.14),
-                    transparent 35%
-                ),
-                linear-gradient(
-                    145deg,
-                    #f6faf8,
-                    #eef5f1
-                );
-            color: var(--amir-text);
-            padding-bottom: calc(90px + env(safe-area-inset-bottom));
-        }
-
-        button,
-        select,
-        input {
-            font: inherit;
-        }
-
-        button {
-            cursor: pointer;
-            border: none;
-        }
-
-        .app {
-            width: 100%;
-            max-width: 1250px;
-            margin: auto;
-            min-height: 100vh;
-        }
-
-        /* =====================================================
-           HEADER
-           ===================================================== */
-
-        .top-header {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-
-            padding:
-                calc(14px + env(safe-area-inset-top))
-                18px
-                14px;
-
-            background: rgba(255,255,255,.88);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-
-            border-bottom: 1px solid rgba(0,0,0,.05);
-        }
-
-        .header-inner {
-            max-width: 1200px;
-            margin: auto;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .brand-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 16px;
-
-            background:
-                linear-gradient(
-                    145deg,
-                    var(--amir-green),
-                    var(--amir-green-light)
-                );
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            color: white;
-            font-size: 25px;
-
-            box-shadow:
-                0 8px 20px rgba(11,107,69,.25);
-        }
-
-        .brand-text h1 {
-            font-size: 20px;
-            font-weight: 800;
-        }
-
-        .brand-text span {
-            display: block;
-            font-size: 11px;
-            color: var(--amir-muted);
-            margin-top: 2px;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .icon-button {
-            width: 43px;
-            height: 43px;
-            border-radius: 14px;
-
-            background: #f1f6f3;
-            color: var(--amir-green);
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 20px;
-
-            transition: .2s;
-        }
-
-        .icon-button:hover {
-            transform: translateY(-2px);
-            background: #e3f1eb;
-        }
-
-        /* =====================================================
-           MAIN
-           ===================================================== */
-
-        main {
-            padding: 20px 16px 30px;
-        }
-
-        .page-section {
-            display: none;
-        }
-
-        .page-section.active {
-            display: block;
-        }
-
-        /* =====================================================
-           HERO
-           ===================================================== */
-
-        .hero {
-            position: relative;
-            overflow: hidden;
-
-            border-radius: 30px;
-
-            padding: 30px 25px;
-
-            color: white;
-
-            background:
-                radial-gradient(
-                    circle at 90% 10%,
-                    rgba(212,175,55,.28),
-                    transparent 25%
-                ),
-                radial-gradient(
-                    circle at 10% 100%,
-                    rgba(20,166,107,.35),
-                    transparent 35%
-                ),
-                linear-gradient(
-                    135deg,
-                    #062016,
-                    #0b6b45
-                );
-
-            box-shadow:
-                0 25px 60px rgba(7,40,25,.22);
-        }
-
-        .hero::after {
-            content: "";
-            position: absolute;
-
-            width: 220px;
-            height: 220px;
-
-            border: 1px solid rgba(255,255,255,.10);
-            border-radius: 50%;
-
-            left: -70px;
-            bottom: -100px;
-        }
-
-        .hero-top {
-            position: relative;
-            z-index: 2;
-
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-        }
-
-        .location {
-            font-size: 14px;
-            opacity: .85;
-        }
-
-        .location strong {
-            display: block;
-            font-size: 20px;
-            opacity: 1;
-            margin-top: 5px;
-        }
-
-        .today-date {
-            text-align: left;
-            font-size: 13px;
-            opacity: .85;
-        }
-
-        .today-date strong {
-            display: block;
-            font-size: 16px;
-            margin-top: 5px;
-        }
-
-        .next-prayer {
-            position: relative;
-            z-index: 2;
-
-            text-align: center;
-            margin: 35px auto 25px;
-        }
-
-        .next-prayer-label {
-            font-size: 14px;
-            opacity: .8;
-        }
-
-        .next-prayer-name {
-            font-size: 34px;
-            font-weight: 900;
-            margin: 5px 0;
-        }
-
-        .countdown {
-            direction: ltr;
-
-            font-size: clamp(38px, 9vw, 65px);
-            line-height: 1;
-
-            font-weight: 900;
-            letter-spacing: 2px;
-
-            text-shadow:
-                0 5px 25px rgba(0,0,0,.25);
-        }
-
-        .progress-container {
-            position: relative;
-            z-index: 2;
-
-            height: 8px;
-            background: rgba(255,255,255,.16);
-
-            border-radius: 50px;
-            overflow: hidden;
-
-            margin-top: 25px;
-        }
-
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-
-            background:
-                linear-gradient(
-                    90deg,
-                    var(--amir-gold),
-                    #f5d978
-                );
-
-            border-radius: inherit;
-
-            transition: width 1s linear;
-        }
-
-        .hero-actions {
-            position: relative;
-            z-index: 2;
-
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
-
-            margin-top: 22px;
-        }
-
-        .hero-button {
-            padding: 11px 17px;
-            border-radius: 14px;
-
-            background: rgba(255,255,255,.13);
-            color: white;
-
-            border: 1px solid rgba(255,255,255,.14);
-
-            transition: .2s;
-        }
-
-        .hero-button:hover {
-            background: rgba(255,255,255,.22);
-        }
-
-        /* =====================================================
-           CARDS
-           ===================================================== */
-
-        .section-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            margin: 25px 4px 13px;
-        }
-
-        .section-title h2 {
-            font-size: 20px;
-            font-weight: 850;
-        }
-
-        .section-title span {
-            font-size: 12px;
-            color: var(--amir-muted);
-        }
-
-        .prayer-grid {
-            display: grid;
-
-            grid-template-columns:
-                repeat(5, minmax(0, 1fr));
-
-            gap: 10px;
-        }
-
-        .prayer-card {
-            background: var(--amir-card);
-
-            border:
-                1px solid var(--amir-border);
-
-            border-radius: 20px;
-
-            padding: 18px 10px;
-
-            text-align: center;
-
-            box-shadow: var(--amir-shadow);
-
-            transition: .25s;
-        }
-
-        .prayer-card:hover {
-            transform: translateY(-3px);
-        }
-
-        .prayer-card.active {
-            color: white;
-
-            background:
-                linear-gradient(
-                    145deg,
-                    var(--amir-green),
-                    var(--amir-green-light)
-                );
-
-            box-shadow:
-                0 15px 35px rgba(11,107,69,.28);
-        }
-
-        .prayer-icon {
-            font-size: 23px;
-            margin-bottom: 8px;
-        }
-
-        .prayer-name {
-            font-size: 13px;
-            color: var(--amir-muted);
-        }
-
-        .prayer-card.active .prayer-name {
-            color: rgba(255,255,255,.78);
-        }
-
-        .prayer-time {
-            direction: ltr;
-
-            font-size: 21px;
-            font-weight: 800;
-
-            margin-top: 5px;
-        }
-
-        /* =====================================================
-           QUICK ACTIONS
-           ===================================================== */
-
-        .quick-grid {
-            display: grid;
-
-            grid-template-columns:
-                repeat(4, 1fr);
-
-            gap: 12px;
-        }
-
-        .quick-card {
-            background: white;
-            border: 1px solid var(--amir-border);
-
-            border-radius: 21px;
-
-            padding: 20px 12px;
-
-            text-align: center;
-
-            box-shadow: var(--amir-shadow);
-
-            transition: .25s;
-        }
-
-        .quick-card:hover {
-            transform: translateY(-4px);
-        }
-
-        .quick-icon {
-            width: 48px;
-            height: 48px;
-
-            margin: auto auto 10px;
-
-            border-radius: 16px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            background: #eaf6f0;
-            color: var(--amir-green);
-
-            font-size: 23px;
-        }
-
-        .quick-card strong {
-            display: block;
-            font-size: 14px;
-        }
-
-        .quick-card small {
-            display: block;
-            color: var(--amir-muted);
-            margin-top: 4px;
-        }
-
-        /* =====================================================
-           CONTENT CARD
-           ===================================================== */
-
-        .content-card {
-            background: white;
-
-            border:
-                1px solid var(--amir-border);
-
-            border-radius: var(--radius);
-
-            padding: 22px;
-
-            box-shadow: var(--amir-shadow);
-
-            margin-bottom: 15px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 45px 20px;
-            color: var(--amir-muted);
-        }
-
-        .empty-state .empty-icon {
-            font-size: 45px;
-            margin-bottom: 12px;
-        }
-
-        /* =====================================================
-           QIBLA
-           ===================================================== */
-
-        .qibla-container {
-            text-align: center;
-        }
-
-        .compass {
-            width: min(300px, 80vw);
-            aspect-ratio: 1;
-
-            margin: 20px auto;
-
-            border-radius: 50%;
-
-            background:
-                radial-gradient(
-                    circle,
-                    #ffffff 0 57%,
-                    #e7f2ed 58% 62%,
-                    #0b6b45 63% 64%,
-                    #ffffff 65%
-                );
-
-            border: 8px solid #dceae4;
-
-            box-shadow:
-                0 20px 50px rgba(0,0,0,.13);
-
-            position: relative;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            transition: transform .3s ease;
-        }
-
-        .compass::before {
-            content: "N";
-
-            position: absolute;
-            top: 12px;
-
-            color: #b18d19;
-            font-weight: 900;
-        }
-
-        .qibla-arrow {
-            font-size: 70px;
-            color: var(--amir-green);
-
-            transition: transform .4s ease;
-        }
-
-        .qibla-degree {
-            font-size: 25px;
-            font-weight: 900;
-        }
-
-        /* =====================================================
-           AZKAR
-           ===================================================== */
-
-        .zikr-grid {
-            display: grid;
-            gap: 15px;
-        }
-
-        .zikr-card {
-            background:
-                linear-gradient(
-                    145deg,
-                    #ffffff,
-                    #f3f8f5
-                );
-
-            border-radius: 22px;
-            padding: 20px;
-
-            border: 1px solid var(--amir-border);
-
-            box-shadow: var(--amir-shadow);
-        }
-
-        .zikr-text {
-            font-size: 20px;
-            line-height: 1.9;
-            text-align: center;
-
-            margin-bottom: 18px;
-        }
-
-        .zikr-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .counter-button {
-            width: 60px;
-            height: 60px;
-
-            border-radius: 50%;
-
-            background: var(--amir-green);
-            color: white;
-
-            font-size: 24px;
-            font-weight: 900;
-
-            box-shadow:
-                0 8px 20px rgba(11,107,69,.25);
-        }
-
-        .counter-value {
-            min-width: 60px;
-            text-align: center;
-
-            font-size: 24px;
-            font-weight: 900;
-        }
-
-        /* =====================================================
-           SETTINGS
-           ===================================================== */
-
-        .settings-list {
-            display: grid;
-            gap: 10px;
-        }
-
-        .setting-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            gap: 15px;
-
-            padding: 16px;
-
-            background: #f7faf8;
-
-            border-radius: 17px;
-        }
-
-        .setting-info strong {
-            display: block;
-            font-size: 15px;
-        }
-
-        .setting-info small {
-            display: block;
-            margin-top: 4px;
-            color: var(--amir-muted);
-        }
-
-        .setting-select {
-            min-width: 120px;
-
-            border:
-                1px solid #d9e5df;
-
-            background: white;
-
-            border-radius: 12px;
-
-            padding: 9px 12px;
-
-            outline: none;
-        }
-
-        /* Toggle */
-
-        .switch {
-            position: relative;
-
-            width: 50px;
-            height: 28px;
-
-            flex-shrink: 0;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            inset: 0;
-
-            background: #cfdad4;
-
-            border-radius: 30px;
-
-            transition: .2s;
-        }
-
-        .slider::before {
-            content: "";
-
-            position: absolute;
-
-            width: 22px;
-            height: 22px;
-
-            left: 3px;
-            top: 3px;
-
-            background: white;
-
-            border-radius: 50%;
-
-            transition: .2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,.15);
-        }
-
-        .switch input:checked + .slider {
-            background: var(--amir-green);
-        }
-
-        .switch input:checked + .slider::before {
-            transform: translateX(22px);
-        }
-
-        /* =====================================================
-           ADHAN
-           ===================================================== */
-
-        .adhan-panel {
-            display: grid;
-            gap: 15px;
-        }
-
-        .adhan-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .primary-button {
-            padding: 13px 20px;
-
-            border-radius: 14px;
-
-            background:
-                linear-gradient(
-                    145deg,
-                    var(--amir-green),
-                    var(--amir-green-light)
-                );
-
-            color: white;
-
-            font-weight: 700;
-
-            box-shadow:
-                0 8px 20px rgba(11,107,69,.2);
-        }
-
-        .secondary-button {
-            padding: 13px 20px;
-
-            border-radius: 14px;
-
-            background: #eef4f1;
-            color: var(--amir-green);
-
-            font-weight: 700;
-        }
-
-        /* =====================================================
-           BOTTOM NAVIGATION
-           ===================================================== */
-
-        .bottom-nav {
-            position: fixed;
-
-            z-index: 2000;
-
-            bottom: 0;
-            left: 0;
-            right: 0;
-
-            padding:
-                8px
-                10px
-                calc(8px + env(safe-area-inset-bottom));
-
-            background: rgba(255,255,255,.94);
-
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-
-            border-top:
-                1px solid rgba(0,0,0,.07);
-
-            box-shadow:
-                0 -10px 30px rgba(0,0,0,.06);
-        }
-
-        .nav-inner {
-            max-width: 700px;
-            margin: auto;
-
-            display: grid;
-            grid-template-columns:
-                repeat(5, 1fr);
-
-            gap: 5px;
-        }
-
-        .nav-button {
-            background: transparent;
-
-            color: #829088;
-
-            padding: 7px 3px;
-
-            border-radius: 15px;
-
-            transition: .2s;
-        }
-
-        .nav-button .nav-icon {
-            display: block;
-            font-size: 20px;
-            margin-bottom: 3px;
-        }
-
-        .nav-button span:last-child {
-            font-size: 10px;
-        }
-
-        .nav-button.active {
-            color: var(--amir-green);
-            background: #edf7f2;
-            font-weight: 800;
-        }
-
-        /* =====================================================
-           INSTALL BANNER
-           ===================================================== */
-
-        .install-banner {
-            display: none;
-
-            position: fixed;
-
-            z-index: 2500;
-
-            bottom:
-                calc(
-                    75px +
-                    env(safe-area-inset-bottom)
-                );
-
-            left: 15px;
-            right: 15px;
-
-            max-width: 550px;
-            margin: auto;
-
-            background: #09271b;
-            color: white;
-
-            border-radius: 22px;
-
-            padding: 15px;
-
-            box-shadow:
-                0 20px 50px rgba(0,0,0,.25);
-        }
-
-        .install-banner.show {
-            display: flex;
-
-            align-items: center;
-            gap: 12px;
-        }
-
-        .install-banner-content {
-            flex: 1;
-        }
-
-        .install-banner strong {
-            display: block;
-        }
-
-        .install-banner small {
-            opacity: .7;
-        }
-
-        .install-button {
-            background: var(--amir-gold);
-            color: #211a05;
-
-            padding: 9px 13px;
-
-            border-radius: 12px;
-
-            font-weight: 800;
-        }
-
-        /* =====================================================
-           STATUS
-           ===================================================== */
-
-        .offline-status {
-            display: none;
-
-            position: fixed;
-
-            top:
-                calc(
-                    75px +
-                    env(safe-area-inset-top)
-                );
-
-            left: 50%;
-            transform: translateX(-50%);
-
-            z-index: 3000;
-
-            background: #7b2020;
-            color: white;
-
-            padding: 8px 15px;
-
-            border-radius: 30px;
-
-            font-size: 12px;
-        }
-
-        .offline-status.show {
-            display: block;
-        }
-
-        /* =====================================================
-           DARK MODE
-           ===================================================== */
-
-        body.dark {
-            background:
-                radial-gradient(
-                    circle at top right,
-                    rgba(20,166,107,.13),
-                    transparent 35%
-                ),
-                #07110d;
-
-            color: #e9f4ee;
-        }
-
-        body.dark .top-header,
-        body.dark .bottom-nav {
-            background: rgba(7,18,13,.94);
-            border-color: rgba(255,255,255,.07);
-        }
-
-        body.dark .icon-button {
-            background: #12251c;
-            color: #75d6ac;
-        }
-
-        body.dark .prayer-card,
-        body.dark .quick-card,
-        body.dark .content-card,
-        body.dark .zikr-card {
-            background: #0e1e16;
-            border-color: rgba(255,255,255,.06);
-            color: #e9f4ee;
-        }
-
-        body.dark .prayer-name,
-        body.dark .section-title span,
-        body.dark .quick-card small,
-        body.dark .setting-info small {
-            color: #94a99e;
-        }
-
-        body.dark .quick-icon {
-            background: #153326;
-            color: #75d6ac;
-        }
-
-        body.dark .setting-item {
-            background: #12231a;
-        }
-
-        body.dark .setting-select {
-            background: #0d1c15;
-            color: white;
-            border-color: #294337;
-        }
-
-        body.dark .nav-button {
-            color: #71867b;
-        }
-
-        body.dark .nav-button.active {
-            background: #153326;
-            color: #75d6ac;
-        }
-
-        /* =====================================================
-           RESPONSIVE FALLBACK
-           ===================================================== */
-
-        @media (max-width: 800px) {
-            .prayer-grid {
-                grid-template-columns:
-                    repeat(3, 1fr);
-            }
-
-            .quick-grid {
-                grid-template-columns:
-                    repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 480px) {
-            main {
-                padding: 14px 10px 25px;
-            }
-
-            .hero {
-                padding: 23px 17px;
-                border-radius: 25px;
-            }
-
-            .hero-top {
-                gap: 10px;
-            }
-
-            .next-prayer {
-                margin-top: 30px;
-            }
-
-            .next-prayer-name {
-                font-size: 29px;
-            }
-
-            .prayer-grid {
-                grid-template-columns:
-                    repeat(2, 1fr);
-            }
-
-            .prayer-card:last-child {
-                grid-column: span 2;
-            }
-
-            .brand-text h1 {
-                font-size: 17px;
-            }
-
-            .brand-icon {
-                width: 43px;
-                height: 43px;
-            }
-        }
-    </style>
 </head>
+
 
 <body>
 
@@ -1156,26 +55,41 @@
                 </div>
 
                 <div class="brand-text">
-                    <h1>أمير مواقيت</h1>
-                    <span>صلاتك... في وقتها</span>
+
+                    <h1>
+                        أمير مواقيت
+                    </h1>
+
+                    <span>
+                        صلاتك... في وقتها
+                    </span>
+
                 </div>
 
             </div>
+
 
             <div class="header-actions">
 
                 <button
                     class="icon-button"
                     id="themeButton"
+                    type="button"
                     aria-label="تغيير المظهر">
+
                     🌙
+
                 </button>
+
 
                 <button
                     class="icon-button"
                     id="notificationButton"
+                    type="button"
                     aria-label="التنبيهات">
+
                     🔔
+
                 </button>
 
             </div>
@@ -1191,11 +105,16 @@
 
     <main>
 
-        <!-- ================= HOME ================= -->
+
+        <!-- =================================================
+             HOME
+             ================================================= -->
 
         <section
             id="homeSection"
-            class="page-section active">
+            class="page-section active"
+            data-section="home">
+
 
             <!-- HERO -->
 
@@ -1207,11 +126,16 @@
 
                         📍 موقعك
 
-                        <strong id="cityName">
+                        <strong
+                            id="cityName"
+                            data-current-city>
+
                             عين وسارة
+
                         </strong>
 
                     </div>
+
 
                     <div class="today-date">
 
@@ -1228,11 +152,16 @@
                 </div>
 
 
+                <!-- NEXT PRAYER -->
+
                 <div class="next-prayer">
 
                     <div class="next-prayer-label">
+
                         الصلاة القادمة
+
                     </div>
+
 
                     <div
                         class="next-prayer-name"
@@ -1242,6 +171,7 @@
 
                     </div>
 
+
                     <div
                         class="countdown"
                         id="countdown">
@@ -1250,11 +180,13 @@
 
                     </div>
 
+
                     <div class="progress-container">
 
                         <div
                             class="progress-bar"
-                            id="progressBar">
+                            id="prayerProgress">
+
                         </div>
 
                     </div>
@@ -1262,27 +194,36 @@
                 </div>
 
 
+                <!-- HERO ACTIONS -->
+
                 <div class="hero-actions">
+
 
                     <button
                         class="hero-button"
-                        id="locationButton">
+                        id="locationButton"
+                        type="button">
 
                         📍 تغيير المدينة
 
                     </button>
 
+
                     <button
                         class="hero-button"
-                        id="adhanTestButton">
+                        id="adhanTestButton"
+                        type="button">
 
                         🔊 اختبار الأذان
 
                     </button>
 
+
                     <button
                         class="hero-button"
-                        id="qiblaQuickButton">
+                        id="qiblaQuickButton"
+                        type="button"
+                        data-go-section="qibla">
 
                         🧭 القبلة
 
@@ -1297,7 +238,9 @@
 
             <div class="section-title">
 
-                <h2>مواقيت اليوم</h2>
+                <h2>
+                    مواقيت اليوم
+                </h2>
 
                 <span id="prayerUpdateStatus">
                     تحديث...
@@ -1305,62 +248,127 @@
 
             </div>
 
+
             <div
                 class="prayer-grid"
                 id="prayerGrid">
 
-                <div class="prayer-card">
-                    <div class="prayer-icon">🌅</div>
-                    <div class="prayer-name">الفجر</div>
-                    <div class="prayer-time">--:--</div>
-                </div>
+                <!-- سيتم ملؤها بواسطة prayer.js -->
 
                 <div class="prayer-card">
-                    <div class="prayer-icon">☀️</div>
-                    <div class="prayer-name">الظهر</div>
-                    <div class="prayer-time">--:--</div>
+
+                    <div class="prayer-icon">
+                        🌅
+                    </div>
+
+                    <div class="prayer-name">
+                        الفجر
+                    </div>
+
+                    <div class="prayer-time">
+                        --:--
+                    </div>
+
                 </div>
 
-                <div class="prayer-card">
-                    <div class="prayer-icon">🌤️</div>
-                    <div class="prayer-name">العصر</div>
-                    <div class="prayer-time">--:--</div>
-                </div>
 
                 <div class="prayer-card">
-                    <div class="prayer-icon">🌇</div>
-                    <div class="prayer-name">المغرب</div>
-                    <div class="prayer-time">--:--</div>
+
+                    <div class="prayer-icon">
+                        ☀️
+                    </div>
+
+                    <div class="prayer-name">
+                        الظهر
+                    </div>
+
+                    <div class="prayer-time">
+                        --:--
+                    </div>
+
                 </div>
 
+
                 <div class="prayer-card">
-                    <div class="prayer-icon">🌙</div>
-                    <div class="prayer-name">العشاء</div>
-                    <div class="prayer-time">--:--</div>
+
+                    <div class="prayer-icon">
+                        🌤️
+                    </div>
+
+                    <div class="prayer-name">
+                        العصر
+                    </div>
+
+                    <div class="prayer-time">
+                        --:--
+                    </div>
+
+                </div>
+
+
+                <div class="prayer-card">
+
+                    <div class="prayer-icon">
+                        🌇
+                    </div>
+
+                    <div class="prayer-name">
+                        المغرب
+                    </div>
+
+                    <div class="prayer-time">
+                        --:--
+                    </div>
+
+                </div>
+
+
+                <div class="prayer-card">
+
+                    <div class="prayer-icon">
+                        🌙
+                    </div>
+
+                    <div class="prayer-name">
+                        العشاء
+                    </div>
+
+                    <div class="prayer-time">
+                        --:--
+                    </div>
+
                 </div>
 
             </div>
 
 
-            <!-- QUICK ACTIONS -->
+            <!-- QUICK SERVICES -->
 
             <div class="section-title">
 
-                <h2>خدمات أمير</h2>
+                <h2>
+                    خدمات أمير
+                </h2>
 
             </div>
 
+
             <div class="quick-grid">
+
 
                 <button
                     class="quick-card"
-                    data-page="qibla">
+                    type="button"
+                    data-page="qibla"
+                    data-go-section="qibla">
 
                     <div class="quick-icon">
                         🧭
                     </div>
 
-                    <strong>القبلة</strong>
+                    <strong>
+                        القبلة
+                    </strong>
 
                     <small>
                         اتجاه الكعبة
@@ -1371,13 +379,17 @@
 
                 <button
                     class="quick-card"
-                    data-page="azkar">
+                    type="button"
+                    data-page="azkar"
+                    data-go-section="azkar">
 
                     <div class="quick-icon">
                         📿
                     </div>
 
-                    <strong>الأذكار</strong>
+                    <strong>
+                        الأذكار
+                    </strong>
 
                     <small>
                         أذكار المسلم
@@ -1388,13 +400,17 @@
 
                 <button
                     class="quick-card"
-                    data-page="quran">
+                    type="button"
+                    data-page="quran"
+                    data-go-section="quran">
 
                     <div class="quick-icon">
                         📖
                     </div>
 
-                    <strong>القرآن</strong>
+                    <strong>
+                        القرآن
+                    </strong>
 
                     <small>
                         القرآن الكريم
@@ -1405,13 +421,17 @@
 
                 <button
                     class="quick-card"
-                    data-page="settings">
+                    type="button"
+                    data-page="settings"
+                    data-go-section="settings">
 
                     <div class="quick-icon">
                         ⚙️
                     </div>
 
-                    <strong>الإعدادات</strong>
+                    <strong>
+                        الإعدادات
+                    </strong>
 
                     <small>
                         تخصيص التطبيق
@@ -1424,15 +444,25 @@
         </section>
 
 
-        <!-- ================= QURAN ================= -->
+
+        <!-- =================================================
+             QURAN
+             ================================================= -->
 
         <section
             id="quranSection"
-            class="page-section">
+            class="page-section"
+            data-section="quran">
+
 
             <div class="section-title">
-                <h2>📖 القرآن الكريم</h2>
+
+                <h2>
+                    📖 القرآن الكريم
+                </h2>
+
             </div>
+
 
             <div class="content-card">
 
@@ -1447,7 +477,10 @@
                     </h3>
 
                     <p style="margin-top:10px;">
-                        سيتم تجهيز قسم القرآن داخل النسخة النهائية.
+
+                        قسم القرآن الكريم قيد التجهيز
+                        ضمن تطوير أمير مواقيت V2.
+
                     </p>
 
                 </div>
@@ -1457,97 +490,216 @@
         </section>
 
 
-        <!-- ================= AZKAR ================= -->
+
+        <!-- =================================================
+             AZKAR
+             ================================================= -->
 
         <section
             id="azkarSection"
-            class="page-section">
+            class="page-section"
+            data-section="azkar">
+
 
             <div class="section-title">
-                <h2>📿 الأذكار</h2>
+
+                <h2>
+                    📿 الأذكار
+                </h2>
+
+                <span>
+                    أذكار المسلم
+                </span>
+
             </div>
 
-            <div class="zikr-grid">
 
-                <div class="zikr-card">
+            <!-- CATEGORY BUTTONS -->
 
-                    <div class="zikr-text">
-                        سُبْحَانَ اللهِ
-                    </div>
+            <div class="adhan-buttons"
+                 style="margin-bottom:15px;">
 
-                    <div class="zikr-controls">
+                <button
+                    class="secondary-button"
+                    type="button"
+                    data-azkar-category="morning">
 
-                        <button
-                            class="counter-button"
-                            data-zikr="1">
+                    🌅 الصباح
 
-                            +
+                </button>
 
-                        </button>
 
-                        <div
-                            class="counter-value"
-                            id="zikr1">
+                <button
+                    class="secondary-button"
+                    type="button"
+                    data-azkar-category="evening">
 
-                            0
+                    🌇 المساء
+
+                </button>
+
+
+                <button
+                    class="secondary-button"
+                    type="button"
+                    data-azkar-category="afterPrayer">
+
+                    🕌 بعد الصلاة
+
+                </button>
+
+
+                <button
+                    class="secondary-button"
+                    type="button"
+                    data-azkar-category="sleep">
+
+                    🌙 النوم
+
+                </button>
+
+
+                <button
+                    class="secondary-button"
+                    type="button"
+                    data-azkar-category="wake">
+
+                    ☀️ الاستيقاظ
+
+                </button>
+
+            </div>
+
+
+            <!-- SEARCH -->
+
+            <div class="content-card">
+
+                <input
+                    type="search"
+                    id="azkarSearch"
+                    placeholder="🔎 ابحث في الأذكار..."
+                    style="
+                        width:100%;
+                        padding:13px;
+                        border:1px solid #d9e5df;
+                        border-radius:14px;
+                        outline:none;
+                    ">
+
+            </div>
+
+
+            <!-- AZKAR LIST -->
+
+            <div
+                class="zikr-grid"
+                id="azkarList">
+
+                <!-- azkar.js -->
+
+            </div>
+
+
+            <!-- OLD SIMPLE COUNTERS
+                 kept for compatibility -->
+
+            <div
+                class="content-card"
+                style="margin-top:15px;">
+
+                <h3 style="margin-bottom:15px;">
+                    📿 التسبيح السريع
+                </h3>
+
+
+                <div class="zikr-grid">
+
+
+                    <div class="zikr-card">
+
+                        <div class="zikr-text">
+                            سُبْحَانَ اللهِ
+                        </div>
+
+                        <div class="zikr-controls">
+
+                            <button
+                                class="counter-button"
+                                data-zikr="1"
+                                type="button">
+
+                                +
+
+                            </button>
+
+                            <div
+                                class="counter-value"
+                                id="zikr1">
+
+                                0
+
+                            </div>
 
                         </div>
 
                     </div>
 
-                </div>
 
+                    <div class="zikr-card">
 
-                <div class="zikr-card">
+                        <div class="zikr-text">
+                            الْحَمْدُ لِلَّهِ
+                        </div>
 
-                    <div class="zikr-text">
-                        الْحَمْدُ لِلَّهِ
-                    </div>
+                        <div class="zikr-controls">
 
-                    <div class="zikr-controls">
+                            <button
+                                class="counter-button"
+                                data-zikr="2"
+                                type="button">
 
-                        <button
-                            class="counter-button"
-                            data-zikr="2">
+                                +
 
-                            +
+                            </button>
 
-                        </button>
+                            <div
+                                class="counter-value"
+                                id="zikr2">
 
-                        <div
-                            class="counter-value"
-                            id="zikr2">
+                                0
 
-                            0
+                            </div>
 
                         </div>
 
                     </div>
 
-                </div>
 
+                    <div class="zikr-card">
 
-                <div class="zikr-card">
+                        <div class="zikr-text">
+                            اللهُ أَكْبَرُ
+                        </div>
 
-                    <div class="zikr-text">
-                        اللهُ أَكْبَرُ
-                    </div>
+                        <div class="zikr-controls">
 
-                    <div class="zikr-controls">
+                            <button
+                                class="counter-button"
+                                data-zikr="3"
+                                type="button">
 
-                        <button
-                            class="counter-button"
-                            data-zikr="3">
+                                +
 
-                            +
+                            </button>
 
-                        </button>
+                            <div
+                                class="counter-value"
+                                id="zikr3">
 
-                        <div
-                            class="counter-value"
-                            id="zikr3">
+                                0
 
-                            0
+                            </div>
 
                         </div>
 
@@ -1560,15 +712,25 @@
         </section>
 
 
-        <!-- ================= QIBLA ================= -->
+
+        <!-- =================================================
+             QIBLA
+             ================================================= -->
 
         <section
             id="qiblaSection"
-            class="page-section">
+            class="page-section"
+            data-section="qibla">
+
 
             <div class="section-title">
-                <h2>🧭 القبلة</h2>
+
+                <h2>
+                    🧭 القبلة
+                </h2>
+
             </div>
+
 
             <div class="content-card qibla-container">
 
@@ -1576,9 +738,11 @@
                     اتجاه القبلة بالنسبة لموقعك
                 </p>
 
+
                 <div
                     class="compass"
                     id="compass">
+
 
                     <div
                         class="qibla-arrow"
@@ -1590,6 +754,7 @@
 
                 </div>
 
+
                 <div
                     class="qibla-degree"
                     id="qiblaDegree">
@@ -1598,37 +763,109 @@
 
                 </div>
 
+
+                <p
+                    id="qiblaDirection"
+                    style="margin-top:8px;">
+
+                    اتجاه القبلة
+
+                </p>
+
+
+                <p
+                    id="compassHeading"
+                    style="
+                        margin-top:5px;
+                        color:#718078;
+                    ">
+
+                    البوصلة غير مفعلة
+
+                </p>
+
+
                 <p
                     id="qiblaStatus"
-                    style="margin-top:8px;color:#718078;">
+                    style="
+                        margin-top:8px;
+                        color:#718078;
+                    ">
 
                     اضغط تفعيل البوصلة
 
                 </p>
 
-                <button
-                    class="primary-button"
-                    id="qiblaStartButton"
-                    style="margin-top:18px;">
 
-                    🧭 تفعيل البوصلة
+                <div class="adhan-buttons"
+                     style="margin-top:18px;">
 
-                </button>
+
+                    <button
+                        class="primary-button"
+                        id="startQibla"
+                        type="button">
+
+                        🧭 تفعيل البوصلة
+
+                    </button>
+
+
+                    <button
+                        class="secondary-button"
+                        id="enableCompass"
+                        type="button">
+
+                        📱 السماح بالبوصلة
+
+                    </button>
+
+
+                    <button
+                        class="secondary-button"
+                        id="stopCompass"
+                        type="button">
+
+                        ⏹ إيقاف
+
+                    </button>
+
+
+                    <button
+                        class="secondary-button"
+                        id="refreshQibla"
+                        type="button">
+
+                        🔄 تحديث
+
+                    </button>
+
+                </div>
 
             </div>
 
         </section>
 
 
-        <!-- ================= SETTINGS ================= -->
+
+        <!-- =================================================
+             SETTINGS
+             ================================================= -->
 
         <section
             id="settingsSection"
-            class="page-section">
+            class="page-section"
+            data-section="settings">
+
 
             <div class="section-title">
-                <h2>⚙️ الإعدادات</h2>
+
+                <h2>
+                    ⚙️ الإعدادات
+                </h2>
+
             </div>
+
 
 
             <!-- LOCATION -->
@@ -1639,7 +876,9 @@
                     📍 الموقع
                 </h3>
 
+
                 <div class="settings-list">
+
 
                     <div class="setting-item">
 
@@ -1655,40 +894,139 @@
 
                         </div>
 
+
                         <select
                             class="setting-select"
                             id="citySelect">
+
 
                             <option value="ain_oussera">
                                 عين وسارة
                             </option>
 
+
                             <option value="algiers">
                                 الجزائر
                             </option>
+
 
                             <option value="oran">
                                 وهران
                             </option>
 
+
                             <option value="constantine">
                                 قسنطينة
                             </option>
+
 
                             <option value="annaba">
                                 عنابة
                             </option>
 
+
                             <option value="blida">
                                 البليدة
                             </option>
+
 
                             <option value="setif">
                                 سطيف
                             </option>
 
+
                             <option value="tlemcen">
                                 تلمسان
+                            </option>
+
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- PRAYER SETTINGS -->
+
+            <div class="content-card">
+
+                <h3 style="margin-bottom:15px;">
+                    🕌 إعدادات الصلاة
+                </h3>
+
+
+                <div class="settings-list">
+
+
+                    <div class="setting-item">
+
+                        <div class="setting-info">
+
+                            <strong>
+                                طريقة الحساب
+                            </strong>
+
+                            <small>
+                                طريقة حساب مواقيت الصلاة
+                            </small>
+
+                        </div>
+
+
+                        <select
+                            class="setting-select"
+                            id="calculationMethod">
+
+                            <option value="19">
+                                Algerian Minister of Religious Affairs
+                            </option>
+
+                            <option value="2">
+                                ISNA
+                            </option>
+
+                            <option value="3">
+                                Muslim World League
+                            </option>
+
+                            <option value="4">
+                                Umm Al-Qura
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="setting-item">
+
+                        <div class="setting-info">
+
+                            <strong>
+                                المذهب
+                            </strong>
+
+                            <small>
+                                طريقة حساب العصر
+                            </small>
+
+                        </div>
+
+
+                        <select
+                            class="setting-select"
+                            id="madhhab">
+
+                            <option value="0">
+                                الشافعي / المالكي
+                            </option>
+
+                            <option value="1">
+                                الحنفي
                             </option>
 
                         </select>
@@ -1700,6 +1038,7 @@
             </div>
 
 
+
             <!-- ADHAN -->
 
             <div class="content-card">
@@ -1708,7 +1047,9 @@
                     🔊 الأذان
                 </h3>
 
+
                 <div class="settings-list">
+
 
                     <div class="setting-item">
 
@@ -1724,6 +1065,7 @@
 
                         </div>
 
+
                         <label class="switch">
 
                             <input
@@ -1735,6 +1077,7 @@
                         </label>
 
                     </div>
+
 
 
                     <div class="setting-item">
@@ -1751,29 +1094,36 @@
 
                         </div>
 
+
                         <select
                             class="setting-select"
                             id="adhanTiming">
+
 
                             <option value="off">
                                 إيقاف
                             </option>
 
+
                             <option value="before">
                                 قبل 10 دقائق
                             </option>
+
 
                             <option value="at">
                                 عند الوقت
                             </option>
 
+
                             <option value="both">
                                 كلاهما
                             </option>
 
+
                         </select>
 
                     </div>
+
 
 
                     <div class="setting-item">
@@ -1784,7 +1134,12 @@
                                 صوت الأذان
                             </strong>
 
+                            <small>
+                                اختيار صوت الأذان
+                            </small>
+
                         </div>
+
 
                         <select
                             class="setting-select"
@@ -1798,41 +1153,82 @@
 
                     </div>
 
+
+
+                    <div class="setting-item">
+
+                        <div class="setting-info">
+
+                            <strong>
+                                مستوى الصوت
+                            </strong>
+
+                            <small>
+                                مستوى صوت الأذان
+                            </small>
+
+                        </div>
+
+
+                        <input
+                            type="range"
+                            id="adhanVolume"
+                            min="0"
+                            max="1"
+                            step="0.05"
+                            value="1"
+                            style="width:130px;">
+
+                    </div>
+
+
                 </div>
 
 
-                <div class="adhan-buttons"
-                     style="margin-top:20px;">
+
+                <div
+                    class="adhan-buttons"
+                    style="margin-top:20px;">
+
 
                     <button
                         class="primary-button"
-                        id="testAdhan">
+                        id="testAdhan"
+                        type="button">
 
                         🔊 اختبار الأذان
 
                     </button>
 
+
                     <button
                         class="secondary-button"
-                        id="stopAdhan">
+                        id="stopAdhan"
+                        type="button">
 
                         ⏹ إيقاف
 
                     </button>
 
+
                 </div>
+
+
+                <!-- IMPORTANT:
+                     adhan1.mp3 is in ROOT -->
 
                 <audio
                     id="adhanAudio"
                     preload="auto">
 
                     <source
-                        src="./audio/adhan1.mp3"
+                        src="./adhan1.mp3"
                         type="audio/mpeg">
 
                 </audio>
 
             </div>
+
 
 
             <!-- NOTIFICATIONS -->
@@ -1843,7 +1239,9 @@
                     🔔 الإشعارات
                 </h3>
 
+
                 <div class="settings-list">
+
 
                     <div class="setting-item">
 
@@ -1859,6 +1257,7 @@
 
                         </div>
 
+
                         <label class="switch">
 
                             <input
@@ -1873,7 +1272,25 @@
 
                 </div>
 
+
+                <div
+                    class="adhan-buttons"
+                    style="margin-top:18px;">
+
+
+                    <button
+                        class="primary-button"
+                        id="enableNotifications"
+                        type="button">
+
+                        🔔 تفعيل الإشعارات
+
+                    </button>
+
+                </div>
+
             </div>
+
 
 
             <!-- APPEARANCE -->
@@ -1884,7 +1301,9 @@
                     🎨 المظهر
                 </h3>
 
+
                 <div class="settings-list">
+
 
                     <div class="setting-item">
 
@@ -1900,6 +1319,7 @@
 
                         </div>
 
+
                         <label class="switch">
 
                             <input
@@ -1912,9 +1332,83 @@
 
                     </div>
 
+
+                    <div class="setting-item">
+
+                        <div class="setting-info">
+
+                            <strong>
+                                نمط المظهر
+                            </strong>
+
+                            <small>
+                                فاتح أو داكن أو تلقائي
+                            </small>
+
+                        </div>
+
+
+                        <select
+                            class="setting-select"
+                            id="themeSelect">
+
+                            <option value="light">
+                                فاتح
+                            </option>
+
+                            <option value="dark">
+                                داكن
+                            </option>
+
+                            <option value="auto">
+                                تلقائي
+                            </option>
+
+                        </select>
+
+                    </div>
+
                 </div>
 
             </div>
+
+
+
+            <!-- APP DATA -->
+
+            <div class="content-card">
+
+                <h3 style="margin-bottom:15px;">
+                    💾 البيانات
+                </h3>
+
+
+                <div class="adhan-buttons">
+
+
+                    <button
+                        class="secondary-button"
+                        id="exportSettings"
+                        type="button">
+
+                        📤 تصدير الإعدادات
+
+                    </button>
+
+
+                    <button
+                        class="secondary-button"
+                        id="clearAppData"
+                        type="button">
+
+                        🗑️ مسح بيانات التطبيق
+
+                    </button>
+
+                </div>
+
+            </div>
+
 
 
             <!-- ABOUT -->
@@ -1927,23 +1421,33 @@
                         🕌
                     </div>
 
+
                     <h2 style="margin-top:8px;">
                         أمير مواقيت
                     </h2>
 
-                    <p style="
-                        margin-top:7px;
-                        color:#718078;
-                    ">
-                        الإصدار V2
+
+                    <p
+                        style="
+                            margin-top:7px;
+                            color:#718078;
+                        ">
+
+                        الإصدار V2.0.0
+
                     </p>
 
-                    <p style="
-                        margin-top:15px;
-                        font-size:13px;
-                        color:#718078;
-                    ">
-                        مواقيت الصلاة • الأذان • القبلة • الأذكار
+
+                    <p
+                        style="
+                            margin-top:15px;
+                            font-size:13px;
+                            color:#718078;
+                        ">
+
+                        مواقيت الصلاة • الأذان • القبلة
+                        • الأذكار • القرآن الكريم
+
                     </p>
 
                 </div>
@@ -1955,6 +1459,7 @@
     </main>
 
 
+
     <!-- =====================================================
          BOTTOM NAVIGATION
          ===================================================== -->
@@ -1963,52 +1468,88 @@
 
         <div class="nav-inner">
 
+
             <button
                 class="nav-button active"
-                data-page="home">
+                type="button"
+                data-page="home"
+                data-section="home">
 
-                <span class="nav-icon">🏠</span>
-                <span>الرئيسية</span>
+                <span class="nav-icon">
+                    🏠
+                </span>
 
-            </button>
-
-
-            <button
-                class="nav-button"
-                data-page="quran">
-
-                <span class="nav-icon">📖</span>
-                <span>القرآن</span>
+                <span>
+                    الرئيسية
+                </span>
 
             </button>
 
 
             <button
                 class="nav-button"
-                data-page="azkar">
+                type="button"
+                data-page="quran"
+                data-section="quran">
 
-                <span class="nav-icon">📿</span>
-                <span>الأذكار</span>
+                <span class="nav-icon">
+                    📖
+                </span>
 
-            </button>
-
-
-            <button
-                class="nav-button"
-                data-page="qibla">
-
-                <span class="nav-icon">🧭</span>
-                <span>القبلة</span>
+                <span>
+                    القرآن
+                </span>
 
             </button>
 
 
             <button
                 class="nav-button"
-                data-page="settings">
+                type="button"
+                data-page="azkar"
+                data-section="azkar">
 
-                <span class="nav-icon">⚙️</span>
-                <span>الإعدادات</span>
+                <span class="nav-icon">
+                    📿
+                </span>
+
+                <span>
+                    الأذكار
+                </span>
+
+            </button>
+
+
+            <button
+                class="nav-button"
+                type="button"
+                data-page="qibla"
+                data-section="qibla">
+
+                <span class="nav-icon">
+                    🧭
+                </span>
+
+                <span>
+                    القبلة
+                </span>
+
+            </button>
+
+
+            <button
+                class="nav-button"
+                type="button"
+                data-page="settings"
+                data-section="settings">
+
+                <span class="nav-icon">
+                    ⚙️
+                </span>
+
+                <span>
+                    الإعدادات
+                </span>
 
             </button>
 
@@ -2017,14 +1558,17 @@
     </nav>
 
 
-    <!-- INSTALL -->
+
+    <!-- =====================================================
+         PWA INSTALL BANNER
+         ===================================================== -->
 
     <div
         class="install-banner"
         id="installBanner">
 
-        <div
-            class="install-banner-content">
+
+        <div class="install-banner-content">
 
             <strong>
                 ثبّت أمير مواقيت 📱
@@ -2036,9 +1580,11 @@
 
         </div>
 
+
         <button
             class="install-button"
-            id="installButton">
+            id="installButton"
+            type="button">
 
             تثبيت
 
@@ -2047,7 +1593,10 @@
     </div>
 
 
-    <!-- OFFLINE -->
+
+    <!-- =====================================================
+         OFFLINE STATUS
+         ===================================================== -->
 
     <div
         class="offline-status"
@@ -2057,878 +1606,45 @@
 
     </div>
 
+
+
+    <!-- =====================================================
+         TOAST
+         ===================================================== -->
+
+    <div
+        id="amirToast"
+        class="amir-toast"
+        aria-live="polite">
+
+    </div>
+
+
 </div>
 
 
+
 <!-- =========================================================
-     BASE APP SCRIPT
-     هذا مؤقت وسيتم ربطه بملفات V2 لاحقاً
+     V2 JAVASCRIPT MODULES
+
+     IMPORTANT:
+     ترتيب الملفات مهم جدًا
      ========================================================= -->
 
-<script>
+<script src="./js/storage.js"></script>
 
-"use strict";
+<script src="./js/prayer.js"></script>
 
-/* =========================================================
-   APP CONFIG
-   ========================================================= */
+<script src="./js/adhan.js"></script>
 
-const AMIR_CONFIG = {
+<script src="./js/qibla.js"></script>
 
-    version: "2.0.0",
+<script src="./js/azkar.js"></script>
 
-    cities: {
+<script src="./js/settings.js"></script>
 
-        ain_oussera: {
-            name: "عين وسارة",
-            lat: 35.4513,
-            lon: 2.9067
-        },
+<script src="./js/app.js"></script>
 
-        algiers: {
-            name: "الجزائر",
-            lat: 36.7538,
-            lon: 3.0588
-        },
-
-        oran: {
-            name: "وهران",
-            lat: 35.6971,
-            lon: -0.6308
-        },
-
-        constantine: {
-            name: "قسنطينة",
-            lat: 36.3650,
-            lon: 6.6147
-        },
-
-        annaba: {
-            name: "عنابة",
-            lat: 36.9000,
-            lon: 7.7667
-        },
-
-        blida: {
-            name: "البليدة",
-            lat: 36.4700,
-            lon: 2.8300
-        },
-
-        setif: {
-            name: "سطيف",
-            lat: 36.1900,
-            lon: 5.4100
-        },
-
-        tlemcen: {
-            name: "تلمسان",
-            lat: 34.8828,
-            lon: -1.3167
-        }
-
-    }
-
-};
-
-
-/* =========================================================
-   NAVIGATION
-   ========================================================= */
-
-function showPage(page) {
-
-    document
-        .querySelectorAll(".page-section")
-        .forEach(section => {
-
-            section.classList.remove("active");
-
-        });
-
-
-    const target =
-        document.getElementById(
-            page + "Section"
-        );
-
-    if (target) {
-        target.classList.add("active");
-    }
-
-
-    document
-        .querySelectorAll(".nav-button")
-        .forEach(button => {
-
-            button.classList.toggle(
-                "active",
-                button.dataset.page === page
-            );
-
-        });
-
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-
-}
-
-
-document
-    .querySelectorAll("[data-page]")
-    .forEach(button => {
-
-        button.addEventListener(
-            "click",
-            () => {
-
-                showPage(
-                    button.dataset.page
-                );
-
-            }
-        );
-
-    });
-
-
-/* =========================================================
-   THEME
-   ========================================================= */
-
-function loadTheme() {
-
-    const theme =
-        localStorage.getItem(
-            "amirTheme"
-        ) || "light";
-
-
-    const dark =
-        theme === "dark";
-
-    document.body.classList.toggle(
-        "dark",
-        dark
-    );
-
-
-    const darkMode =
-        document.getElementById(
-            "darkMode"
-        );
-
-    if (darkMode) {
-        darkMode.checked = dark;
-    }
-
-}
-
-
-function toggleTheme() {
-
-    const dark =
-        document.body.classList.toggle(
-            "dark"
-        );
-
-
-    localStorage.setItem(
-        "amirTheme",
-        dark ? "dark" : "light"
-    );
-
-
-    const darkMode =
-        document.getElementById(
-            "darkMode"
-        );
-
-    if (darkMode) {
-        darkMode.checked = dark;
-    }
-
-}
-
-
-document
-    .getElementById("themeButton")
-    .addEventListener(
-        "click",
-        toggleTheme
-    );
-
-
-document
-    .getElementById("darkMode")
-    .addEventListener(
-        "change",
-        event => {
-
-            const dark =
-                event.target.checked;
-
-            document.body.classList.toggle(
-                "dark",
-                dark
-            );
-
-            localStorage.setItem(
-                "amirTheme",
-                dark ? "dark" : "light"
-            );
-
-        }
-    );
-
-
-loadTheme();
-
-
-/* =========================================================
-   CITY
-   ========================================================= */
-
-function loadCity() {
-
-    const saved =
-        localStorage.getItem(
-            "amirCity"
-        ) || "ain_oussera";
-
-
-    const city =
-        AMIR_CONFIG.cities[saved];
-
-
-    if (!city) return;
-
-
-    document
-        .getElementById("cityName")
-        .textContent =
-        city.name;
-
-
-    const select =
-        document.getElementById(
-            "citySelect"
-        );
-
-
-    if (select) {
-        select.value = saved;
-    }
-
-}
-
-
-document
-    .getElementById("citySelect")
-    .addEventListener(
-        "change",
-        event => {
-
-            localStorage.setItem(
-                "amirCity",
-                event.target.value
-            );
-
-            loadCity();
-
-            if (
-                typeof window.loadPrayerTimes ===
-                "function"
-            ) {
-                window.loadPrayerTimes();
-            }
-
-        }
-    );
-
-
-document
-    .getElementById("locationButton")
-    .addEventListener(
-        "click",
-        () => {
-
-            showPage("settings");
-
-            document
-                .getElementById("citySelect")
-                .focus();
-
-        }
-    );
-
-
-loadCity();
-
-
-/* =========================================================
-   DATES
-   ========================================================= */
-
-function updateDates() {
-
-    const now =
-        new Date();
-
-
-    const gregorian =
-        now.toLocaleDateString(
-            "ar-DZ",
-            {
-                weekday: "long",
-                year: "numeric",
-                month: "long",
-                day: "numeric"
-            }
-        );
-
-
-    document
-        .getElementById("gregorianDate")
-        .textContent =
-        gregorian;
-
-
-    try {
-
-        const hijri =
-            new Intl.DateTimeFormat(
-                "ar-SA-u-ca-islamic",
-                {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric"
-                }
-            ).format(now);
-
-
-        document
-            .getElementById("hijriDate")
-            .textContent =
-            hijri;
-
-    } catch {
-
-        document
-            .getElementById("hijriDate")
-            .textContent =
-            "التاريخ الهجري";
-
-    }
-
-}
-
-
-updateDates();
-
-
-setInterval(
-    updateDates,
-    60000
-);
-
-
-/* =========================================================
-   ZIKR COUNTERS
-   ========================================================= */
-
-function loadZikr() {
-
-    [1,2,3].forEach(number => {
-
-        const value =
-            parseInt(
-                localStorage.getItem(
-                    "zikr" + number
-                ) || "0",
-                10
-            );
-
-
-        const element =
-            document.getElementById(
-                "zikr" + number
-            );
-
-
-        if (element) {
-            element.textContent =
-                value;
-        }
-
-    });
-
-}
-
-
-document
-    .querySelectorAll(
-        ".counter-button"
-    )
-    .forEach(button => {
-
-        button.addEventListener(
-            "click",
-            () => {
-
-                const number =
-                    button.dataset.zikr;
-
-
-                let value =
-                    parseInt(
-                        localStorage.getItem(
-                            "zikr" + number
-                        ) || "0",
-                        10
-                    );
-
-
-                value++;
-
-
-                localStorage.setItem(
-                    "zikr" + number,
-                    value
-                );
-
-
-                document
-                    .getElementById(
-                        "zikr" + number
-                    )
-                    .textContent =
-                    value;
-
-            }
-        );
-
-    });
-
-
-loadZikr();
-
-
-/* =========================================================
-   ADHAN
-   ========================================================= */
-
-const adhanAudio =
-    document.getElementById(
-        "adhanAudio"
-    );
-
-
-function playAdhan() {
-
-    if (!adhanAudio) return;
-
-
-    adhanAudio.currentTime = 0;
-
-
-    adhanAudio
-        .play()
-        .catch(() => {
-
-            alert(
-                "اضغط مرة أخرى على زر اختبار الأذان للسماح بتشغيل الصوت."
-            );
-
-        });
-
-}
-
-
-function stopAdhan() {
-
-    if (!adhanAudio) return;
-
-
-    adhanAudio.pause();
-
-    adhanAudio.currentTime = 0;
-
-}
-
-
-document
-    .getElementById("testAdhan")
-    .addEventListener(
-        "click",
-        playAdhan
-    );
-
-
-document
-    .getElementById("stopAdhan")
-    .addEventListener(
-        "click",
-        stopAdhan
-    );
-
-
-document
-    .getElementById("adhanTestButton")
-    .addEventListener(
-        "click",
-        playAdhan
-    );
-
-
-/* =========================================================
-   ADHAN SETTINGS
-   ========================================================= */
-
-function loadAdhanSettings() {
-
-    const enabled =
-        localStorage.getItem(
-            "amirAdhanEnabled"
-        ) !== "false";
-
-
-    const timing =
-        localStorage.getItem(
-            "amirAdhanTiming"
-        ) || "at";
-
-
-    const notifications =
-        localStorage.getItem(
-            "amirNotifications"
-        ) === "true";
-
-
-    document
-        .getElementById("adhanEnabled")
-        .checked =
-        enabled;
-
-
-    document
-        .getElementById("adhanTiming")
-        .value =
-        timing;
-
-
-    document
-        .getElementById("notificationsEnabled")
-        .checked =
-        notifications;
-
-}
-
-
-document
-    .getElementById("adhanEnabled")
-    .addEventListener(
-        "change",
-        event => {
-
-            localStorage.setItem(
-                "amirAdhanEnabled",
-                event.target.checked
-            );
-
-        }
-    );
-
-
-document
-    .getElementById("adhanTiming")
-    .addEventListener(
-        "change",
-        event => {
-
-            localStorage.setItem(
-                "amirAdhanTiming",
-                event.target.value
-            );
-
-        }
-    );
-
-
-document
-    .getElementById("notificationsEnabled")
-    .addEventListener(
-        "change",
-        async event => {
-
-            localStorage.setItem(
-                "amirNotifications",
-                event.target.checked
-            );
-
-
-            if (
-                event.target.checked &&
-                "Notification" in window
-            ) {
-
-                try {
-
-                    await Notification.requestPermission();
-
-                } catch {}
-
-            }
-
-        }
-    );
-
-
-loadAdhanSettings();
-
-
-/* =========================================================
-   NOTIFICATION BUTTON
-   ========================================================= */
-
-document
-    .getElementById("notificationButton")
-    .addEventListener(
-        "click",
-        async () => {
-
-            if (
-                !("Notification" in window)
-            ) {
-
-                alert(
-                    "المتصفح لا يدعم إشعارات الويب."
-                );
-
-                return;
-
-            }
-
-
-            try {
-
-                const permission =
-                    await Notification.requestPermission();
-
-
-                if (
-                    permission === "granted"
-                ) {
-
-                    new Notification(
-                        "أمير مواقيت 🕌",
-                        {
-                            body:
-                            "تم تفعيل إشعارات التطبيق."
-                        }
-                    );
-
-                }
-
-            } catch {
-
-                alert(
-                    "لم يتمكن التطبيق من تفعيل الإشعارات."
-                );
-
-            }
-
-        }
-    );
-
-
-/* =========================================================
-   QIBLA PLACEHOLDER
-   سيتم استبداله بملف qibla.js
-   ========================================================= */
-
-document
-    .getElementById("qiblaQuickButton")
-    .addEventListener(
-        "click",
-        () => showPage("qibla")
-    );
-
-
-document
-    .getElementById("qiblaStartButton")
-    .addEventListener(
-        "click",
-        () => {
-
-            document
-                .getElementById(
-                    "qiblaStatus"
-                )
-                .textContent =
-                "سيتم تشغيل البوصلة عند ربط وحدة القبلة.";
-
-        }
-    );
-
-
-/* =========================================================
-   OFFLINE STATUS
-   ========================================================= */
-
-function updateConnection() {
-
-    document
-        .getElementById("offlineStatus")
-        .classList.toggle(
-            "show",
-            !navigator.onLine
-        );
-
-}
-
-
-window.addEventListener(
-    "online",
-    updateConnection
-);
-
-window.addEventListener(
-    "offline",
-    updateConnection
-);
-
-updateConnection();
-
-
-/* =========================================================
-   SERVICE WORKER
-   ========================================================= */
-
-if (
-    "serviceWorker" in navigator
-) {
-
-    window.addEventListener(
-        "load",
-        () => {
-
-            navigator.serviceWorker
-                .register("./sw.js")
-                .then(
-                    registration => {
-
-                        console.log(
-                            "Amir Mawaqit Service Worker:",
-                            registration.scope
-                        );
-
-                    }
-                )
-                .catch(
-                    error => {
-
-                        console.log(
-                            "Service Worker Error:",
-                            error
-                        );
-
-                    }
-                );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   PWA INSTALL
-   ========================================================= */
-
-let deferredInstallPrompt = null;
-
-
-window.addEventListener(
-    "beforeinstallprompt",
-    event => {
-
-        event.preventDefault();
-
-        deferredInstallPrompt =
-            event;
-
-        document
-            .getElementById(
-                "installBanner"
-            )
-            .classList.add(
-                "show"
-            );
-
-    }
-);
-
-
-document
-    .getElementById("installButton")
-    .addEventListener(
-        "click",
-        async () => {
-
-            if (!deferredInstallPrompt) {
-
-                alert(
-                    "في iPhone افتح التطبيق في Safari ثم اختر: مشاركة ← إضافة إلى الشاشة الرئيسية."
-                );
-
-                return;
-
-            }
-
-
-            deferredInstallPrompt.prompt();
-
-
-            try {
-
-                await deferredInstallPrompt.userChoice;
-
-            } catch {}
-
-
-            deferredInstallPrompt = null;
-
-
-            document
-                .getElementById(
-                    "installBanner"
-                )
-                .classList.remove(
-                    "show"
-                );
-
-        }
-    );
-
-
-/* =========================================================
-   INITIALIZATION
-   ========================================================= */
-
-console.log(
-    "🕌 أمير مواقيت V2 بدأ التشغيل"
-);
-
-console.log(
-    "Version:",
-    AMIR_CONFIG.version
-);
-
-</script>
 
 </body>
 </html>
