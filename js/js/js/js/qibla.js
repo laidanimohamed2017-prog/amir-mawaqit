@@ -1,744 +1,770 @@
 /* =========================================================
    أمير مواقيت V2
-   qibla.js
-   نظام اتجاه القبلة والبوصلة
+   Qibla Module
+   القبلة والبوصلة
    ========================================================= */
 
-(() => {
-  "use strict";
+(function () {
+    "use strict";
 
-  /* ---------------------------------------------------------
-     إحداثيات الكعبة المشرفة
-     --------------------------------------------------------- */
+    const KAABA_LAT = 21.4225;
+    const KAABA_LON = 39.8262;
 
-  const KAABA_LATITUDE = 21.4225;
-  const KAABA_LONGITUDE = 39.8262;
+    let currentCity = null;
+    let qiblaBearing = 0;
+    let compassHeading = null;
+    let isCompassActive = false;
+    let orientationHandler = null;
+    let orientationEventType = null;
 
-  let compassActive = false;
-  let orientationHandler = null;
-  let lastHeading = null;
+    /* ---------------------------------------------------------
+       Helpers
+    --------------------------------------------------------- */
 
-  /* ---------------------------------------------------------
-     تحويل الدرجات إلى راديان
-     --------------------------------------------------------- */
-
-  function toRadians(degrees) {
-    return degrees * Math.PI / 180;
-  }
-
-  /* ---------------------------------------------------------
-     تحويل الراديان إلى درجات
-     --------------------------------------------------------- */
-
-  function toDegrees(radians) {
-    return radians * 180 / Math.PI;
-  }
-
-  /* ---------------------------------------------------------
-     حساب اتجاه القبلة من إحداثيات المستخدم
-     إلى مكة المكرمة
-     --------------------------------------------------------- */
-
-  function calculateQiblaBearing(
-    latitude,
-    longitude
-  ) {
-    const lat1 =
-      toRadians(latitude);
-
-    const lat2 =
-      toRadians(KAABA_LATITUDE);
-
-    const deltaLongitude =
-      toRadians(
-        KAABA_LONGITUDE -
-        longitude
-      );
-
-    const y =
-      Math.sin(deltaLongitude);
-
-    const x =
-      Math.cos(lat1) *
-        Math.tan(lat2) -
-      Math.sin(lat1) *
-        Math.cos(deltaLongitude);
-
-    let bearing =
-      toDegrees(
-        Math.atan2(y, x)
-      );
-
-    bearing =
-      (bearing + 360) % 360;
-
-    return bearing;
-  }
-
-  /* ---------------------------------------------------------
-     جلب موقع المدينة الحالي
-     --------------------------------------------------------- */
-
-  function getCurrentCity() {
-    if (
-      window.AmirPrayer &&
-      typeof window.AmirPrayer.getCity ===
-        "function"
-    ) {
-      return window.AmirPrayer.getCity();
+    function getElement(id) {
+        return document.getElementById(id);
     }
 
-    return {
-      name: "عين وسارة",
-      latitude: 35.4513,
-      longitude: 2.9067
-    };
-  }
+    function showMessage(message, type = "info") {
+        const toast = getElement("amirToast");
 
-  /* ---------------------------------------------------------
-     عرض درجة القبلة
-     --------------------------------------------------------- */
+        if (!toast) {
+            return;
+        }
 
-  function renderBearing(
-    bearing
-  ) {
-    const rounded =
-      Math.round(bearing);
+        toast.textContent = message;
+        toast.className = "amir-toast show";
 
-    const degreeElements =
-      document.querySelectorAll(
-        "[data-qibla-degree]"
-      );
+        if (type === "success") {
+            toast.classList.add("success");
+        } else if (type === "error") {
+            toast.classList.add("error");
+        }
 
-    degreeElements.forEach(
-      element => {
-        element.textContent =
-          `${rounded}°`;
-      }
-    );
+        clearTimeout(showMessage.timer);
 
-    const degree =
-      document.getElementById(
-        "qiblaDegree"
-      );
-
-    if (degree) {
-      degree.textContent =
-        `${rounded}°`;
+        showMessage.timer = setTimeout(() => {
+            toast.classList.remove("show", "success", "error");
+        }, 3000);
     }
 
-    const status =
-      document.getElementById(
-        "qiblaStatus"
-      );
-
-    if (status) {
-      status.textContent =
-        `اتجاه القبلة ${rounded}° من الشمال`;
-    }
-  }
-
-  /* ---------------------------------------------------------
-     تحريك سهم القبلة
-     --------------------------------------------------------- */
-
-  function rotateQiblaArrow(
-    angle
-  ) {
-    const arrows =
-      document.querySelectorAll(
-        ".qibla-arrow"
-      );
-
-    arrows.forEach(
-      arrow => {
-        arrow.style.transform =
-          `translate(-50%, -50%) rotate(${angle}deg)`;
-      }
-    );
-
-    const mainArrow =
-      document.getElementById(
-        "qiblaArrow"
-      );
-
-    if (mainArrow) {
-      mainArrow.style.transform =
-        `translate(-50%, -50%) rotate(${angle}deg)`;
-    }
-  }
-
-  /* ---------------------------------------------------------
-     اتجاه القبلة بدون بوصلة
-     --------------------------------------------------------- */
-
-  function showStaticQibla() {
-    const city =
-      getCurrentCity();
-
-    const bearing =
-      calculateQiblaBearing(
-        city.latitude,
-        city.longitude
-      );
-
-    renderBearing(
-      bearing
-    );
-
-    rotateQiblaArrow(
-      bearing
-    );
-
-    updateStatus(
-      "الاتجاه المحسوب حسب موقع المدينة"
-    );
-
-    saveQiblaSettings({
-      latitude:
-        city.latitude,
-
-      longitude:
-        city.longitude,
-
-      bearing
-    });
-
-    return bearing;
-  }
-
-  /* ---------------------------------------------------------
-     حالة البوصلة
-     --------------------------------------------------------- */
-
-  function updateStatus(
-    message
-  ) {
-    const statusElements =
-      document.querySelectorAll(
-        "[data-qibla-status]"
-      );
-
-    statusElements.forEach(
-      element => {
-        element.textContent =
-          message;
-      }
-    );
-
-    const status =
-      document.getElementById(
-        "qiblaStatus"
-      );
-
-    if (status) {
-      status.textContent =
-        message;
-    }
-  }
-
-  /* ---------------------------------------------------------
-     حساب اتجاه الهاتف بالنسبة للشمال
-     --------------------------------------------------------- */
-
-  function getCompassHeading(
-    event
-  ) {
-    /*
-      iOS Safari يوفر:
-      webkitCompassHeading
-    */
-
-    if (
-      typeof event.webkitCompassHeading ===
-        "number" &&
-      !Number.isNaN(
-        event.webkitCompassHeading
-      )
-    ) {
-      return event.webkitCompassHeading;
+    function normalizeDegrees(value) {
+        value = Number(value) || 0;
+        return ((value % 360) + 360) % 360;
     }
 
-    /*
-      Android / بعض المتصفحات:
-      alpha يمثل دوران الجهاز.
-    */
-
-    if (
-      typeof event.alpha ===
-        "number"
-    ) {
-      return (
-        360 -
-        event.alpha
-      );
+    function toRadians(degrees) {
+        return degrees * Math.PI / 180;
     }
 
-    return null;
-  }
-
-  /* ---------------------------------------------------------
-     تحديث البوصلة
-     --------------------------------------------------------- */
-
-  function handleOrientation(
-    event
-  ) {
-    const heading =
-      getCompassHeading(
-        event
-      );
-
-    if (
-      heading === null
-    ) {
-      return;
+    function toDegrees(radians) {
+        return radians * 180 / Math.PI;
     }
 
-    lastHeading =
-      heading;
+    /* ---------------------------------------------------------
+       Get city coordinates
+    --------------------------------------------------------- */
 
-    const city =
-      getCurrentCity();
+    function getSelectedCity() {
+        try {
+            if (
+                window.AmirStorage &&
+                typeof window.AmirStorage.getCity === "function"
+            ) {
+                return window.AmirStorage.getCity();
+            }
+        } catch (error) {
+            console.warn("AmirStorage city error:", error);
+        }
 
-    const qiblaBearing =
-      calculateQiblaBearing(
-        city.latitude,
-        city.longitude
-      );
-
-    /*
-      الزاوية التي يجب أن يشير إليها
-      السهم على الشاشة.
-    */
-
-    let relativeAngle =
-      qiblaBearing -
-      heading;
-
-    relativeAngle =
-      (
-        relativeAngle +
-        360
-      ) % 360;
-
-    renderBearing(
-      qiblaBearing
-    );
-
-    rotateQiblaArrow(
-      relativeAngle
-    );
-
-    updateCompassText(
-      heading,
-      qiblaBearing,
-      relativeAngle
-    );
-  }
-
-  /* ---------------------------------------------------------
-     معلومات البوصلة
-     --------------------------------------------------------- */
-
-  function updateCompassText(
-    heading,
-    qiblaBearing,
-    relativeAngle
-  ) {
-    const headingElement =
-      document.getElementById(
-        "compassHeading"
-      );
-
-    if (headingElement) {
-      headingElement.textContent =
-        `${Math.round(
-          heading
-        )}°`;
+        return localStorage.getItem("amirCity") || "ain_oussera";
     }
 
-    const directionElement =
-      document.getElementById(
-        "qiblaDirection"
-      );
-
-    if (directionElement) {
-      directionElement.textContent =
-        `${Math.round(
-          relativeAngle
-        )}°`;
-    }
-
-    const status =
-      document.getElementById(
-        "qiblaStatus"
-      );
-
-    if (status) {
-      status.textContent =
-        `القبلة ${Math.round(
-          qiblaBearing
-        )}° — اتجاه الهاتف ${Math.round(
-          heading
-        )}°`;
-    }
-  }
-
-  /* ---------------------------------------------------------
-     طلب إذن البوصلة في iPhone / iPad
-     --------------------------------------------------------- */
-
-  async function requestOrientationPermission() {
-    /*
-      iOS 13+ يحتاج إلى إذن صريح
-      عند استخدام DeviceOrientationEvent.
-    */
-
-    if (
-      typeof DeviceOrientationEvent !==
-        "undefined" &&
-      typeof DeviceOrientationEvent.requestPermission ===
-        "function"
-    ) {
-      try {
-        const permission =
-          await DeviceOrientationEvent.requestPermission();
+    function getCityCoordinates() {
+        const cityKey = getSelectedCity();
 
         if (
-          permission ===
-          "granted"
+            window.AmirPrayer &&
+            typeof window.AmirPrayer.getCityCoordinates === "function"
         ) {
-          startCompassListener();
+            const coordinates =
+                window.AmirPrayer.getCityCoordinates(cityKey);
 
-          return true;
+            if (coordinates) {
+                return coordinates;
+            }
         }
 
-        updateStatus(
-          "تم رفض إذن البوصلة. فعّل الوصول إلى مستشعر الحركة."
-        );
+        const fallbackCities = {
+            algiers: {
+                lat: 36.7538,
+                lon: 3.0588
+            },
 
-        return false;
-      } catch (error) {
-        console.warn(
-          "Orientation permission error:",
-          error
-        );
+            oran: {
+                lat: 35.6971,
+                lon: -0.6308
+            },
 
-        updateStatus(
-          "تعذر الحصول على إذن البوصلة"
-        );
+            constantine: {
+                lat: 36.3650,
+                lon: 6.6147
+            },
 
-        return false;
-      }
+            annaba: {
+                lat: 36.9000,
+                lon: 7.7667
+            },
+
+            blida: {
+                lat: 36.4700,
+                lon: 2.8300
+            },
+
+            setif: {
+                lat: 36.1900,
+                lon: 5.4100
+            },
+
+            tlemcen: {
+                lat: 34.8828,
+                lon: -1.3167
+            },
+
+            ain_oussera: {
+                lat: 35.4513,
+                lon: 2.9067
+            }
+        };
+
+        return fallbackCities[cityKey] || fallbackCities.ain_oussera;
     }
 
-    /*
-      Android والمتصفحات التي لا تحتاج
-      إلى requestPermission.
-    */
+    /* ---------------------------------------------------------
+       Calculate Qibla bearing
+    --------------------------------------------------------- */
 
-    startCompassListener();
+    function calculateQibla(latitude, longitude) {
+        const lat1 = toRadians(latitude);
+        const lat2 = toRadians(KAABA_LAT);
 
-    return true;
-  }
+        const deltaLon = toRadians(KAABA_LON - longitude);
 
-  /* ---------------------------------------------------------
-     تشغيل البوصلة
-     --------------------------------------------------------- */
+        const y = Math.sin(deltaLon);
 
-  function startCompassListener() {
-    if (
-      compassActive
-    ) {
-      return true;
+        const x =
+            Math.cos(lat1) * Math.tan(lat2) -
+            Math.sin(lat1) * Math.cos(deltaLon);
+
+        let bearing = toDegrees(Math.atan2(y, x));
+
+        bearing = normalizeDegrees(bearing);
+
+        return bearing;
     }
 
-    if (
-      typeof DeviceOrientationEvent ===
-      "undefined"
-    ) {
-      updateStatus(
-        "هذا الجهاز لا يدعم مستشعر الاتجاه"
-      );
+    function calculateCurrentQibla() {
+        const coordinates = getCityCoordinates();
 
-      showStaticQibla();
+        if (!coordinates) {
+            return null;
+        }
 
-      return false;
+        const latitude =
+            Number(
+                coordinates.lat ??
+                coordinates.latitude
+            );
+
+        const longitude =
+            Number(
+                coordinates.lon ??
+                coordinates.lng ??
+                coordinates.longitude
+            );
+
+        if (
+            !Number.isFinite(latitude) ||
+            !Number.isFinite(longitude)
+        ) {
+            return null;
+        }
+
+        qiblaBearing = calculateQibla(latitude, longitude);
+
+        currentCity = {
+            latitude,
+            longitude
+        };
+
+        return qiblaBearing;
     }
 
-    orientationHandler =
-      handleOrientation;
+    /* ---------------------------------------------------------
+       Direction name
+    --------------------------------------------------------- */
 
-    /*
-      true = التقاط orientation بشكل أفضل
-    */
+    function getDirectionName(degrees) {
+        degrees = normalizeDegrees(degrees);
 
-    window.addEventListener(
-      "deviceorientationabsolute",
-      orientationHandler,
-      true
-    );
+        if (degrees >= 337.5 || degrees < 22.5) {
+            return "شمال";
+        }
 
-    /*
-      fallback للمتصفحات التي
-      لا توفر absolute.
-    */
+        if (degrees < 67.5) {
+            return "شمال شرق";
+        }
 
-    window.addEventListener(
-      "deviceorientation",
-      orientationHandler,
-      true
-    );
+        if (degrees < 112.5) {
+            return "شرق";
+        }
 
-    compassActive =
-      true;
+        if (degrees < 157.5) {
+            return "جنوب شرق";
+        }
 
-    updateStatus(
-      "البوصلة تعمل — حرّك الهاتف ببطء"
-    );
+        if (degrees < 202.5) {
+            return "جنوب";
+        }
 
-    return true;
-  }
+        if (degrees < 247.5) {
+            return "جنوب غرب";
+        }
 
-  /* ---------------------------------------------------------
-     إيقاف البوصلة
-     --------------------------------------------------------- */
+        if (degrees < 292.5) {
+            return "غرب";
+        }
 
-  function stopCompass() {
-    if (
-      !orientationHandler
-    ) {
-      return;
+        return "شمال غرب";
     }
 
-    window.removeEventListener(
-      "deviceorientationabsolute",
-      orientationHandler,
-      true
-    );
+    /* ---------------------------------------------------------
+       Update UI
+    --------------------------------------------------------- */
 
-    window.removeEventListener(
-      "deviceorientation",
-      orientationHandler,
-      true
-    );
+    function updateQiblaUI() {
+        const degreeElement = getElement("qiblaDegree");
+        const directionElement = getElement("qiblaDirection");
+        const statusElement = getElement("qiblaStatus");
 
-    orientationHandler =
-      null;
+        if (degreeElement) {
+            degreeElement.textContent =
+                Math.round(qiblaBearing) + "°";
+        }
 
-    compassActive =
-      false;
+        if (directionElement) {
+            directionElement.textContent =
+                getDirectionName(qiblaBearing);
+        }
 
-    updateStatus(
-      "تم إيقاف البوصلة"
-    );
-  }
+        if (statusElement) {
+            statusElement.textContent =
+                "اتجاه القبلة من موقعك الحالي";
+        }
 
-  /* ---------------------------------------------------------
-     تخزين إعدادات القبلة
-     --------------------------------------------------------- */
-
-  function saveQiblaSettings(
-    settings
-  ) {
-    try {
-      if (
-        window.AmirStorage &&
-        typeof window.AmirStorage.setQiblaSettings ===
-          "function"
-      ) {
-        window.AmirStorage.setQiblaSettings(
-          settings
-        );
-
-        return;
-      }
-
-      localStorage.setItem(
-        "amirQiblaSettings",
-        JSON.stringify(
-          settings
-        )
-      );
-    } catch (error) {
-      console.warn(
-        "Could not save qibla settings:",
-        error
-      );
+        updateCompassUI();
     }
-  }
 
-  function getSavedQiblaSettings() {
-    try {
-      if (
-        window.AmirStorage &&
-        typeof window.AmirStorage.getQiblaSettings ===
-          "function"
-      ) {
-        return (
-          window.AmirStorage.getQiblaSettings() ||
-          null
-        );
-      }
+    /* ---------------------------------------------------------
+       Compass UI
+    --------------------------------------------------------- */
 
-      const raw =
-        localStorage.getItem(
-          "amirQiblaSettings"
-        );
+    function updateCompassUI() {
+        const arrow = getElement("qiblaArrow");
+        const compass = getElement("compass");
+        const headingElement = getElement("compassHeading");
 
-      if (!raw) {
+        if (headingElement) {
+            if (compassHeading === null) {
+                headingElement.textContent = "--°";
+            } else {
+                headingElement.textContent =
+                    Math.round(compassHeading) + "°";
+            }
+        }
+
+        if (!arrow) {
+            return;
+        }
+
+        if (compassHeading === null) {
+            arrow.style.transform =
+                "translate(-50%, -50%) rotate(" +
+                qiblaBearing +
+                "deg)";
+
+            return;
+        }
+
+        /*
+         * السهم يشير فعلياً نحو القبلة بالنسبة لاتجاه
+         * الهاتف الحالي.
+         */
+        const rotation =
+            normalizeDegrees(qiblaBearing - compassHeading);
+
+        arrow.style.transform =
+            "translate(-50%, -50%) rotate(" +
+            rotation +
+            "deg)";
+
+        if (compass) {
+            compass.setAttribute(
+                "data-heading",
+                String(Math.round(compassHeading))
+            );
+        }
+    }
+
+    /* ---------------------------------------------------------
+       Compass heading extraction
+    --------------------------------------------------------- */
+
+    function extractHeading(event) {
+        /*
+         * iPhone / iPad Safari
+         */
+        if (
+            typeof event.webkitCompassHeading === "number" &&
+            Number.isFinite(event.webkitCompassHeading)
+        ) {
+            return normalizeDegrees(
+                event.webkitCompassHeading
+            );
+        }
+
+        /*
+         * Android / standard orientation
+         */
+        if (
+            typeof event.alpha === "number" &&
+            Number.isFinite(event.alpha)
+        ) {
+            let heading = 360 - event.alpha;
+
+            /*
+             * landscape correction
+             */
+            if (
+                typeof window.orientation === "number" &&
+                window.orientation !== 0
+            ) {
+                heading += window.orientation;
+            }
+
+            return normalizeDegrees(heading);
+        }
+
         return null;
-      }
-
-      return JSON.parse(
-        raw
-      );
-    } catch {
-      return null;
-    }
-  }
-
-  /* ---------------------------------------------------------
-     إعادة حساب القبلة
-     --------------------------------------------------------- */
-
-  function refreshQibla() {
-    const city =
-      getCurrentCity();
-
-    const bearing =
-      calculateQiblaBearing(
-        city.latitude,
-        city.longitude
-      );
-
-    renderBearing(
-      bearing
-    );
-
-    if (!compassActive) {
-      rotateQiblaArrow(
-        bearing
-      );
     }
 
-    return bearing;
-  }
+    function handleOrientation(event) {
+        const heading = extractHeading(event);
 
-  /* ---------------------------------------------------------
-     ربط أزرار الواجهة
-     --------------------------------------------------------- */
-
-  function bindUI() {
-    const button =
-      document.getElementById(
-        "startQibla"
-      );
-
-    if (button) {
-      button.addEventListener(
-        "click",
-        async () => {
-          await requestOrientationPermission();
+        if (heading === null) {
+            return;
         }
-      );
-    }
 
-    const startButton =
-      document.getElementById(
-        "enableCompass"
-      );
+        compassHeading = heading;
 
-    if (startButton) {
-      startButton.addEventListener(
-        "click",
-        async () => {
-          await requestOrientationPermission();
+        updateCompassUI();
+
+        const status = getElement("qiblaStatus");
+
+        if (status) {
+            const difference =
+                Math.abs(
+                    normalizeDegrees(
+                        qiblaBearing - compassHeading
+                    )
+                );
+
+            const shortestDifference =
+                Math.min(
+                    difference,
+                    360 - difference
+                );
+
+            if (shortestDifference <= 5) {
+                status.textContent =
+                    "أنت تقريباً في اتجاه القبلة ✓";
+            } else if (shortestDifference <= 15) {
+                status.textContent =
+                    "اقتربت من اتجاه القبلة";
+            } else {
+                status.textContent =
+                    "حرّك الهاتف حتى يشير السهم إلى اتجاه القبلة";
+            }
         }
-      );
     }
 
-    const stopButton =
-      document.getElementById(
-        "stopCompass"
-      );
+    /* ---------------------------------------------------------
+       Start compass
+    --------------------------------------------------------- */
 
-    if (stopButton) {
-      stopButton.addEventListener(
-        "click",
-        () => {
-          stopCompass();
+    async function startCompass() {
+        if (!("DeviceOrientationEvent" in window)) {
+            showMessage(
+                "هذا الجهاز لا يدعم البوصلة الإلكترونية",
+                "error"
+            );
+            return false;
         }
-      );
-    }
 
-    const refreshButton =
-      document.getElementById(
-        "refreshQibla"
-      );
+        /*
+         * iOS requires explicit permission.
+         */
+        if (
+            typeof DeviceOrientationEvent.requestPermission ===
+            "function"
+        ) {
+            try {
+                const permission =
+                    await DeviceOrientationEvent.requestPermission();
 
-    if (refreshButton) {
-      refreshButton.addEventListener(
-        "click",
-        () => {
-          refreshQibla();
+                if (permission !== "granted") {
+                    showMessage(
+                        "لم يتم السماح بالوصول إلى البوصلة",
+                        "error"
+                    );
+
+                    return false;
+                }
+            } catch (error) {
+                console.error(
+                    "Compass permission error:",
+                    error
+                );
+
+                showMessage(
+                    "تعذر تشغيل البوصلة",
+                    "error"
+                );
+
+                return false;
+            }
         }
-      );
+
+        stopCompass(false);
+
+        orientationHandler = handleOrientation;
+
+        /*
+         * نستخدم absolute عندما يكون متاحاً.
+         * لا نربط النوعين معاً حتى لا تتكرر الأحداث.
+         */
+        if ("ondeviceorientationabsolute" in window) {
+            orientationEventType =
+                "deviceorientationabsolute";
+        } else {
+            orientationEventType =
+                "deviceorientation";
+        }
+
+        window.addEventListener(
+            orientationEventType,
+            orientationHandler,
+            true
+        );
+
+        isCompassActive = true;
+
+        const status = getElement("qiblaStatus");
+
+        if (status) {
+            status.textContent =
+                "البوصلة تعمل — حرّك الهاتف ببطء لمعايرتها";
+        }
+
+        const enableButton =
+            getElement("enableCompass");
+
+        const startButton =
+            getElement("startQibla");
+
+        const stopButton =
+            getElement("stopCompass");
+
+        if (enableButton) {
+            enableButton.classList.add("active");
+        }
+
+        if (startButton) {
+            startButton.classList.add("active");
+        }
+
+        if (stopButton) {
+            stopButton.disabled = false;
+        }
+
+        showMessage(
+            "تم تشغيل البوصلة",
+            "success"
+        );
+
+        return true;
     }
-  }
 
-  /* ---------------------------------------------------------
-     API عام
-     --------------------------------------------------------- */
+    /* ---------------------------------------------------------
+       Stop compass
+    --------------------------------------------------------- */
 
-  window.AmirQibla = {
-    calculate:
-      calculateQiblaBearing,
+    function stopCompass(showToast = true) {
+        if (
+            orientationHandler &&
+            orientationEventType
+        ) {
+            window.removeEventListener(
+                orientationEventType,
+                orientationHandler,
+                true
+            );
+        }
 
-    getCity:
-      getCurrentCity,
+        orientationHandler = null;
+        orientationEventType = null;
 
-    refresh:
-      refreshQibla,
+        isCompassActive = false;
+        compassHeading = null;
 
-    start:
-      requestOrientationPermission,
+        updateCompassUI();
 
-    stop:
-      stopCompass,
+        const status = getElement("qiblaStatus");
 
-    isActive:
-      () => compassActive,
+        if (status) {
+            status.textContent =
+                "البوصلة متوقفة";
+        }
 
-    getLastHeading:
-      () => lastHeading,
+        const enableButton =
+            getElement("enableCompass");
 
-    getSavedSettings:
-      getSavedQiblaSettings
-  };
+        const startButton =
+            getElement("startQibla");
 
-  /* ---------------------------------------------------------
-     التشغيل
-     --------------------------------------------------------- */
+        const stopButton =
+            getElement("stopCompass");
 
-  document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-      bindUI();
+        if (enableButton) {
+            enableButton.classList.remove("active");
+        }
 
-      /*
-        نعرض اتجاه القبلة المحسوب
-        مباشرة حتى قبل تشغيل البوصلة.
-      */
+        if (startButton) {
+            startButton.classList.remove("active");
+        }
 
-      setTimeout(
-        () => {
-          refreshQibla();
+        if (stopButton) {
+            stopButton.disabled = true;
+        }
+
+        if (showToast) {
+            showMessage(
+                "تم إيقاف البوصلة"
+            );
+        }
+    }
+
+    /* ---------------------------------------------------------
+       Refresh Qibla
+    --------------------------------------------------------- */
+
+    function refresh() {
+        const bearing =
+            calculateCurrentQibla();
+
+        if (bearing === null) {
+            showMessage(
+                "تعذر تحديد اتجاه القبلة",
+                "error"
+            );
+
+            return null;
+        }
+
+        updateQiblaUI();
+
+        return bearing;
+    }
+
+    /* ---------------------------------------------------------
+       Quick access
+    --------------------------------------------------------- */
+
+    function openQibla() {
+        const qiblaSection =
+            getElement("qiblaSection");
+
+        if (qiblaSection) {
+            document
+                .querySelectorAll(".page-section")
+                .forEach(section => {
+                    section.classList.remove("active");
+                });
+
+            qiblaSection.classList.add("active");
+        }
+
+        document
+            .querySelectorAll(
+                "[data-section], [data-page]"
+            )
+            .forEach(button => {
+                button.classList.remove("active");
+            });
+
+        const qiblaNav =
+            document.querySelector(
+                '[data-section="qibla"]'
+            );
+
+        if (qiblaNav) {
+            qiblaNav.classList.add("active");
+        }
+
+        refresh();
+    }
+
+    /* ---------------------------------------------------------
+       Bind buttons
+    --------------------------------------------------------- */
+
+    function bindEvents() {
+        const startButton =
+            getElement("startQibla");
+
+        const enableButton =
+            getElement("enableCompass");
+
+        const stopButton =
+            getElement("stopCompass");
+
+        const refreshButton =
+            getElement("refreshQibla");
+
+        if (startButton) {
+            startButton.addEventListener(
+                "click",
+                function () {
+                    refresh();
+                    startCompass();
+                }
+            );
+        }
+
+        if (enableButton) {
+            enableButton.addEventListener(
+                "click",
+                function () {
+                    startCompass();
+                }
+            );
+        }
+
+        if (stopButton) {
+            stopButton.addEventListener(
+                "click",
+                function () {
+                    stopCompass();
+                }
+            );
+
+            stopButton.disabled = true;
+        }
+
+        if (refreshButton) {
+            refreshButton.addEventListener(
+                "click",
+                function () {
+                    refresh();
+                    showMessage(
+                        "تم تحديث اتجاه القبلة",
+                        "success"
+                    );
+                }
+            );
+        }
+
+        /*
+         * زر القبلة السريع من الصفحة الرئيسية
+         */
+        document
+            .querySelectorAll(
+                '[data-go-section="qibla"]'
+            )
+            .forEach(button => {
+                button.addEventListener(
+                    "click",
+                    function () {
+                        openQibla();
+                    }
+                );
+            });
+
+        /*
+         * عندما يفتح المستخدم قسم القبلة
+         */
+        document
+            .querySelectorAll(
+                '[data-section="qibla"]'
+            )
+            .forEach(button => {
+                button.addEventListener(
+                    "click",
+                    function () {
+                        setTimeout(
+                            refresh,
+                            100
+                        );
+                    }
+                );
+            });
+    }
+
+    /* ---------------------------------------------------------
+       Public API
+    --------------------------------------------------------- */
+
+    window.AmirQibla = {
+        calculate: calculateCurrentQibla,
+        calculateBearing: calculateQibla,
+        getBearing: function () {
+            return qiblaBearing;
         },
-        300
-      );
-    }
-  );
+        getHeading: function () {
+            return compassHeading;
+        },
+        getDirectionName,
+        startCompass,
+        stopCompass,
+        refresh,
+        updateUI: updateQiblaUI,
+        open: openQibla,
+        isActive: function () {
+            return isCompassActive;
+        }
+    };
+
+    /* ---------------------------------------------------------
+       Initialization
+    --------------------------------------------------------- */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+            calculateCurrentQibla();
+            updateQiblaUI();
+            bindEvents();
+
+            /*
+             * إذا تغيرت المدينة أثناء تشغيل التطبيق
+             */
+            window.addEventListener(
+                "amirCityChanged",
+                function () {
+                    refresh();
+                }
+            );
+        }
+    );
 
 })();
