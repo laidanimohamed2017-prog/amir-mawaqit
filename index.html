@@ -1,1704 +1,714 @@
-```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
-
     <meta charset="UTF-8">
 
     <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <meta name="theme-color" content="#071a12">
-
+    <meta name="theme-color" content="#087f5b">
     <meta name="description"
-          content="أمير مواقيت - تطبيق احترافي لمواقيت الصلاة والأذان والقبلة والأذكار والقرآن الكريم">
+          content="أمير مواقيت - مواقيت الصلاة والأذان والقبلة والأذكار والقرآن الكريم">
 
-    <meta name="mobile-web-app-capable" content="yes">
-
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="أمير مواقيت">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="./icon-192.png">
 
     <title>أمير مواقيت</title>
 
-    <!-- PWA -->
-    <link rel="manifest" href="./manifest.json">
-
-    <!-- iOS Icon -->
-    <link rel="apple-touch-icon" href="./icon-192.png">
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="./css/style.css">
-    <link rel="stylesheet" href="./css/responsive.css">
-    <link rel="stylesheet" href="./css/animations.css">
-
-    <!-- Quran CSS -->
-    <link rel="stylesheet" href="./css/quran.css">
-
+    <!-- التصميم الرئيسي -->
+    <link rel="stylesheet" href="./css/style.css?v=2">
+    <link rel="stylesheet" href="./css/responsive.css?v=2">
+    <link rel="stylesheet" href="./css/animations.css?v=2">
+    <link rel="stylesheet" href="./css/quran.css?v=2">
 </head>
-
 
 <body>
 
-<div class="app">
+<!-- =====================================================
+     HEADER
+===================================================== -->
 
-    <!-- =====================================================
-         HEADER
-         ===================================================== -->
+<header class="top-header">
 
-    <header class="top-header">
+    <div class="brand">
 
-        <div class="header-inner">
+        <div class="brand-logo">
+            🕌
+        </div>
 
-            <div class="brand">
+        <div class="brand-text">
+            <h1>أمير مواقيت</h1>
+            <span>صلاتك... في وقتها</span>
+        </div>
 
-                <div class="brand-icon">
-                    🕌
-                </div>
+    </div>
 
-                <div class="brand-text">
+    <div class="header-actions">
 
-                    <h1>
-                        أمير مواقيت
-                    </h1>
+        <button
+            id="themeButton"
+            class="icon-button"
+            type="button"
+            aria-label="الوضع الليلي">
+            🌙
+        </button>
 
-                    <span>
-                        صلاتك... في وقتها
-                    </span>
+        <button
+            id="notificationButton"
+            class="icon-button"
+            type="button"
+            aria-label="الإشعارات">
+            🔔
+        </button>
 
-                </div>
+    </div>
 
-            </div>
-
-
-            <div class="header-actions">
-
-                <button
-                    class="icon-button"
-                    id="themeButton"
-                    type="button"
-                    aria-label="تغيير المظهر">
-
-                    🌙
-
-                </button>
+</header>
 
 
-                <button
-                    class="icon-button"
-                    id="notificationButton"
-                    type="button"
-                    aria-label="التنبيهات">
+<!-- =====================================================
+     MAIN
+===================================================== -->
 
-                    🔔
+<main id="appMain">
 
-                </button>
 
-            </div>
+<!-- =====================================================
+     HOME
+===================================================== -->
+
+<section id="homeSection" class="app-section active">
+
+    <div class="welcome-card">
+
+        <div class="welcome-content">
+
+            <span class="welcome-small">
+                السلام عليكم ورحمة الله وبركاته
+            </span>
+
+            <h2>
+                أهلاً بك في<br>
+                <strong>أمير مواقيت</strong>
+            </h2>
+
+            <p>
+                حافظ على صلاتك، واجعل وقتك مرتبطًا بعبادتك.
+            </p>
 
         </div>
 
-    </header>
-
-
-    <!-- =====================================================
-         MAIN
-         ===================================================== -->
-
-    <main>
-
-
-        <!-- =================================================
-             HOME
-             ================================================= -->
-
-        <section
-            id="homeSection"
-            class="page-section active"
-            data-section="home">
-
-
-            <div class="hero">
-
-                <div class="hero-top">
-
-                    <div class="location">
-
-                        📍 موقعك
-
-                        <strong id="cityName">
-                            عين وسارة
-                        </strong>
-
-                    </div>
-
-
-                    <div class="today-date">
-
-                        <span id="gregorianDate">
-                            --
-                        </span>
-
-                        <strong id="hijriDate">
-                            --
-                        </strong>
-
-                    </div>
-
-                </div>
-
-
-                <div class="next-prayer">
-
-                    <div class="next-prayer-label">
-                        الصلاة القادمة
-                    </div>
-
-
-                    <div
-                        class="next-prayer-name"
-                        id="nextPrayerName">
-
-                        جاري التحميل...
-
-                    </div>
-
-
-                    <div
-                        class="countdown"
-                        id="countdown">
-
-                        --:--:--
-
-                    </div>
-
-
-                    <div class="progress-container">
-
-                        <div
-                            class="progress-bar"
-                            id="prayerProgress">
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="hero-actions">
-
-                    <button
-                        class="hero-button"
-                        id="locationButton"
-                        type="button">
-
-                        📍 تغيير المدينة
-
-                    </button>
-
-
-                    <button
-                        class="hero-button"
-                        id="adhanTestButton"
-                        type="button">
-
-                        🔊 اختبار الأذان
-
-                    </button>
-
-
-                    <button
-                        class="hero-button"
-                        id="qiblaQuickButton"
-                        type="button"
-                        data-go-section="qibla">
-
-                        🧭 القبلة
-
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <!-- PRAYER TIMES -->
-
-            <div class="section-title">
-
-                <h2>
-                    مواقيت اليوم
-                </h2>
-
-                <span id="prayerUpdateStatus">
-                    تحديث...
-                </span>
-
-            </div>
-
-
-            <div
-                class="prayer-grid"
-                id="prayerGrid">
-
-                <div class="prayer-card">
-                    <div class="prayer-icon">🌅</div>
-                    <div class="prayer-name">الفجر</div>
-                    <div class="prayer-time">--:--</div>
-                </div>
-
-                <div class="prayer-card">
-                    <div class="prayer-icon">☀️</div>
-                    <div class="prayer-name">الظهر</div>
-                    <div class="prayer-time">--:--</div>
-                </div>
-
-                <div class="prayer-card">
-                    <div class="prayer-icon">🌤️</div>
-                    <div class="prayer-name">العصر</div>
-                    <div class="prayer-time">--:--</div>
-                </div>
-
-                <div class="prayer-card">
-                    <div class="prayer-icon">🌇</div>
-                    <div class="prayer-name">المغرب</div>
-                    <div class="prayer-time">--:--</div>
-                </div>
-
-                <div class="prayer-card">
-                    <div class="prayer-icon">🌙</div>
-                    <div class="prayer-name">العشاء</div>
-                    <div class="prayer-time">--:--</div>
-                </div>
-
-            </div>
-
-
-            <!-- QUICK SERVICES -->
-
-            <div class="section-title">
-
-                <h2>
-                    خدمات أمير
-                </h2>
-
-            </div>
-
-
-            <div class="quick-grid">
-
-                <button
-                    class="quick-card"
-                    type="button"
-                    data-go-section="qibla">
-
-                    <div class="quick-icon">🧭</div>
-
-                    <strong>القبلة</strong>
-
-                    <small>اتجاه الكعبة</small>
-
-                </button>
-
-
-                <button
-                    class="quick-card"
-                    type="button"
-                    data-go-section="azkar">
-
-                    <div class="quick-icon">📿</div>
-
-                    <strong>الأذكار</strong>
-
-                    <small>أذكار المسلم</small>
-
-                </button>
-
-
-                <button
-                    class="quick-card"
-                    type="button"
-                    data-go-section="quran">
-
-                    <div class="quick-icon">📖</div>
-
-                    <strong>القرآن</strong>
-
-                    <small>القرآن الكريم</small>
-
-                </button>
-
-
-                <button
-                    class="quick-card"
-                    type="button"
-                    data-go-section="settings">
-
-                    <div class="quick-icon">⚙️</div>
-
-                    <strong>الإعدادات</strong>
-
-                    <small>تخصيص التطبيق</small>
-
-                </button>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================================
-             QURAN
-             ================================================= -->
-
-        <section
-            id="quranSection"
-            class="page-section"
-            data-section="quran">
-
-            <div class="section-title">
-
-                <div>
-
-                    <h2>
-                        📖 القرآن الكريم
-                    </h2>
-
-                    <p>
-                        اقرأ القرآن الكريم بسهولة وراحة
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <!-- LAST READ -->
-
-            <div
-                id="quranLastRead"
-                class="quran-last-read">
-
-                <div class="quran-last-read-empty">
-                    لم تبدأ القراءة بعد
-                </div>
-
-            </div>
-
-
-            <!-- TOOLBAR -->
-
-            <div class="quran-toolbar">
-
-                <div class="quran-search-box">
-
-                    <span class="quran-search-icon">
-                        🔎
-                    </span>
-
-                    <input
-                        type="search"
-                        id="quranSearch"
-                        placeholder="ابحث عن سورة..."
-                        autocomplete="off"
-                        aria-label="البحث عن سورة">
-
-                </div>
-
-
-                <div class="quran-actions">
-
-                    <button
-                        type="button"
-                        class="secondary-button"
-                        id="quranAllButton">
-
-                        📖 كل السور
-
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="secondary-button"
-                        id="quranFavoritesButton">
-
-                        ⭐ المفضلة
-
-                        <span id="quranFavoriteCount">
-                            0
-                        </span>
-
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="primary-button"
-                        id="quranLastReadButton">
-
-                        ▶ متابعة القراءة
-
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <!-- SURAHS -->
-
-            <div
-                id="quranSurahList"
-                class="quran-surah-list">
-
-                <div class="quran-loading">
-
-                    جاري تحميل سور القرآن...
-
-                </div>
-
-            </div>
-
-
-            <!-- READER -->
-
-            <div
-                id="quranReader"
-                class="quran-reader"
-                hidden>
-            </div>
-
-        </section>
-
-
-        <!-- =================================================
-             AZKAR
-             ================================================= -->
-
-        <section
-            id="azkarSection"
-            class="page-section"
-            data-section="azkar">
-
-            <div class="section-title">
-
-                <h2>
-                    📿 الأذكار
-                </h2>
-
-                <span>
-                    أذكار المسلم
-                </span>
-
-            </div>
-
-
-            <div
-                class="adhan-buttons"
-                style="margin-bottom:15px;">
-
-                <button
-                    class="secondary-button active"
-                    type="button"
-                    data-azkar-category="morning">
-
-                    🌅 الصباح
-
-                </button>
-
-
-                <button
-                    class="secondary-button"
-                    type="button"
-                    data-azkar-category="evening">
-
-                    🌇 المساء
-
-                </button>
-
-
-                <button
-                    class="secondary-button"
-                    type="button"
-                    data-azkar-category="afterPrayer">
-
-                    🕌 بعد الصلاة
-
-                </button>
-
-
-                <button
-                    class="secondary-button"
-                    type="button"
-                    data-azkar-category="sleep">
-
-                    🌙 النوم
-
-                </button>
-
-
-                <button
-                    class="secondary-button"
-                    type="button"
-                    data-azkar-category="wake">
-
-                    ☀️ الاستيقاظ
-
-                </button>
-
-            </div>
-
-
-            <div class="content-card">
-
-                <input
-                    type="search"
-                    id="azkarSearch"
-                    placeholder="🔎 ابحث في الأذكار..."
-                    aria-label="البحث في الأذكار"
-                    style="
-                        width:100%;
-                        padding:13px;
-                        border:1px solid #d9e5df;
-                        border-radius:14px;
-                        outline:none;
-                    ">
-
-            </div>
-
-
-            <div
-                class="content-card"
-                style="margin-top:15px;">
-
-                <div class="azkar-summary">
-
-                    <div class="azkar-summary-item">
-
-                        <strong id="azkarProgressPercentage">
-                            0%
-                        </strong>
-
-                        <span>
-                            الإنجاز
-                        </span>
-
-                    </div>
-
-
-                    <div class="azkar-summary-item">
-
-                        <strong id="azkarCompletedCount">
-                            0
-                        </strong>
-
-                        <span>
-                            المكتمل
-                        </span>
-
-                    </div>
-
-
-                    <div class="azkar-summary-item">
-
-                        <strong id="azkarTotalCount">
-                            0
-                        </strong>
-
-                        <span>
-                            الإجمالي
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <div
-                    class="azkar-progress"
-                    style="margin-top:15px;">
-
-                    <span
-                        id="azkarOverallProgress"
-                        style="width:0%;">
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div
-                class="zikr-grid"
-                id="azkarList">
-
-            </div>
-
-
-            <div
-                class="adhan-buttons"
-                style="margin-top:15px;">
-
-                <button
-                    class="secondary-button"
-                    id="resetAzkarCategory"
-                    type="button">
-
-                    ↻ إعادة هذا القسم
-
-                </button>
-
-
-                <button
-                    class="secondary-button"
-                    id="resetAllAzkar"
-                    type="button">
-
-                    🗑️ إعادة الكل
-
-                </button>
-
-            </div>
-
-
-            <!-- TASBIH -->
-
-            <div
-                class="content-card"
-                style="margin-top:15px;">
-
-                <h3 style="margin-bottom:15px;">
-                    📿 التسبيح
-                </h3>
-
-
-                <div
-                    style="
-                        text-align:center;
-                        padding:15px 0;
-                    ">
-
-                    <div
-                        id="tasbihCount"
-                        style="
-                            font-size:42px;
-                            font-weight:800;
-                            margin-bottom:15px;
-                        ">
-
-                        0
-
-                    </div>
-
-
-                    <button
-                        class="primary-button"
-                        id="tasbihButton"
-                        type="button"
-                        style="
-                            min-width:180px;
-                            min-height:65px;
-                            font-size:20px;
-                        ">
-
-                        📿 تسبيح
-
-                    </button>
-
-
-                    <div
-                        class="adhan-buttons"
-                        style="margin-top:15px;">
-
-                        <button
-                            class="secondary-button"
-                            id="resetTasbih"
-                            type="button">
-
-                            ↻ تصفير العداد
-
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- QUICK AZKAR -->
-
-            <div
-                class="content-card"
-                style="margin-top:15px;">
-
-                <h3 style="margin-bottom:15px;">
-                    أذكار سريعة
-                </h3>
-
-
-                <div class="zikr-grid">
-
-                    <div class="zikr-card">
-
-                        <div class="zikr-text">
-                            سُبْحَانَ اللهِ
-                        </div>
-
-                        <div class="zikr-controls">
-
-                            <button
-                                class="counter-button"
-                                data-zikr="1"
-                                type="button">
-
-                                +
-
-                            </button>
-
-                            <div
-                                class="counter-value"
-                                id="zikr1">
-
-                                0
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="zikr-card">
-
-                        <div class="zikr-text">
-                            الْحَمْدُ لِلَّهِ
-                        </div>
-
-                        <div class="zikr-controls">
-
-                            <button
-                                class="counter-button"
-                                data-zikr="2"
-                                type="button">
-
-                                +
-
-                            </button>
-
-                            <div
-                                class="counter-value"
-                                id="zikr2">
-
-                                0
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="zikr-card">
-
-                        <div class="zikr-text">
-                            اللهُ أَكْبَرُ
-                        </div>
-
-                        <div class="zikr-controls">
-
-                            <button
-                                class="counter-button"
-                                data-zikr="3"
-                                type="button">
-
-                                +
-
-                            </button>
-
-                            <div
-                                class="counter-value"
-                                id="zikr3">
-
-                                0
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================================
-             QIBLA
-             ================================================= -->
-
-        <section
-            id="qiblaSection"
-            class="page-section"
-            data-section="qibla">
-
-            <div class="section-title">
-
-                <h2>
-                    🧭 القبلة
-                </h2>
-
-            </div>
-
-
-            <div class="content-card qibla-container">
-
-                <p>
-                    اتجاه القبلة بالنسبة لموقعك
-                </p>
-
-
-                <div
-                    class="compass"
-                    id="compass">
-
-                    <div
-                        class="qibla-arrow"
-                        id="qiblaArrow">
-
-                        ▲
-
-                    </div>
-
-                </div>
-
-
-                <div
-                    class="qibla-degree"
-                    id="qiblaDegree">
-
-                    --°
-
-                </div>
-
-
-                <p
-                    id="qiblaDirection"
-                    style="margin-top:8px;">
-
-                    اتجاه القبلة
-
-                </p>
-
-
-                <p
-                    id="compassHeading"
-                    style="
-                        margin-top:5px;
-                        color:#718078;
-                    ">
-
-                    البوصلة غير مفعلة
-
-                </p>
-
-
-                <p
-                    id="qiblaStatus"
-                    style="
-                        margin-top:8px;
-                        color:#718078;
-                    ">
-
-                    اضغط تفعيل البوصلة
-
-                </p>
-
-
-                <div
-                    class="adhan-buttons"
-                    style="margin-top:18px;">
-
-                    <button
-                        class="primary-button"
-                        id="startQibla"
-                        type="button">
-
-                        🧭 تفعيل البوصلة
-
-                    </button>
-
-
-                    <button
-                        class="secondary-button"
-                        id="enableCompass"
-                        type="button">
-
-                        📱 السماح بالبوصلة
-
-                    </button>
-
-
-                    <button
-                        class="secondary-button"
-                        id="stopCompass"
-                        type="button">
-
-                        ⏹ إيقاف
-
-                    </button>
-
-
-                    <button
-                        class="secondary-button"
-                        id="refreshQibla"
-                        type="button">
-
-                        🔄 تحديث
-
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================================
-             SETTINGS
-             ================================================= -->
-
-        <section
-            id="settingsSection"
-            class="page-section"
-            data-section="settings">
-
-            <div class="section-title">
-
-                <h2>
-                    ⚙️ الإعدادات
-                </h2>
-
-            </div>
-
-
-            <!-- LOCATION -->
-
-            <div class="content-card">
-
-                <h3 style="margin-bottom:15px;">
-                    📍 الموقع
-                </h3>
-
-
-                <div class="settings-list">
-
-                    <div class="setting-item">
-
-                        <div class="setting-info">
-
-                            <strong>
-                                المدينة
-                            </strong>
-
-                            <small>
-                                اختر مدينتك لحساب المواقيت
-                            </small>
-
-                        </div>
-
-
-                        <select
-                            class="setting-select"
-                            id="citySelect">
-
-                            <option value="ain_oussera">
-                                عين وسارة
-                            </option>
-
-                            <option value="algiers">
-                                الجزائر
-                            </option>
-
-                            <option value="oran">
-                                وهران
-                            </option>
-
-                            <option value="constantine">
-                                قسنطينة
-                            </option>
-
-                            <option value="annaba">
-                                عنابة
-                            </option>
-
-                            <option value="blida">
-                                البليدة
-                            </option>
-
-                            <option value="setif">
-                                سطيف
-                            </option>
-
-                            <option value="tlemcen">
-                                تلمسان
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- PRAYER SETTINGS -->
-
-            <div class="content-card">
-
-                <h3 style="margin-bottom:15px;">
-                    🕌 إعدادات الصلاة
-                </h3>
-
-
-                <div class="settings-list">
-
-                    <div class="setting-item">
-
-                        <div class="setting-info">
-
-                            <strong>
-                                طريقة الحساب
-                            </strong>
-
-                            <small>
-                                طريقة حساب مواقيت الصلاة
-                            </small>
-
-                        </div>
-
-
-                        <select
-                            class="setting-select"
-                            id="calculationMethod">
-
-                            <option value="19">
-                                Algerian Minister of Religious Affairs
-                            </option>
-
-                            <option value="2">
-                                ISNA
-                            </option>
-
-                            <option value="3">
-                                Muslim World League
-                            </option>
-
-                            <option value="4">
-                                Umm Al-Qura
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="setting-item">
-
-                        <div class="setting-info">
-
-                            <strong>
-                                المذهب
-                            </strong>
-
-                            <small>
-                                طريقة حساب العصر
-                            </small>
-
-                        </div>
-
-
-                        <select
-                            class="setting-select"
-                            id="madhhab">
-
-                            <option value="0">
-                                الشافعي / المالكي
-                            </option>
-
-                            <option value="1">
-                                الحنفي
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- ADHAN -->
-
-            <div class="content-card">
-
-                <h3 style="margin-bottom:15px;">
-                    🔊 الأذان
-                </h3>
-
-
-                <div class="settings-list">
-
-                    <div class="setting-item">
-
-                        <div class="setting-info">
-
-                            <strong>
-                                تشغيل الأذان
-                            </strong>
-
-                            <small>
-                                تفعيل تنبيهات الأذان
-                            </small>
-
-                        </div>
-
-
-                        <label class="switch">
-
-                            <input
-                                type="checkbox"
-                                id="adhanEnabled">
-
-                            <span class="slider"></span>
-
-                        </label>
-
-                    </div>
-
-
-                    <div class="setting-item">
-
-                        <div class="setting-info">
-
-                            <strong>
-                                توقيت التنبيه
-                            </strong>
-
-                            <small>
-                                قبل الصلاة أو عند دخول الوقت
-                            </small>
-
-                        </div>
-
-
-                        <select
-                            class="setting-select"
-                            id="adhanTiming">
-
-                            <option value="off">
-                                إيقاف
-                            </option>
-
-                            <option value="before">
-                                قبل 10 دقائق
-                            </option>
-
-                            <option value="at">
-                                عند الوقت
-                            </option>
-
-                            <option value="both">
-                                كلاهما
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="setting-item">
-
-                        <div class="setting-info">
-
-                            <strong>
-                                صوت الأذان
-                            </strong>
-
-                            <small>
-                                تفعيل صوت الأذان
-                            </small>
-
-                        </div>
-
-
-                        <label class="switch">
-
-                            <input
-                                type="checkbox"
-                                id="adhanSound">
-
-                            <span class="slider"></span>
-
-                        </label>
-
-                    </div>
-
-
-                    <div class="setting-item">
-
-                        <div class="setting-info">
-
-                            <strong>
-                                مستوى الصوت
-                            </strong>
-
-                            <small id="adhanVolumeValue">
-                                80%
-                            </small>
-
-                        </div>
-
-
-                        <input
-                            type="range"
-                            id="adhanVolume"
-                            min="0"
-                            max="100"
-                            step="5"
-                            value="80"
-                            style="width:130px;">
-
-                    </div>
-
-                </div>
-
-
-                <div
-                    class="adhan-buttons"
-                    style="margin-top:20px;">
-
-                    <button
-                        class="primary-button"
-                        id="testAdhan"
-                        type="button">
-
-                        🔊 اختبار الأذان
-
-                    </button>
-
-
-                    <button
-                        class="secondary-button"
-                        id="stopAdhan"
-                        type="button">
-
-                        ⏹ إيقاف
-
-                    </button>
-
-                </div>
-
-
-                <audio
-                    id="adhanAudio"
-                    preload="auto">
-
-                    <source
-                        src="./adhan1.mp3"
-                        type="audio/mpeg">
-
-                </audio>
-
-            </div>
-
-
-            <!-- NOTIFICATIONS -->
-
-            <div class="content-card">
-
-                <h3 style="margin-bottom:15px;">
-                    🔔 الإشعارات
-                </h3>
-
-
-                <div class="settings-list">
-
-                    <div class="setting-item">
-
-                        <div class="setting-info">
-
-                            <strong>
-                                إشعارات الصلاة
-                            </strong>
-
-                            <small>
-                                السماح للتطبيق بإرسال التنبيهات
-                            </small>
-
-                        </div>
-
-
-                        <label class="switch">
-
-                            <input
-                                type="checkbox"
-                                id="notificationsEnabled">
-
-                            <span class="slider"></span>
-
-                        </label>
-
-                    </div>
-
-                </div>
-
-
-                <div
-                    class="adhan-buttons"
-                    style="margin-top:18px;">
-
-                    <button
-                        class="primary-button"
-                        id="enableNotifications"
-                        type="button">
-
-                        🔔 تفعيل الإشعارات
-
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <!-- APPEARANCE -->
-
-            <div class="content-card">
-
-                <h3 style="margin-bottom:15px;">
-                    🎨 المظهر
-                </h3>
-
-
-                <div class="settings-list">
-
-                    <div class="setting-item">
-
-                        <div class="setting-info">
-
-                            <strong>
-                                الوضع الليلي
-                            </strong>
-
-                            <small>
-                                تغيير مظهر التطبيق
-                            </small>
-
-                        </div>
-
-
-                        <label class="switch">
-
-                            <input
-                                type="checkbox"
-                                id="darkMode">
-
-                            <span class="slider"></span>
-
-                        </label>
-
-                    </div>
-
-
-                    <div class="setting-item">
-
-                        <div class="setting-info">
-
-                            <strong>
-                                نمط المظهر
-                            </strong>
-
-                            <small>
-                                فاتح أو داكن أو تلقائي
-                            </small>
-
-                        </div>
-
-
-                        <select
-                            class="setting-select"
-                            id="themeSelect">
-
-                            <option value="light">
-                                فاتح
-                            </option>
-
-                            <option value="dark">
-                                داكن
-                            </option>
-
-                            <option value="auto">
-                                تلقائي
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- APP DATA -->
-
-            <div class="content-card">
-
-                <h3 style="margin-bottom:15px;">
-                    💾 البيانات
-                </h3>
-
-
-                <div class="adhan-buttons">
-
-                    <button
-                        class="secondary-button"
-                        id="exportSettings"
-                        type="button">
-
-                        📤 تصدير الإعدادات
-
-                    </button>
-
-
-                    <button
-                        class="secondary-button"
-                        id="clearAppData"
-                        type="button">
-
-                        🗑️ مسح بيانات التطبيق
-
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <!-- ABOUT -->
-
-            <div class="content-card">
-
-                <div style="text-align:center;">
-
-                    <div style="font-size:40px;">
-                        🕌
-                    </div>
-
-
-                    <h2 style="margin-top:8px;">
-                        أمير مواقيت
-                    </h2>
-
-
-                    <p
-                        id="appVersion"
-                        style="
-                            margin-top:7px;
-                            color:#718078;
-                        ">
-
-                        الإصدار V2.0.0
-
-                    </p>
-
-
-                    <p
-                        style="
-                            margin-top:15px;
-                            font-size:13px;
-                            color:#718078;
-                        ">
-
-                        مواقيت الصلاة • الأذان • القبلة
-                        • الأذكار • القرآن الكريم
-
-                    </p>
-
-                </div>
-
-            </div>
-
-        </section>
-
-    </main>
-
-
-    <!-- =====================================================
-         BOTTOM NAVIGATION
-         ===================================================== -->
-
-    <nav class="bottom-nav">
-
-        <div class="nav-inner">
-
-            <button
-                class="nav-button active"
-                type="button"
-                data-section="home">
-
-                <span class="nav-icon">
-                    🏠
-                </span>
-
-                <span>
-                    الرئيسية
-                </span>
-
-            </button>
-
-
-            <button
-                class="nav-button"
-                type="button"
-                data-section="quran">
-
-                <span class="nav-icon">
-                    📖
-                </span>
-
-                <span>
-                    القرآن
-                </span>
-
-            </button>
-
-
-            <button
-                class="nav-button"
-                type="button"
-                data-section="azkar">
-
-                <span class="nav-icon">
-                    📿
-                </span>
-
-                <span>
-                    الأذكار
-                </span>
-
-            </button>
-
-
-            <button
-                class="nav-button"
-                type="button"
-                data-section="qibla">
-
-                <span class="nav-icon">
-                    🧭
-                </span>
-
-                <span>
-                    القبلة
-                </span>
-
-            </button>
-
-
-            <button
-                class="nav-button"
-                type="button"
-                data-section="settings">
-
-                <span class="nav-icon">
-                    ⚙️
-                </span>
-
-                <span>
-                    الإعدادات
-                </span>
-
-            </button>
-
+        <div class="welcome-icon">
+            🕌
         </div>
 
-    </nav>
+    </div>
 
 
-    <!-- =====================================================
-         PWA INSTALL BANNER
-         ===================================================== -->
+    <!-- التاريخ -->
 
-    <div
-        class="install-banner"
-        id="installBanner"
-        hidden>
+    <div class="date-card">
 
-        <div class="install-banner-content">
+        <div class="date-icon">
+            📅
+        </div>
 
-            <strong>
-                ثبّت أمير مواقيت 📱
+        <div>
+            <strong id="gregorianDate">
+                اليوم
             </strong>
 
-            <small>
-                استخدم التطبيق بسرعة من الشاشة الرئيسية
-            </small>
+            <span id="hijriDate">
+                التاريخ الهجري
+            </span>
+        </div>
+
+    </div>
+
+
+    <!-- الصلاة الحالية -->
+
+    <div class="current-prayer-card">
+
+        <div class="current-prayer-top">
+
+            <div>
+                <span class="small-label">
+                    الصلاة القادمة
+                </span>
+
+                <h2 id="nextPrayerName">
+                    -
+                </h2>
+            </div>
+
+            <div class="next-prayer-icon">
+                🕐
+            </div>
 
         </div>
+
+        <div class="next-prayer-time"
+             id="nextPrayerTime">
+            --:--
+        </div>
+
+        <div class="countdown"
+             id="countdown">
+            جاري الحساب...
+        </div>
+
+    </div>
+
+
+    <!-- مواقيت الصلاة -->
+
+    <div class="section-title">
+
+        <div>
+            <span>اليوم</span>
+            <h2>مواقيت الصلاة</h2>
+        </div>
+
+        <span class="section-icon">
+            🕋
+        </span>
+
+    </div>
+
+
+    <div class="prayer-times">
+
+        <div class="prayer-card" data-prayer="fajr">
+            <div class="prayer-icon">🌙</div>
+            <span class="prayer-name">الفجر</span>
+            <strong id="fajrTime">--:--</strong>
+        </div>
+
+        <div class="prayer-card" data-prayer="sunrise">
+            <div class="prayer-icon">🌅</div>
+            <span class="prayer-name">الشروق</span>
+            <strong id="sunriseTime">--:--</strong>
+        </div>
+
+        <div class="prayer-card" data-prayer="dhuhr">
+            <div class="prayer-icon">☀️</div>
+            <span class="prayer-name">الظهر</span>
+            <strong id="dhuhrTime">--:--</strong>
+        </div>
+
+        <div class="prayer-card" data-prayer="asr">
+            <div class="prayer-icon">🌤️</div>
+            <span class="prayer-name">العصر</span>
+            <strong id="asrTime">--:--</strong>
+        </div>
+
+        <div class="prayer-card" data-prayer="maghrib">
+            <div class="prayer-icon">🌇</div>
+            <span class="prayer-name">المغرب</span>
+            <strong id="maghribTime">--:--</strong>
+        </div>
+
+        <div class="prayer-card" data-prayer="isha">
+            <div class="prayer-icon">🌌</div>
+            <span class="prayer-name">العشاء</span>
+            <strong id="ishaTime">--:--</strong>
+        </div>
+
+    </div>
+
+
+    <!-- أزرار سريعة -->
+
+    <div class="section-title">
+
+        <div>
+            <span>الوصول السريع</span>
+            <h2>خدمات أمير</h2>
+        </div>
+
+    </div>
+
+
+    <div class="quick-actions">
+
+        <button
+            class="quick-card"
+            data-section="quran">
+
+            <div class="quick-icon">
+                📖
+            </div>
+
+            <strong>القرآن الكريم</strong>
+
+            <span>
+                اقرأ القرآن
+            </span>
+
+        </button>
 
 
         <button
-            class="install-button"
-            id="installButton"
-            type="button">
+            class="quick-card"
+            data-section="azkar">
 
-            تثبيت
+            <div class="quick-icon">
+                🤲
+            </div>
+
+            <strong>الأذكار</strong>
+
+            <span>
+                أذكار المسلم
+            </span>
+
+        </button>
+
+
+        <button
+            class="quick-card"
+            data-section="qibla">
+
+            <div class="quick-icon">
+                🧭
+            </div>
+
+            <strong>القبلة</strong>
+
+            <span>
+                اتجاه القبلة
+            </span>
+
+        </button>
+
+
+        <button
+            class="quick-card"
+            data-section="settings">
+
+            <div class="quick-icon">
+                ⚙️
+            </div>
+
+            <strong>الإعدادات</strong>
+
+            <span>
+                تخصيص التطبيق
+            </span>
 
         </button>
 
     </div>
 
+</section>
 
-    <!-- =====================================================
-         OFFLINE STATUS
-         ===================================================== -->
 
-    <div
-        class="offline-status"
-        id="offlineStatus"
-        hidden>
+<!-- =====================================================
+     QURAN
+===================================================== -->
 
-        ⚠️ أنت غير متصل بالإنترنت
+<section id="quranSection" class="app-section">
+
+    <div class="section-title">
+
+        <div>
+            <span>كتاب الله</span>
+            <h2>📖 القرآن الكريم</h2>
+        </div>
 
     </div>
 
 
-    <!-- =====================================================
-         TOAST
-         ===================================================== -->
-
-    <div
-        id="amirToast"
-        class="amir-toast"
-        aria-live="polite">
+    <div id="quranLastRead"
+         class="quran-last-read">
     </div>
+
+
+    <div class="quran-toolbar">
+
+        <div class="quran-search-box">
+
+            <span>🔎</span>
+
+            <input
+                id="quranSearch"
+                type="search"
+                placeholder="ابحث عن سورة..."
+                autocomplete="off">
+
+        </div>
+
+
+        <div class="quran-actions">
+
+            <button
+                id="quranAllButton"
+                class="primary-button"
+                type="button">
+                كل السور
+            </button>
+
+            <button
+                id="quranFavoritesButton"
+                class="secondary-button"
+                type="button">
+
+                ⭐ المفضلة
+                <span id="quranFavoriteCount">0</span>
+
+            </button>
+
+            <button
+                id="quranLastReadButton"
+                class="secondary-button"
+                type="button">
+                آخر قراءة
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div id="quranSurahList"
+         class="quran-surah-list">
+    </div>
+
+
+    <div id="quranReader"
+         class="quran-reader"
+         hidden>
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     AZKAR
+===================================================== -->
+
+<section id="azkarSection" class="app-section">
+
+    <div class="section-title">
+
+        <div>
+            <span>ذكر الله</span>
+            <h2>🤲 الأذكار</h2>
+        </div>
+
+    </div>
+
+    <div id="azkarContainer"
+         class="azkar-container">
+
+        <div class="content-card">
+            <div class="loading">
+                جاري تحميل الأذكار...
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     QIBLA
+===================================================== -->
+
+<section id="qiblaSection" class="app-section">
+
+    <div class="section-title">
+
+        <div>
+            <span>اتجاه مكة المكرمة</span>
+            <h2>🧭 القبلة</h2>
+        </div>
+
+    </div>
+
+
+    <div class="qibla-card">
+
+        <div id="qiblaCompass"
+             class="qibla-compass">
+
+            <div class="compass-ring">
+                <span>N</span>
+                <span>E</span>
+                <span>S</span>
+                <span>W</span>
+
+                <div class="qibla-arrow">
+                    🕋
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="qibla-info">
+
+            <strong id="qiblaDegree">
+                --
+            </strong>
+
+            <span>
+                درجة اتجاه القبلة
+            </span>
+
+        </div>
+
+
+        <button
+            id="qiblaButton"
+            class="primary-button"
+            type="button">
+
+            تحديد اتجاه القبلة
+
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     SETTINGS
+===================================================== -->
+
+<section id="settingsSection" class="app-section">
+
+    <div class="section-title">
+
+        <div>
+            <span>تخصيص التطبيق</span>
+            <h2>⚙️ الإعدادات</h2>
+        </div>
+
+    </div>
+
+
+    <div class="settings-list">
+
+        <div class="setting-item">
+
+            <div class="setting-info">
+
+                <strong>الوضع الليلي</strong>
+
+                <span>
+                    تفعيل المظهر الداكن
+                </span>
+
+            </div>
+
+            <label class="switch">
+
+                <input
+                    id="darkModeToggle"
+                    type="checkbox">
+
+                <span class="slider"></span>
+
+            </label>
+
+        </div>
+
+
+        <div class="setting-item">
+
+            <div class="setting-info">
+
+                <strong>الإشعارات</strong>
+
+                <span>
+                    تنبيهات مواقيت الصلاة
+                </span>
+
+            </div>
+
+            <label class="switch">
+
+                <input
+                    id="notificationsToggle"
+                    type="checkbox">
+
+                <span class="slider"></span>
+
+            </label>
+
+        </div>
+
+
+        <div class="setting-item">
+
+            <div class="setting-info">
+
+                <strong>طريقة الحساب</strong>
+
+                <span>
+                    طريقة حساب مواقيت الصلاة
+                </span>
+
+            </div>
+
+            <select
+                id="calculationMethod"
+                class="setting-select">
+
+                <option value="19">
+                    الجزائر
+                </option>
+
+                <option value="3">
+                    Muslim World League
+                </option>
+
+                <option value="4">
+                    أم القرى
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <div class="about-card">
+
+        <div class="about-logo">
+            🕌
+        </div>
+
+        <h3>أمير مواقيت</h3>
+
+        <p>
+            تطبيق إسلامي جزائري لمواقيت الصلاة
+            والقرآن والأذكار والقبلة.
+        </p>
+
+        <small>
+            الإصدار 2.0
+        </small>
+
+    </div>
+
+</section>
+
+</main>
+
+
+<!-- =====================================================
+     BOTTOM NAVIGATION
+===================================================== -->
+
+<nav class="bottom-nav">
+
+    <button
+        class="nav-button active"
+        data-section="home">
+
+        <span>🏠</span>
+        <small>الرئيسية</small>
+
+    </button>
+
+
+    <button
+        class="nav-button"
+        data-section="quran">
+
+        <span>📖</span>
+        <small>القرآن</small>
+
+    </button>
+
+
+    <button
+        class="nav-button"
+        data-section="azkar">
+
+        <span>🤲</span>
+        <small>الأذكار</small>
+
+    </button>
+
+
+    <button
+        class="nav-button"
+        data-section="qibla">
+
+        <span>🧭</span>
+        <small>القبلة</small>
+
+    </button>
+
+
+    <button
+        class="nav-button"
+        data-section="settings">
+
+        <span>⚙️</span>
+        <small>الإعدادات</small>
+
+    </button>
+
+</nav>
+
+
+<!-- =====================================================
+     INSTALL BANNER
+===================================================== -->
+
+<div id="installBanner"
+     class="install-banner"
+     hidden>
+
+    <div>
+        <strong>تثبيت أمير مواقيت</strong>
+        <span>ثبّت التطبيق على جهازك</span>
+    </div>
+
+    <button
+        id="installButton"
+        class="primary-button">
+        تثبيت
+    </button>
 
 </div>
 
 
-<!-- =========================================================
-     V2 JAVASCRIPT MODULES
-     ترتيب الملفات مهم جدًا
-     ========================================================= -->
+<!-- =====================================================
+     OFFLINE
+===================================================== -->
+
+<div id="offlineStatus"
+     class="offline-status"
+     hidden>
+
+    أنت غير متصل بالإنترنت
+
+</div>
+
+
+<!-- =====================================================
+     TOAST
+===================================================== -->
+
+<div id="amirToast"
+     class="toast"
+     role="status"
+     aria-live="polite">
+</div>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
 
 <script src="./js/storage.js"></script>
 <script src="./js/prayer.js"></script>
@@ -1711,4 +721,3 @@
 
 </body>
 </html>
-```
