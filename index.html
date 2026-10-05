@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 
@@ -15,7 +16,6 @@
 
     <meta name="mobile-web-app-capable" content="yes">
 
-    <!-- iPhone / iPad -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="أمير مواقيت">
@@ -32,6 +32,9 @@
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/responsive.css">
     <link rel="stylesheet" href="./css/animations.css">
+
+    <!-- Quran CSS -->
+    <link rel="stylesheet" href="./css/quran.css">
 
 </head>
 
@@ -240,87 +243,33 @@
                 id="prayerGrid">
 
                 <div class="prayer-card">
-
-                    <div class="prayer-icon">
-                        🌅
-                    </div>
-
-                    <div class="prayer-name">
-                        الفجر
-                    </div>
-
-                    <div class="prayer-time">
-                        --:--
-                    </div>
-
+                    <div class="prayer-icon">🌅</div>
+                    <div class="prayer-name">الفجر</div>
+                    <div class="prayer-time">--:--</div>
                 </div>
 
-
                 <div class="prayer-card">
-
-                    <div class="prayer-icon">
-                        ☀️
-                    </div>
-
-                    <div class="prayer-name">
-                        الظهر
-                    </div>
-
-                    <div class="prayer-time">
-                        --:--
-                    </div>
-
+                    <div class="prayer-icon">☀️</div>
+                    <div class="prayer-name">الظهر</div>
+                    <div class="prayer-time">--:--</div>
                 </div>
 
-
                 <div class="prayer-card">
-
-                    <div class="prayer-icon">
-                        🌤️
-                    </div>
-
-                    <div class="prayer-name">
-                        العصر
-                    </div>
-
-                    <div class="prayer-time">
-                        --:--
-                    </div>
-
+                    <div class="prayer-icon">🌤️</div>
+                    <div class="prayer-name">العصر</div>
+                    <div class="prayer-time">--:--</div>
                 </div>
 
-
                 <div class="prayer-card">
-
-                    <div class="prayer-icon">
-                        🌇
-                    </div>
-
-                    <div class="prayer-name">
-                        المغرب
-                    </div>
-
-                    <div class="prayer-time">
-                        --:--
-                    </div>
-
+                    <div class="prayer-icon">🌇</div>
+                    <div class="prayer-name">المغرب</div>
+                    <div class="prayer-time">--:--</div>
                 </div>
 
-
                 <div class="prayer-card">
-
-                    <div class="prayer-icon">
-                        🌙
-                    </div>
-
-                    <div class="prayer-name">
-                        العشاء
-                    </div>
-
-                    <div class="prayer-time">
-                        --:--
-                    </div>
-
+                    <div class="prayer-icon">🌙</div>
+                    <div class="prayer-name">العشاء</div>
+                    <div class="prayer-time">--:--</div>
                 </div>
 
             </div>
@@ -344,17 +293,11 @@
                     type="button"
                     data-go-section="qibla">
 
-                    <div class="quick-icon">
-                        🧭
-                    </div>
+                    <div class="quick-icon">🧭</div>
 
-                    <strong>
-                        القبلة
-                    </strong>
+                    <strong>القبلة</strong>
 
-                    <small>
-                        اتجاه الكعبة
-                    </small>
+                    <small>اتجاه الكعبة</small>
 
                 </button>
 
@@ -364,17 +307,11 @@
                     type="button"
                     data-go-section="azkar">
 
-                    <div class="quick-icon">
-                        📿
-                    </div>
+                    <div class="quick-icon">📿</div>
 
-                    <strong>
-                        الأذكار
-                    </strong>
+                    <strong>الأذكار</strong>
 
-                    <small>
-                        أذكار المسلم
-                    </small>
+                    <small>أذكار المسلم</small>
 
                 </button>
 
@@ -384,17 +321,11 @@
                     type="button"
                     data-go-section="quran">
 
-                    <div class="quick-icon">
-                        📖
-                    </div>
+                    <div class="quick-icon">📖</div>
 
-                    <strong>
-                        القرآن
-                    </strong>
+                    <strong>القرآن</strong>
 
-                    <small>
-                        القرآن الكريم
-                    </small>
+                    <small>القرآن الكريم</small>
 
                 </button>
 
@@ -404,17 +335,11 @@
                     type="button"
                     data-go-section="settings">
 
-                    <div class="quick-icon">
-                        ⚙️
-                    </div>
+                    <div class="quick-icon">⚙️</div>
 
-                    <strong>
-                        الإعدادات
-                    </strong>
+                    <strong>الإعدادات</strong>
 
-                    <small>
-                        تخصيص التطبيق
-                    </small>
+                    <small>تخصيص التطبيق</small>
 
                 </button>
 
@@ -435,6 +360,7 @@
             <div class="section-title">
 
                 <div>
+
                     <h2>
                         📖 القرآن الكريم
                     </h2>
@@ -442,28 +368,44 @@
                     <p>
                         اقرأ القرآن الكريم بسهولة وراحة
                     </p>
+
                 </div>
 
             </div>
 
-            <div id="quranLastRead" class="quran-last-read">
+
+            <!-- LAST READ -->
+
+            <div
+                id="quranLastRead"
+                class="quran-last-read">
+
                 <div class="quran-last-read-empty">
                     لم تبدأ القراءة بعد
                 </div>
+
             </div>
+
+
+            <!-- TOOLBAR -->
 
             <div class="quran-toolbar">
 
                 <div class="quran-search-box">
-                    <span class="quran-search-icon">🔎</span>
+
+                    <span class="quran-search-icon">
+                        🔎
+                    </span>
 
                     <input
                         type="search"
                         id="quranSearch"
                         placeholder="ابحث عن سورة..."
                         autocomplete="off"
-                    >
+                        aria-label="البحث عن سورة">
+
                 </div>
+
 
                 <div class="quran-actions">
 
@@ -476,15 +418,20 @@
 
                     </button>
 
+
                     <button
                         type="button"
                         class="secondary-button"
                         id="quranFavoritesButton">
 
                         ⭐ المفضلة
-                        <span id="quranFavoriteCount">0</span>
+
+                        <span id="quranFavoriteCount">
+                            0
+                        </span>
 
                     </button>
+
 
                     <button
                         type="button"
@@ -499,15 +446,23 @@
 
             </div>
 
+
+            <!-- SURAHS -->
+
             <div
                 id="quranSurahList"
                 class="quran-surah-list">
 
                 <div class="quran-loading">
+
                     جاري تحميل سور القرآن...
+
                 </div>
 
             </div>
+
+
+            <!-- READER -->
 
             <div
                 id="quranReader"
@@ -539,8 +494,6 @@
 
             </div>
 
-
-            <!-- CATEGORY BUTTONS -->
 
             <div
                 class="adhan-buttons"
@@ -598,8 +551,6 @@
             </div>
 
 
-            <!-- SEARCH -->
-
             <div class="content-card">
 
                 <input
@@ -617,8 +568,6 @@
 
             </div>
 
-
-            <!-- AZKAR SUMMARY -->
 
             <div
                 class="content-card"
@@ -681,18 +630,12 @@
             </div>
 
 
-            <!-- AZKAR LIST -->
-
             <div
                 class="zikr-grid"
                 id="azkarList">
 
-                <!-- azkar.js -->
-
             </div>
 
-
-            <!-- RESET -->
 
             <div
                 class="adhan-buttons"
@@ -785,7 +728,7 @@
             </div>
 
 
-            <!-- OLD COMPATIBILITY COUNTERS -->
+            <!-- QUICK AZKAR -->
 
             <div
                 class="content-card"
@@ -1754,7 +1697,6 @@
 
 <!-- =========================================================
      V2 JAVASCRIPT MODULES
-
      ترتيب الملفات مهم جدًا
      ========================================================= -->
 
@@ -1769,3 +1711,4 @@
 
 </body>
 </html>
+```
