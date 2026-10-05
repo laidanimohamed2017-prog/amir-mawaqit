@@ -1830,3 +1830,211 @@ body.dark-mode .nav-button.active {
         transition-duration: 0.01ms !important;
     }
 }
+/* =========================================================
+   AMIR MAWAQIT — HOME PREMIUM LAYER
+   ========================================================= */
+
+/* الصفحة الرئيسية */
+#homeSection {
+    max-width: 100%;
+}
+
+
+/* =========================================================
+   بطاقة الصلاة الرئيسية
+   ========================================================= */
+
+#homeSection .prayer-main-card,
+#homeSection .main-prayer-card,
+#homeSection .today-prayer-card {
+    position: relative;
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            #087f5b 0%,
+            #056044 55%,
+            #034c37 100%
+        );
+
+    color: #fff;
+
+    border: none;
+    border-radius: 26px;
+
+    box-shadow:
+        0 20px 50px rgba(8, 127, 91, .20);
+}
+
+
+/* زخارف خفيفة */
+#homeSection .prayer-main-card::before,
+#homeSection .main-prayer-card::before,
+#homeSection .today-prayer-card::before {
+    content: "";
+
+    position: absolute;
+
+    width: 230px;
+    height: 230px;
+
+    left: -90px;
+    bottom: -120px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,.06);
+}
+
+#homeSection .prayer-main-card::after,
+#homeSection .main-prayer-card::after,
+#homeSection .today-prayer-card::after {
+    content: "";
+
+    position: absolute;
+
+    width: 170px;
+    height: 170px;
+
+    right: -70px;
+    top: -90px;
+
+    border-radius: 50%;
+
+    border:
+        1px solid rgba(255,255,255,.09);
+}
+
+
+/* =========================================================
+   عنوان الصفحة الرئيسية
+   ========================================================= */
+
+#homeSection .section-title {
+    margin-bottom: 18px;
+}
+
+#homeSection .section-title h2 {
+    letter-spacing: -.3px;
+}
+
+
+/* =========================================================
+   جميع البطاقات داخل الرئيسية
+   ========================================================= */
+
+#homeSection .content-card {
+    overflow: hidden;
+
+    border-radius: 20px;
+}
+
+
+/* =========================================================
+   بطاقات الصلاة
+   ========================================================= */
+
+#homeSection .prayer-card {
+    min-height: 135px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#homeSection .prayer-card.active {
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   الأيقونات
+   ========================================================= */
+
+#homeSection .quick-icon {
+    transition:
+        transform .25s ease,
+        background .25s ease;
+}
+
+#homeSection .quick-card:hover .quick-icon {
+    transform: scale(1.06);
+}
+
+
+/* =========================================================
+   أزرار الإجراءات
+   ========================================================= */
+
+#homeSection .primary-button {
+    border-radius: 13px;
+
+    padding:
+        10px 20px;
+}
+
+#homeSection .secondary-button {
+    border-radius: 13px;
+}
+
+
+/* =========================================================
+   تحسين المساحات
+   ========================================================= */
+
+#homeSection > * {
+    margin-bottom: 20px;
+}
+
+#homeSection > *:last-child {
+    margin-bottom: 0;
+}
+
+
+/* =========================================================
+   الوضع الليلي
+   ========================================================= */
+
+body.dark #homeSection .prayer-main-card,
+body.dark #homeSection .main-prayer-card,
+body.dark #homeSection .today-prayer-card,
+body.dark-mode #homeSection .prayer-main-card,
+body.dark-mode #homeSection .main-prayer-card,
+body.dark-mode #homeSection .today-prayer-card {
+    background:
+        linear-gradient(
+            135deg,
+            #087f5b,
+            #04583f
+        );
+
+    box-shadow:
+        0 20px 50px rgba(0,0,0,.25);
+}
+
+
+/* =========================================================
+   الهاتف
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    #homeSection .section-title {
+        margin-bottom: 14px;
+    }
+
+    #homeSection .prayer-card {
+        min-height: 125px;
+    }
+
+    #homeSection .content-card {
+        border-radius: 17px;
+    }
+
+    #homeSection > * {
+        margin-bottom: 15px;
+    }
+}
