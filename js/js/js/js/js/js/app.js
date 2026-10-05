@@ -1,7 +1,7 @@
 /* =========================================================
    أمير مواقيت V2
-   app.js
-   الملف الرئيسي لتشغيل وربط التطبيق
+   Main Application
+   التطبيق الرئيسي وربط جميع الوحدات
    ========================================================= */
 
 (function () {
@@ -11,431 +11,668 @@
 
     let deferredInstallPrompt = null;
 
-    /* =========================================================
-       أدوات عامة
-       ========================================================= */
+    /* ---------------------------------------------------------
+       Helpers
+    --------------------------------------------------------- */
 
-    function $(selector) {
-        return document.querySelector(selector);
+    function $(id) {
+        return document.getElementById(id);
     }
 
-    function $$(selector) {
-        return document.querySelectorAll(selector);
-    }
-
-    function showToast(message) {
-        let toast = $("#amirToast");
+    function showMessage(
+        message,
+        type = "info"
+    ) {
+        const toast =
+            $("amirToast");
 
         if (!toast) {
-            toast = document.createElement("div");
-            toast.id = "amirToast";
-            toast.className = "amir-toast";
-            document.body.appendChild(toast);
+            return;
         }
 
-        toast.textContent = message;
-        toast.classList.add("show");
+        toast.textContent =
+            message;
 
-        clearTimeout(toast._timer);
+        toast.className =
+            "amir-toast show";
 
-        toast._timer = setTimeout(() => {
-            toast.classList.remove("show");
-        }, 3000);
-    }
-
-    /* =========================================================
-       التنقل بين صفحات التطبيق
-       ========================================================= */
-
-    function setupNavigation() {
-        const navButtons = $$("[data-section]");
-
-        navButtons.forEach(button => {
-            button.addEventListener("click", function () {
-                const sectionName = this.dataset.section;
-
-                if (!sectionName) return;
-
-                openSection(sectionName);
-            });
-        });
-
-        // أزرار العودة أو الروابط الداخلية
-        $$("[data-go-section]").forEach(button => {
-            button.addEventListener("click", function () {
-                const sectionName = this.dataset.goSection;
-
-                if (sectionName) {
-                    openSection(sectionName);
-                }
-            });
-        });
-    }
-
-    function openSection(sectionName) {
-        const sections = $$(".app-section");
-
-        let targetFound = false;
-
-        sections.forEach(section => {
-            const id = section.id;
-
-            if (id === sectionName || id === `section-${sectionName}`) {
-                section.classList.add("active");
-                section.removeAttribute("hidden");
-                targetFound = true;
-            } else {
-                section.classList.remove("active");
-                section.setAttribute("hidden", "");
-            }
-        });
-
-        // إذا كانت الصفحة تستخدم IDs مباشرة
-        if (!targetFound) {
-            const target = document.getElementById(sectionName);
-
-            if (target) {
-                sections.forEach(section => {
-                    section.classList.remove("active");
-                    section.setAttribute("hidden", "");
-                });
-
-                target.classList.add("active");
-                target.removeAttribute("hidden");
-            }
-        }
-
-        // تحديث القائمة السفلية
-        $$("[data-section]").forEach(button => {
-            button.classList.toggle(
-                "active",
-                button.dataset.section === sectionName
+        if (type === "success") {
+            toast.classList.add(
+                "success"
             );
-        });
-
-        // تحديث عنوان الصفحة
-        updatePageTitle(sectionName);
-
-        // تحديث بعض الأقسام عند فتحها
-        if (sectionName === "qibla" && window.AmirQibla) {
-            try {
-                window.AmirQibla.refresh();
-            } catch (error) {
-                console.warn("Qibla refresh:", error);
-            }
         }
 
-        if (sectionName === "azkar" && window.AmirAzkar) {
-            try {
-                window.AmirAzkar.render();
-            } catch (error) {
-                console.warn("Azkar render:", error);
-            }
+        if (type === "error") {
+            toast.classList.add(
+                "error"
+            );
         }
 
+        clearTimeout(
+            showMessage.timer
+        );
+
+        showMessage.timer =
+            setTimeout(() => {
+                toast.classList.remove(
+                    "show",
+                    "success",
+                    "error"
+                );
+            }, 3000);
+    }
+
+    /* ---------------------------------------------------------
+       Navigation
+    --------------------------------------------------------- */
+
+    function getSections() {
+        return document.querySelectorAll(
+            ".page-section"
+        );
+    }
+
+    function getNavButtons() {
+        return document.querySelectorAll(
+            "[data-section]"
+        );
+    }
+
+    function openSection(
+        sectionName
+    ) {
+        if (!sectionName) {
+            sectionName = "home";
+        }
+
+        let target =
+            document.getElementById(
+                sectionName + "Section"
+            );
+
+        /*
+         * دعم إضافي إذا كان الاسم نفسه هو ID.
+         */
+        if (!target) {
+            target =
+                document.getElementById(
+                    sectionName
+                );
+        }
+
+        if (!target) {
+            console.warn(
+                "Section not found:",
+                sectionName
+            );
+
+            return false;
+        }
+
+        /*
+         * إخفاء جميع الأقسام.
+         */
+        getSections().forEach(
+            section => {
+                section.classList.remove(
+                    "active"
+                );
+            }
+        );
+
+        /*
+         * إظهار القسم المطلوب.
+         */
+        target.classList.add(
+            "active"
+        );
+
+        /*
+         * تحديث شريط التنقل.
+         */
+        getNavButtons().forEach(
+            button => {
+                const name =
+                    button.getAttribute(
+                        "data-section"
+                    );
+
+                button.classList.toggle(
+                    "active",
+                    name ===
+                        sectionName
+                );
+            }
+        );
+
+        /*
+         * التمرير إلى الأعلى.
+         */
         window.scrollTo({
             top: 0,
             behavior: "smooth"
         });
+
+        /*
+         * إجراءات خاصة بالأقسام.
+         */
+        if (
+            sectionName === "qibla" &&
+            window.AmirQibla
+        ) {
+            setTimeout(() => {
+                if (
+                    typeof window
+                        .AmirQibla
+                        .refresh ===
+                    "function"
+                ) {
+                    window.AmirQibla.refresh();
+                }
+            }, 100);
+        }
+
+        if (
+            sectionName === "azkar" &&
+            window.AmirAzkar
+        ) {
+            setTimeout(() => {
+                if (
+                    typeof window
+                        .AmirAzkar
+                        .render ===
+                    "function"
+                ) {
+                    window.AmirAzkar.render();
+                }
+            }, 100);
+        }
+
+        return true;
     }
 
-    function updatePageTitle(sectionName) {
-        const titles = {
-            home: "أمير مواقيت",
-            quran: "القرآن الكريم",
-            azkar: "الأذكار",
-            qibla: "القبلة",
-            settings: "الإعدادات"
-        };
+    function bindNavigation() {
 
-        const title = titles[sectionName] || "أمير مواقيت";
+        /*
+         * أزرار شريط التنقل السفلي.
+         */
+        document
+            .querySelectorAll(
+                "[data-section]"
+            )
+            .forEach(button => {
 
-        document.title = title;
+                button.addEventListener(
+                    "click",
+                    function (event) {
+                        event.preventDefault();
+
+                        const section =
+                            this.getAttribute(
+                                "data-section"
+                            );
+
+                        openSection(
+                            section
+                        );
+                    }
+                );
+            });
+
+        /*
+         * البطاقات والأزرار التي تحتوي
+         * data-go-section.
+         */
+        document
+            .querySelectorAll(
+                "[data-go-section]"
+            )
+            .forEach(element => {
+
+                element.addEventListener(
+                    "click",
+                    function (event) {
+                        event.preventDefault();
+
+                        const section =
+                            this.getAttribute(
+                                "data-go-section"
+                            );
+
+                        openSection(
+                            section
+                        );
+                    }
+                );
+            });
+
+        /*
+         * دعم data-page القديم.
+         */
+        document
+            .querySelectorAll(
+                "[data-page]"
+            )
+            .forEach(element => {
+
+                /*
+                 * إذا كان العنصر لديه
+                 * data-section أو data-go-section
+                 * فلا نضيف مستمعًا ثانيًا.
+                 */
+                if (
+                    element.hasAttribute(
+                        "data-section"
+                    ) ||
+                    element.hasAttribute(
+                        "data-go-section"
+                    )
+                ) {
+                    return;
+                }
+
+                element.addEventListener(
+                    "click",
+                    function (event) {
+                        const page =
+                            this.getAttribute(
+                                "data-page"
+                            );
+
+                        if (!page) {
+                            return;
+                        }
+
+                        event.preventDefault();
+
+                        openSection(
+                            page
+                        );
+                    }
+                );
+            });
     }
 
-    /* =========================================================
-       الحالة: متصل / غير متصل
-       ========================================================= */
+    /* ---------------------------------------------------------
+       Online / Offline
+    --------------------------------------------------------- */
 
-    function setupNetworkStatus() {
-        const offlineBox = $("#offlineStatus");
+    function updateOnlineStatus() {
+        const online =
+            navigator.onLine;
 
-        function updateStatus() {
-            const online = navigator.onLine;
+        const status =
+            $("offlineStatus");
 
-            document.documentElement.classList.toggle(
-                "offline-mode",
+        if (status) {
+            status.textContent =
+                online
+                    ? "متصل بالإنترنت"
+                    : "أنت تعمل بدون إنترنت";
+
+            status.classList.toggle(
+                "offline",
                 !online
             );
 
-            if (offlineBox) {
-                offlineBox.classList.toggle("show", !online);
-
-                offlineBox.textContent = online
-                    ? ""
-                    : "أنت غير متصل بالإنترنت — سيتم استخدام البيانات المحفوظة";
-            }
-
-            if (online) {
-                console.log("🌐 Online");
-            } else {
-                console.log("📴 Offline");
-            }
+            status.classList.toggle(
+                "online",
+                online
+            );
         }
 
-        window.addEventListener("online", updateStatus);
-        window.addEventListener("offline", updateStatus);
+        document.body.classList.toggle(
+            "is-offline",
+            !online
+        );
 
-        updateStatus();
+        if (!online) {
+            showMessage(
+                "أنت الآن تعمل بدون إنترنت"
+            );
+        }
     }
 
-    /* =========================================================
+    function bindOnlineStatus() {
+        window.addEventListener(
+            "online",
+            function () {
+                updateOnlineStatus();
+
+                showMessage(
+                    "تم الاتصال بالإنترنت",
+                    "success"
+                );
+
+                /*
+                 * تحديث مواقيت الصلاة بعد
+                 * عودة الاتصال.
+                 */
+                if (
+                    window.AmirPrayer &&
+                    typeof window.AmirPrayer.load ===
+                        "function"
+                ) {
+                    window.AmirPrayer.load();
+                }
+            }
+        );
+
+        window.addEventListener(
+            "offline",
+            function () {
+                updateOnlineStatus();
+            }
+        );
+
+        updateOnlineStatus();
+    }
+
+    /* ---------------------------------------------------------
        Service Worker
-       ========================================================= */
+    --------------------------------------------------------- */
 
     async function registerServiceWorker() {
-        if (!("serviceWorker" in navigator)) {
-            console.log("Service Worker غير مدعوم");
-            return;
+
+        if (
+            !("serviceWorker" in navigator)
+        ) {
+            return null;
         }
 
         try {
             const registration =
-                await navigator.serviceWorker.register("./sw.js");
+                await navigator.serviceWorker.register(
+                    "./sw.js",
+                    {
+                        scope: "./"
+                    }
+                );
 
             console.log(
-                "✅ Service Worker registered:",
+                "Amir Mawaqit Service Worker registered:",
                 registration.scope
             );
 
-            registration.addEventListener("updatefound", () => {
-                const newWorker = registration.installing;
+            /*
+             * تحديث Service Worker.
+             */
+            registration.addEventListener(
+                "updatefound",
+                function () {
+                    const worker =
+                        registration.installing;
 
-                if (!newWorker) return;
-
-                newWorker.addEventListener("statechange", () => {
-                    if (
-                        newWorker.state === "installed" &&
-                        navigator.serviceWorker.controller
-                    ) {
-                        showToast("تم تجهيز تحديث جديد لأمير مواقيت");
+                    if (!worker) {
+                        return;
                     }
-                });
-            });
+
+                    worker.addEventListener(
+                        "statechange",
+                        function () {
+                            if (
+                                worker.state ===
+                                "installed"
+                            ) {
+                                if (
+                                    navigator
+                                        .serviceWorker
+                                        .controller
+                                ) {
+                                    showMessage(
+                                        "تم تجهيز تحديث جديد للتطبيق"
+                                    );
+                                }
+                            }
+                        }
+                    );
+                }
+            );
+
+            return registration;
 
         } catch (error) {
             console.error(
-                "❌ Service Worker registration failed:",
+                "Service Worker registration failed:",
                 error
+            );
+
+            return null;
+        }
+    }
+
+    /* ---------------------------------------------------------
+       PWA Install
+    --------------------------------------------------------- */
+
+    function isIOS() {
+        return /iphone|ipad|ipod/i.test(
+            navigator.userAgent
+        );
+    }
+
+    function isStandalone() {
+        return (
+            window.matchMedia &&
+            window.matchMedia(
+                "(display-mode: standalone)"
+            ).matches
+        ) ||
+            window.navigator.standalone === true;
+    }
+
+    function hideInstallBanner() {
+        const banner =
+            $("installBanner");
+
+        if (banner) {
+            banner.classList.remove(
+                "show"
             );
         }
     }
 
-    /* =========================================================
-       تثبيت التطبيق PWA
-       ========================================================= */
+    function showInstallBanner() {
+        const banner =
+            $("installBanner");
+
+        if (!banner) {
+            return;
+        }
+
+        if (isStandalone()) {
+            hideInstallBanner();
+            return;
+        }
+
+        banner.classList.add(
+            "show"
+        );
+    }
 
     function setupInstallPrompt() {
 
-        const installButton = $("#installApp");
-        const installBanner = $("#installBanner");
-        const closeInstall = $("#closeInstall");
-
         window.addEventListener(
             "beforeinstallprompt",
-            event => {
+            function (event) {
                 event.preventDefault();
 
-                deferredInstallPrompt = event;
+                deferredInstallPrompt =
+                    event;
 
-                if (installBanner) {
-                    installBanner.classList.add("show");
-                }
-
-                if (installButton) {
-                    installButton.style.display = "inline-flex";
-                }
-
-                console.log("📲 PWA install available");
+                showInstallBanner();
             }
         );
+
+        const installButton =
+            $("installButton");
 
         if (installButton) {
-            installButton.addEventListener("click", async () => {
+            installButton.addEventListener(
+                "click",
+                async function () {
 
-                if (!deferredInstallPrompt) {
-                    showToast(
-                        "إذا لم يظهر التثبيت، افتح قائمة المتصفح واختر إضافة إلى الشاشة الرئيسية"
-                    );
-                    return;
-                }
+                    /*
+                     * Android / Chrome / Edge
+                     */
+                    if (
+                        deferredInstallPrompt
+                    ) {
+                        deferredInstallPrompt
+                            .prompt();
 
-                deferredInstallPrompt.prompt();
+                        const result =
+                            await deferredInstallPrompt
+                                .userChoice;
 
-                const result =
-                    await deferredInstallPrompt.userChoice;
+                        console.log(
+                            "Install result:",
+                            result.outcome
+                        );
 
-                console.log(
-                    "Install result:",
-                    result.outcome
-                );
+                        deferredInstallPrompt =
+                            null;
 
-                deferredInstallPrompt = null;
+                        hideInstallBanner();
 
-                if (installBanner) {
-                    installBanner.classList.remove("show");
-                }
-            });
-        }
-
-        if (closeInstall) {
-            closeInstall.addEventListener("click", () => {
-
-                if (installBanner) {
-                    installBanner.classList.remove("show");
-                }
-
-                try {
-                    if (window.AmirStorage) {
-                        window.AmirStorage.setInstallDismissed(true);
+                        return;
                     }
-                } catch (error) {
-                    console.warn(error);
+
+                    /*
+                     * iPhone / iPad
+                     */
+                    if (isIOS()) {
+                        showIOSInstallInstructions();
+                        return;
+                    }
+
+                    showMessage(
+                        "افتح قائمة المتصفح ثم اختر إضافة إلى الشاشة الرئيسية"
+                    );
                 }
-            });
-        }
-
-        window.addEventListener("appinstalled", () => {
-
-            console.log("✅ Amir Mawaqit installed");
-
-            deferredInstallPrompt = null;
-
-            if (installBanner) {
-                installBanner.classList.remove("show");
-            }
-
-            showToast("تم تثبيت أمير مواقيت بنجاح");
-        });
-    }
-
-    /* =========================================================
-       التوافق مع iPhone / iPad
-       ========================================================= */
-
-    function detectAppleDevice() {
-
-        const userAgent = navigator.userAgent || "";
-
-        const isIOS =
-            /iPhone|iPad|iPod/i.test(userAgent) ||
-            (
-                navigator.platform === "MacIntel" &&
-                navigator.maxTouchPoints > 1
             );
-
-        if (isIOS) {
-            document.documentElement.classList.add("ios-device");
-
-            console.log("🍎 Apple device detected");
-
-            // إظهار تلميح التثبيت فقط إذا لم يكن التطبيق مثبتًا
-            const standalone =
-                window.navigator.standalone === true ||
-                window.matchMedia("(display-mode: standalone)").matches;
-
-            if (!standalone) {
-                const iosHint = $("#iosInstallHint");
-
-                if (iosHint) {
-                    iosHint.style.display = "block";
-                }
-            }
         }
-    }
-
-    /* =========================================================
-       الوضع المظلم
-       ========================================================= */
-
-    function setupTheme() {
-
-        function applyTheme() {
-
-            let theme = "light";
-
-            try {
-                if (window.AmirStorage) {
-                    theme =
-                        window.AmirStorage.getTheme() || "light";
-                }
-            } catch (error) {
-                console.warn(error);
-            }
-
-            if (theme === "auto") {
-                const dark =
-                    window.matchMedia(
-                        "(prefers-color-scheme: dark)"
-                    ).matches;
-
-                document.documentElement.classList.toggle(
-                    "dark-mode",
-                    dark
-                );
-
-            } else {
-
-                document.documentElement.classList.toggle(
-                    "dark-mode",
-                    theme === "dark"
-                );
-            }
-        }
-
-        applyTheme();
 
         window.addEventListener(
-            "amirThemeChanged",
-            applyTheme
-        );
+            "appinstalled",
+            function () {
+                deferredInstallPrompt =
+                    null;
 
-        const media =
-            window.matchMedia(
-                "(prefers-color-scheme: dark)"
-            );
+                hideInstallBanner();
 
-        if (media.addEventListener) {
-            media.addEventListener("change", applyTheme);
-        }
-    }
-
-    /* =========================================================
-       ساعة وتاريخ التطبيق
-       ========================================================= */
-
-    function updateClock() {
-
-        const clock = $("#liveClock");
-
-        if (!clock) return;
-
-        const now = new Date();
-
-        const time = now.toLocaleTimeString(
-            "ar-DZ",
-            {
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit"
+                showMessage(
+                    "تم تثبيت أمير مواقيت بنجاح ✓",
+                    "success"
+                );
             }
         );
 
-        clock.textContent = time;
+        /*
+         * إذا كان المستخدم على iPhone
+         * وليس التطبيق مثبتًا.
+         */
+        if (
+            isIOS() &&
+            !isStandalone()
+        ) {
+            setTimeout(
+                showInstallBanner,
+                1500
+            );
+        }
+    }
+
+    function showIOSInstallInstructions() {
+        const message =
+            "على iPhone أو iPad: اضغط زر المشاركة في Safari ثم اختر «إضافة إلى الشاشة الرئيسية».";
+
+        showMessage(
+            message
+        );
+    }
+
+    /* ---------------------------------------------------------
+       Theme
+    --------------------------------------------------------- */
+
+    function applyInitialTheme() {
+        if (
+            window.AmirSettings &&
+            typeof window.AmirSettings.getTheme ===
+                "function" &&
+            typeof window.AmirSettings.applyTheme ===
+                "function"
+        ) {
+            const theme =
+                window.AmirSettings.getTheme();
+
+            window.AmirSettings.applyTheme(
+                theme
+            );
+
+            return;
+        }
+
+        const saved =
+            localStorage.getItem(
+                "amirTheme"
+            ) || "auto";
+
+        let theme =
+            saved;
+
+        if (theme === "auto") {
+            theme =
+                window.matchMedia &&
+                window.matchMedia(
+                    "(prefers-color-scheme: dark)"
+                ).matches
+                    ? "dark"
+                    : "light";
+        }
+
+        document.documentElement.setAttribute(
+            "data-theme",
+            theme
+        );
+    }
+
+    /* ---------------------------------------------------------
+       Live clock
+    --------------------------------------------------------- */
+
+    function updateClock() {
+        const element =
+            $("liveClock");
+
+        if (!element) {
+            return;
+        }
+
+        const now =
+            new Date();
+
+        const hours =
+            String(
+                now.getHours()
+            ).padStart(2, "0");
+
+        const minutes =
+            String(
+                now.getMinutes()
+            ).padStart(2, "0");
+
+        const seconds =
+            String(
+                now.getSeconds()
+            ).padStart(2, "0");
+
+        element.textContent =
+            `${hours}:${minutes}:${seconds}`;
     }
 
     function startClock() {
-
         updateClock();
 
         setInterval(
@@ -444,210 +681,442 @@
         );
     }
 
-    /* =========================================================
-       أزرار الصفحة الرئيسية
-       ========================================================= */
+    /* ---------------------------------------------------------
+       Quick actions
+    --------------------------------------------------------- */
 
-    function setupQuickActions() {
+    function bindQuickActions() {
 
-        $$("[data-action]").forEach(button => {
+        const locationButton =
+            $("locationButton");
 
-            button.addEventListener("click", function () {
+        if (locationButton) {
+            locationButton.addEventListener(
+                "click",
+                function () {
 
-                const action =
-                    this.dataset.action;
+                    if (
+                        !navigator.geolocation
+                    ) {
+                        showMessage(
+                            "الموقع الجغرافي غير مدعوم",
+                            "error"
+                        );
 
-                switch (action) {
+                        return;
+                    }
 
-                    case "qibla":
-                        openSection("qibla");
-                        break;
+                    showMessage(
+                        "جارٍ محاولة تحديد موقعك..."
+                    );
 
-                    case "azkar":
-                        openSection("azkar");
-                        break;
+                    navigator.geolocation.getCurrentPosition(
+                        function (position) {
 
-                    case "quran":
-                        openSection("quran");
-                        break;
+                            const latitude =
+                                position.coords.latitude;
 
-                    case "settings":
-                        openSection("settings");
-                        break;
+                            const longitude =
+                                position.coords.longitude;
 
-                    case "refreshPrayer":
+                            /*
+                             * لا نغير المدينة تلقائيًا
+                             * في هذه المرحلة، بل نعرض
+                             * الإحداثيات للمستخدم.
+                             */
+                            showMessage(
+                                "تم تحديد موقعك بنجاح ✓",
+                                "success"
+                            );
 
-                        if (window.AmirPrayer) {
-                            window.AmirPrayer.load({
-                                force: true
-                            });
+                            console.log(
+                                "User location:",
+                                latitude,
+                                longitude
+                            );
+                        },
+                        function (error) {
+                            console.warn(
+                                "Geolocation error:",
+                                error
+                            );
+
+                            showMessage(
+                                "تعذر تحديد موقعك. تأكد من السماح بالموقع.",
+                                "error"
+                            );
+                        },
+                        {
+                            enableHighAccuracy:
+                                true,
+                            timeout: 10000,
+                            maximumAge:
+                                300000
                         }
-
-                        showToast(
-                            "جاري تحديث مواقيت الصلاة..."
-                        );
-
-                        break;
-
-                    default:
-                        console.log(
-                            "Unknown action:",
-                            action
-                        );
+                    );
                 }
-            });
-        });
+            );
+        }
+
+        const qiblaButton =
+            $("qiblaQuickButton");
+
+        if (qiblaButton) {
+            qiblaButton.addEventListener(
+                "click",
+                function () {
+                    openSection(
+                        "qibla"
+                    );
+                }
+            );
+        }
+
+        const adhanButton =
+            $("adhanTestButton");
+
+        if (adhanButton) {
+            adhanButton.addEventListener(
+                "click",
+                function () {
+                    if (
+                        window.AmirAdhan &&
+                        typeof window.AmirAdhan.test ===
+                            "function"
+                    ) {
+                        window.AmirAdhan.test();
+                    }
+                }
+            );
+        }
     }
 
-    /* =========================================================
-       تحديث مواقيت الصلاة عند العودة للتطبيق
-       ========================================================= */
+    /* ---------------------------------------------------------
+       App buttons feedback
+    --------------------------------------------------------- */
 
-    function setupVisibilityRefresh() {
+    function bindButtonFeedback() {
+        document
+            .querySelectorAll(
+                "button"
+            )
+            .forEach(button => {
 
+                button.addEventListener(
+                    "pointerdown",
+                    function () {
+                        this.classList.add(
+                            "pressed"
+                        );
+                    }
+                );
+
+                button.addEventListener(
+                    "pointerup",
+                    function () {
+                        this.classList.remove(
+                            "pressed"
+                        );
+                    }
+                );
+
+                button.addEventListener(
+                    "pointercancel",
+                    function () {
+                        this.classList.remove(
+                            "pressed"
+                        );
+                    }
+                );
+
+                button.addEventListener(
+                    "pointerleave",
+                    function () {
+                        this.classList.remove(
+                            "pressed"
+                        );
+                    }
+                );
+            });
+    }
+
+    /* ---------------------------------------------------------
+       App version
+    --------------------------------------------------------- */
+
+    function showVersion() {
+        document
+            .querySelectorAll(
+                "[data-app-version]"
+            )
+            .forEach(element => {
+                element.textContent =
+                    APP_VERSION;
+            });
+    }
+
+    /* ---------------------------------------------------------
+       Visibility refresh
+    --------------------------------------------------------- */
+
+    function bindVisibilityRefresh() {
         document.addEventListener(
             "visibilitychange",
-            () => {
+            function () {
 
-                if (!document.hidden) {
+                if (
+                    document.visibilityState !==
+                    "visible"
+                ) {
+                    return;
+                }
 
-                    if (window.AmirPrayer) {
-                        try {
-                            window.AmirPrayer.startCountdown();
-                        } catch (error) {
-                            console.warn(error);
-                        }
-                    }
+                /*
+                 * تحديث المواقيت عند العودة
+                 * إلى التطبيق.
+                 */
+                if (
+                    window.AmirPrayer &&
+                    typeof window.AmirPrayer.load ===
+                        "function"
+                ) {
+                    window.AmirPrayer.load();
+                }
 
-                    if (window.AmirAdhan) {
-                        try {
-                            window.AmirAdhan.reschedule();
-                        } catch (error) {
-                            console.warn(error);
-                        }
-                    }
+                /*
+                 * إعادة جدولة الأذان.
+                 */
+                if (
+                    window.AmirAdhan &&
+                    typeof window.AmirAdhan.refresh ===
+                        "function"
+                ) {
+                    window.AmirAdhan.refresh();
+                }
+
+                /*
+                 * إعادة تحديث الثيم.
+                 */
+                if (
+                    window.AmirSettings &&
+                    typeof window.AmirSettings.getTheme ===
+                        "function" &&
+                    typeof window.AmirSettings.applyTheme ===
+                        "function"
+                ) {
+                    window.AmirSettings.applyTheme(
+                        window.AmirSettings.getTheme()
+                    );
                 }
             }
         );
     }
 
-    /* =========================================================
-       منع أخطاء الضغط المتكرر
-       ========================================================= */
+    /* ---------------------------------------------------------
+       Keyboard shortcuts
+    --------------------------------------------------------- */
 
-    function setupButtonFeedback() {
+    function bindKeyboardShortcuts() {
 
         document.addEventListener(
-            "click",
-            event => {
+            "keydown",
+            function (event) {
 
-                const button =
-                    event.target.closest("button");
+                /*
+                 * لا نستخدم الاختصارات أثناء الكتابة.
+                 */
+                const tag =
+                    document.activeElement &&
+                    document.activeElement.tagName;
 
-                if (!button) return;
+                if (
+                    tag === "INPUT" ||
+                    tag === "TEXTAREA" ||
+                    tag === "SELECT"
+                ) {
+                    return;
+                }
 
-                button.classList.add("pressed");
+                /*
+                 * H = الرئيسية
+                 */
+                if (
+                    event.key.toLowerCase() ===
+                    "h"
+                ) {
+                    openSection(
+                        "home"
+                    );
+                }
 
-                setTimeout(() => {
-                    button.classList.remove("pressed");
-                }, 150);
+                /*
+                 * Q = القرآن
+                 */
+                if (
+                    event.key.toLowerCase() ===
+                    "q"
+                ) {
+                    openSection(
+                        "quran"
+                    );
+                }
+
+                /*
+                 * A = الأذكار
+                 */
+                if (
+                    event.key.toLowerCase() ===
+                    "a"
+                ) {
+                    openSection(
+                        "azkar"
+                    );
+                }
+
+                /*
+                 * K = القبلة
+                 */
+                if (
+                    event.key.toLowerCase() ===
+                    "k"
+                ) {
+                    openSection(
+                        "qibla"
+                    );
+                }
+
+                /*
+                 * S = الإعدادات
+                 */
+                if (
+                    event.key.toLowerCase() ===
+                    "s"
+                ) {
+                    openSection(
+                        "settings"
+                    );
+                }
             }
         );
     }
 
-    /* =========================================================
-       معلومات التطبيق
-       ========================================================= */
+    /* ---------------------------------------------------------
+       Initialize application
+    --------------------------------------------------------- */
 
-    function exposeAppInfo() {
-
-        window.AmirApp = {
-
-            version: APP_VERSION,
-
-            openSection,
-
-            showToast,
-
-            refresh: function () {
-
-                if (window.AmirPrayer) {
-                    window.AmirPrayer.load({
-                        force: true
-                    });
-                }
-
-                if (window.AmirAdhan) {
-                    window.AmirAdhan.reschedule();
-                }
-
-                showToast(
-                    "تم تحديث التطبيق"
-                );
-            }
-
-        };
+    async function init() {
 
         console.log(
-            `✨ أمير مواقيت V${APP_VERSION}`
-        );
-    }
-
-    /* =========================================================
-       التشغيل الرئيسي
-       ========================================================= */
-
-    async function initApp() {
-
-        console.log(
-            "🚀 Starting Amir Mawaqit V2..."
+            "Amir Mawaqit V2 starting..."
         );
 
-        detectAppleDevice();
+        /*
+         * المظهر أولاً حتى لا يظهر التطبيق
+         * بثوانٍ بلون مختلف.
+         */
+        applyInitialTheme();
 
-        setupNavigation();
+        /*
+         * التنقل.
+         */
+        bindNavigation();
 
-        setupQuickActions();
+        /*
+         * حالة الإنترنت.
+         */
+        bindOnlineStatus();
 
-        setupNetworkStatus();
+        /*
+         * الأزرار السريعة.
+         */
+        bindQuickActions();
 
-        setupInstallPrompt();
+        /*
+         * تأثيرات الأزرار.
+         */
+        bindButtonFeedback();
 
-        setupTheme();
-
-        setupVisibilityRefresh();
-
-        setupButtonFeedback();
-
+        /*
+         * الساعة.
+         */
         startClock();
 
-        exposeAppInfo();
+        /*
+         * تحديث عند العودة.
+         */
+        bindVisibilityRefresh();
 
+        /*
+         * اختصارات لوحة المفاتيح.
+         */
+        bindKeyboardShortcuts();
+
+        /*
+         * الإصدار.
+         */
+        showVersion();
+
+        /*
+         * PWA.
+         */
+        setupInstallPrompt();
+
+        /*
+         * Service Worker.
+         */
         await registerServiceWorker();
 
-        // الصفحة الرئيسية
-        openSection("home");
+        /*
+         * نبدأ دائمًا من الصفحة الرئيسية.
+         */
+        openSection(
+            "home"
+        );
 
         console.log(
-            "✅ أمير مواقيت V2 جاهز"
+            "Amir Mawaqit V2 ready."
         );
     }
 
-    /* =========================================================
-       بدء التطبيق
-       ========================================================= */
+    /* ---------------------------------------------------------
+       Public API
+    --------------------------------------------------------- */
 
-    if (document.readyState === "loading") {
+    window.AmirApp = {
+        version:
+            APP_VERSION,
 
+        openSection,
+
+        showMessage,
+
+        updateOnlineStatus,
+
+        showInstallBanner,
+
+        hideInstallBanner,
+
+        isIOS,
+
+        isStandalone,
+
+        registerServiceWorker
+    };
+
+    /* ---------------------------------------------------------
+       Start
+    --------------------------------------------------------- */
+
+    if (
+        document.readyState ===
+        "loading"
+    ) {
         document.addEventListener(
             "DOMContentLoaded",
-            initApp
+            init
         );
-
     } else {
-
-        initApp();
-
+        init();
     }
 
 })();
