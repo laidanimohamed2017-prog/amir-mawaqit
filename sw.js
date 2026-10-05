@@ -3,7 +3,7 @@
    Service Worker
    ========================================================= */
 
-const CACHE_NAME = "amir-mawaqit-v5";
+const CACHE_NAME = "amir-mawaqit-v6";
 
 const APP_FILES = [
     "./",
@@ -35,13 +35,12 @@ const APP_FILES = [
 
 self.addEventListener("install", event => {
 
-    console.log(
-        "📦 Amir Mawaqit V2 installing..."
-    );
+    console.log("📦 أمير مواقيت V2: تثبيت Service Worker");
 
     event.waitUntil(
 
         caches.open(CACHE_NAME)
+
             .then(async cache => {
 
                 for (const file of APP_FILES) {
@@ -51,22 +50,29 @@ self.addEventListener("install", event => {
                         await cache.add(file);
 
                         console.log(
-                            "✅ Cached:",
+                            "✅ تم حفظ:",
                             file
                         );
 
                     } catch (error) {
 
                         console.warn(
-                            "⚠️ Could not cache:",
+                            "⚠️ تعذر حفظ:",
                             file
                         );
                     }
                 }
 
             })
-            .then(() => self.skipWaiting())
+
+            .then(() => {
+
+                return self.skipWaiting();
+
+            })
+
     );
+
 });
 
 
@@ -77,12 +83,13 @@ self.addEventListener("install", event => {
 self.addEventListener("activate", event => {
 
     console.log(
-        "⚡ Amir Mawaqit V2 activated"
+        "⚡ أمير مواقيت V2: Service Worker مفعل"
     );
 
     event.waitUntil(
 
         caches.keys()
+
             .then(cacheNames => {
 
                 return Promise.all(
@@ -90,30 +97,34 @@ self.addEventListener("activate", event => {
                     cacheNames.map(cacheName => {
 
                         if (
-                            cacheName !== CACHE_NAME &&
-                            cacheName.startsWith(
-                                "amir-mawaqit-"
-                            )
+                            cacheName.startsWith("amir-mawaqit-") &&
+                            cacheName !== CACHE_NAME
                         ) {
 
                             console.log(
-                                "🗑️ Delete old cache:",
+                                "🗑️ حذف الكاش القديم:",
                                 cacheName
                             );
 
-                            return caches.delete(
-                                cacheName
-                            );
+                            return caches.delete(cacheName);
                         }
 
                         return null;
+
                     })
 
                 );
 
             })
-            .then(() => self.clients.claim())
+
+            .then(() => {
+
+                return self.clients.claim();
+
+            })
+
     );
+
 });
 
 
@@ -125,6 +136,7 @@ self.addEventListener("fetch", event => {
 
     const request = event.request;
 
+    /* فقط GET */
     if (request.method !== "GET") {
         return;
     }
@@ -133,7 +145,7 @@ self.addEventListener("fetch", event => {
 
 
     /* =====================================================
-       Aladhan API
+       ALADHAN API
        Network First
        ===================================================== */
 
@@ -144,6 +156,7 @@ self.addEventListener("fetch", event => {
         event.respondWith(
 
             fetch(request)
+
                 .then(response => {
 
                     if (
@@ -162,17 +175,18 @@ self.addEventListener("fetch", event => {
                                     copy
                                 );
 
-                            });
+                            })
+                            .catch(() => {});
+
                     }
 
                     return response;
 
                 })
+
                 .catch(() => {
 
-                    return caches.match(
-                        request
-                    );
+                    return caches.match(request);
 
                 })
 
@@ -183,8 +197,8 @@ self.addEventListener("fetch", event => {
 
 
     /* =====================================================
-       ملفات التطبيق
-       Cache First
+       ملفات التطبيق المحلية
+       Cache First + تحديث في الخلفية
        ===================================================== */
 
     if (
@@ -194,15 +208,19 @@ self.addEventListener("fetch", event => {
         event.respondWith(
 
             caches.match(request)
+
                 .then(cachedResponse => {
+
+                    /* -----------------------------------------
+                       الملف موجود في الكاش
+                       ----------------------------------------- */
 
                     if (cachedResponse) {
 
-                        /*
-                         * تحديث الملف في الخلفية
-                         */
+                        /* تحديث النسخة في الخلفية */
 
                         fetch(request)
+
                             .then(networkResponse => {
 
                                 if (
@@ -210,9 +228,8 @@ self.addEventListener("fetch", event => {
                                     networkResponse.ok
                                 ) {
 
-                                    caches.open(
-                                        CACHE_NAME
-                                    )
+                                    caches.open(CACHE_NAME)
+
                                         .then(cache => {
 
                                             cache.put(
@@ -220,21 +237,26 @@ self.addEventListener("fetch", event => {
                                                 networkResponse.clone()
                                             );
 
-                                        });
+                                        })
+                                        .catch(() => {});
+
                                 }
 
                             })
+
                             .catch(() => {});
+
 
                         return cachedResponse;
                     }
 
 
-                    /* =================================================
+                    /* -----------------------------------------
                        الملف غير موجود في الكاش
-                       ================================================= */
+                       ----------------------------------------- */
 
                     return fetch(request)
+
                         .then(response => {
 
                             if (
@@ -245,9 +267,8 @@ self.addEventListener("fetch", event => {
                                 const copy =
                                     response.clone();
 
-                                caches.open(
-                                    CACHE_NAME
-                                )
+                                caches.open(CACHE_NAME)
+
                                     .then(cache => {
 
                                         cache.put(
@@ -255,18 +276,20 @@ self.addEventListener("fetch", event => {
                                             copy
                                         );
 
-                                    });
+                                    })
+                                    .catch(() => {});
+
                             }
 
                             return response;
 
                         })
+
                         .catch(() => {
 
-                            /*
-                             * إذا فتح المستخدم التطبيق
-                             * بدون إنترنت.
-                             */
+                            /* ---------------------------------
+                               Offline navigation
+                               --------------------------------- */
 
                             if (
                                 request.mode === "navigate"
@@ -275,7 +298,13 @@ self.addEventListener("fetch", event => {
                                 return caches.match(
                                     "./index.html"
                                 );
+
                             }
+
+
+                            /* ---------------------------------
+                               Offline resource
+                               --------------------------------- */
 
                             return new Response(
                                 "غير متصل بالإنترنت",
@@ -299,13 +328,18 @@ self.addEventListener("fetch", event => {
 
 
     /* =====================================================
-       الطلبات الخارجية
+       الطلبات الخارجية الأخرى
        ===================================================== */
 
     event.respondWith(
 
         fetch(request)
-            .catch(() => caches.match(request))
+
+            .catch(() => {
+
+                return caches.match(request);
+
+            })
 
     );
 
@@ -326,6 +360,7 @@ self.addEventListener(
         ) {
 
             self.skipWaiting();
+
         }
 
     }
@@ -333,5 +368,5 @@ self.addEventListener(
 
 
 console.log(
-    "🚀 Amir Mawaqit V2 Service Worker loaded"
+    "🚀 أمير مواقيت V2 Service Worker جاهز"
 );
