@@ -2038,3 +2038,6 @@ body.dark-mode #homeSection .today-prayer-card {
         margin-bottom: 15px;
     }
 }
+body {
+    background: red !important;
+}
