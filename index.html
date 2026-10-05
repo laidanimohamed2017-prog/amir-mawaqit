@@ -116,8 +116,6 @@
             data-section="home">
 
 
-            <!-- HERO -->
-
             <div class="hero">
 
                 <div class="hero-top">
@@ -126,12 +124,8 @@
 
                         📍 موقعك
 
-                        <strong
-                            id="cityName"
-                            data-current-city>
-
+                        <strong id="cityName">
                             عين وسارة
-
                         </strong>
 
                     </div>
@@ -152,14 +146,10 @@
                 </div>
 
 
-                <!-- NEXT PRAYER -->
-
                 <div class="next-prayer">
 
                     <div class="next-prayer-label">
-
                         الصلاة القادمة
-
                     </div>
 
 
@@ -186,7 +176,6 @@
                         <div
                             class="progress-bar"
                             id="prayerProgress">
-
                         </div>
 
                     </div>
@@ -194,10 +183,7 @@
                 </div>
 
 
-                <!-- HERO ACTIONS -->
-
                 <div class="hero-actions">
-
 
                     <button
                         class="hero-button"
@@ -252,8 +238,6 @@
             <div
                 class="prayer-grid"
                 id="prayerGrid">
-
-                <!-- سيتم ملؤها بواسطة prayer.js -->
 
                 <div class="prayer-card">
 
@@ -355,11 +339,9 @@
 
             <div class="quick-grid">
 
-
                 <button
                     class="quick-card"
                     type="button"
-                    data-page="qibla"
                     data-go-section="qibla">
 
                     <div class="quick-icon">
@@ -380,7 +362,6 @@
                 <button
                     class="quick-card"
                     type="button"
-                    data-page="azkar"
                     data-go-section="azkar">
 
                     <div class="quick-icon">
@@ -401,7 +382,6 @@
                 <button
                     class="quick-card"
                     type="button"
-                    data-page="quran"
                     data-go-section="quran">
 
                     <div class="quick-icon">
@@ -422,7 +402,6 @@
                 <button
                     class="quick-card"
                     type="button"
-                    data-page="settings"
                     data-go-section="settings">
 
                     <div class="quick-icon">
@@ -444,7 +423,6 @@
         </section>
 
 
-
         <!-- =================================================
              QURAN
              ================================================= -->
@@ -453,7 +431,6 @@
             id="quranSection"
             class="page-section"
             data-section="quran">
-
 
             <div class="section-title">
 
@@ -490,7 +467,6 @@
         </section>
 
 
-
         <!-- =================================================
              AZKAR
              ================================================= -->
@@ -499,7 +475,6 @@
             id="azkarSection"
             class="page-section"
             data-section="azkar">
-
 
             <div class="section-title">
 
@@ -516,11 +491,12 @@
 
             <!-- CATEGORY BUTTONS -->
 
-            <div class="adhan-buttons"
-                 style="margin-bottom:15px;">
+            <div
+                class="adhan-buttons"
+                style="margin-bottom:15px;">
 
                 <button
-                    class="secondary-button"
+                    class="secondary-button active"
                     type="button"
                     data-azkar-category="morning">
 
@@ -579,6 +555,7 @@
                     type="search"
                     id="azkarSearch"
                     placeholder="🔎 ابحث في الأذكار..."
+                    aria-label="البحث في الأذكار"
                     style="
                         width:100%;
                         padding:13px;
@@ -586,6 +563,69 @@
                         border-radius:14px;
                         outline:none;
                     ">
+
+            </div>
+
+
+            <!-- AZKAR SUMMARY -->
+
+            <div
+                class="content-card"
+                style="margin-top:15px;">
+
+                <div class="azkar-summary">
+
+                    <div class="azkar-summary-item">
+
+                        <strong id="azkarProgressPercentage">
+                            0%
+                        </strong>
+
+                        <span>
+                            الإنجاز
+                        </span>
+
+                    </div>
+
+
+                    <div class="azkar-summary-item">
+
+                        <strong id="azkarCompletedCount">
+                            0
+                        </strong>
+
+                        <span>
+                            المكتمل
+                        </span>
+
+                    </div>
+
+
+                    <div class="azkar-summary-item">
+
+                        <strong id="azkarTotalCount">
+                            0
+                        </strong>
+
+                        <span>
+                            الإجمالي
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="azkar-progress"
+                    style="margin-top:15px;">
+
+                    <span
+                        id="azkarOverallProgress"
+                        style="width:0%;">
+                    </span>
+
+                </div>
 
             </div>
 
@@ -601,20 +641,111 @@
             </div>
 
 
-            <!-- OLD SIMPLE COUNTERS
-                 kept for compatibility -->
+            <!-- RESET -->
+
+            <div
+                class="adhan-buttons"
+                style="margin-top:15px;">
+
+                <button
+                    class="secondary-button"
+                    id="resetAzkarCategory"
+                    type="button">
+
+                    ↻ إعادة هذا القسم
+
+                </button>
+
+
+                <button
+                    class="secondary-button"
+                    id="resetAllAzkar"
+                    type="button">
+
+                    🗑️ إعادة الكل
+
+                </button>
+
+            </div>
+
+
+            <!-- TASBIH -->
 
             <div
                 class="content-card"
                 style="margin-top:15px;">
 
                 <h3 style="margin-bottom:15px;">
-                    📿 التسبيح السريع
+                    📿 التسبيح
+                </h3>
+
+
+                <div
+                    style="
+                        text-align:center;
+                        padding:15px 0;
+                    ">
+
+                    <div
+                        id="tasbihCount"
+                        style="
+                            font-size:42px;
+                            font-weight:800;
+                            margin-bottom:15px;
+                        ">
+
+                        0
+
+                    </div>
+
+
+                    <button
+                        class="primary-button"
+                        id="tasbihButton"
+                        type="button"
+                        style="
+                            min-width:180px;
+                            min-height:65px;
+                            font-size:20px;
+                        ">
+
+                        📿 تسبيح
+
+                    </button>
+
+
+                    <div
+                        class="adhan-buttons"
+                        style="margin-top:15px;">
+
+                        <button
+                            class="secondary-button"
+                            id="resetTasbih"
+                            type="button">
+
+                            ↻ تصفير العداد
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- OLD COMPATIBILITY COUNTERS -->
+
+            <div
+                class="content-card"
+                style="margin-top:15px;">
+
+                <h3 style="margin-bottom:15px;">
+                    أذكار سريعة
                 </h3>
 
 
                 <div class="zikr-grid">
-
 
                     <div class="zikr-card">
 
@@ -712,7 +843,6 @@
         </section>
 
 
-
         <!-- =================================================
              QIBLA
              ================================================= -->
@@ -721,7 +851,6 @@
             id="qiblaSection"
             class="page-section"
             data-section="qibla">
-
 
             <div class="section-title">
 
@@ -742,7 +871,6 @@
                 <div
                     class="compass"
                     id="compass">
-
 
                     <div
                         class="qibla-arrow"
@@ -797,9 +925,9 @@
                 </p>
 
 
-                <div class="adhan-buttons"
-                     style="margin-top:18px;">
-
+                <div
+                    class="adhan-buttons"
+                    style="margin-top:18px;">
 
                     <button
                         class="primary-button"
@@ -847,7 +975,6 @@
         </section>
 
 
-
         <!-- =================================================
              SETTINGS
              ================================================= -->
@@ -857,7 +984,6 @@
             class="page-section"
             data-section="settings">
 
-
             <div class="section-title">
 
                 <h2>
@@ -865,7 +991,6 @@
                 </h2>
 
             </div>
-
 
 
             <!-- LOCATION -->
@@ -878,7 +1003,6 @@
 
 
                 <div class="settings-list">
-
 
                     <div class="setting-item">
 
@@ -899,46 +1023,37 @@
                             class="setting-select"
                             id="citySelect">
 
-
                             <option value="ain_oussera">
                                 عين وسارة
                             </option>
-
 
                             <option value="algiers">
                                 الجزائر
                             </option>
 
-
                             <option value="oran">
                                 وهران
                             </option>
-
 
                             <option value="constantine">
                                 قسنطينة
                             </option>
 
-
                             <option value="annaba">
                                 عنابة
                             </option>
-
 
                             <option value="blida">
                                 البليدة
                             </option>
 
-
                             <option value="setif">
                                 سطيف
                             </option>
 
-
                             <option value="tlemcen">
                                 تلمسان
                             </option>
-
 
                         </select>
 
@@ -947,7 +1062,6 @@
                 </div>
 
             </div>
-
 
 
             <!-- PRAYER SETTINGS -->
@@ -960,7 +1074,6 @@
 
 
                 <div class="settings-list">
-
 
                     <div class="setting-item">
 
@@ -1038,7 +1151,6 @@
             </div>
 
 
-
             <!-- ADHAN -->
 
             <div class="content-card">
@@ -1049,7 +1161,6 @@
 
 
                 <div class="settings-list">
-
 
                     <div class="setting-item">
 
@@ -1079,7 +1190,6 @@
                     </div>
 
 
-
                     <div class="setting-item">
 
                         <div class="setting-info">
@@ -1099,31 +1209,25 @@
                             class="setting-select"
                             id="adhanTiming">
 
-
                             <option value="off">
                                 إيقاف
                             </option>
-
 
                             <option value="before">
                                 قبل 10 دقائق
                             </option>
 
-
                             <option value="at">
                                 عند الوقت
                             </option>
-
 
                             <option value="both">
                                 كلاهما
                             </option>
 
-
                         </select>
 
                     </div>
-
 
 
                     <div class="setting-item">
@@ -1135,24 +1239,23 @@
                             </strong>
 
                             <small>
-                                اختيار صوت الأذان
+                                تفعيل صوت الأذان
                             </small>
 
                         </div>
 
 
-                        <select
-                            class="setting-select"
-                            id="adhanSound">
+                        <label class="switch">
 
-                            <option value="adhan1">
-                                الأذان 1
-                            </option>
+                            <input
+                                type="checkbox"
+                                id="adhanSound">
 
-                        </select>
+                            <span class="slider"></span>
+
+                        </label>
 
                     </div>
-
 
 
                     <div class="setting-item">
@@ -1163,8 +1266,8 @@
                                 مستوى الصوت
                             </strong>
 
-                            <small>
-                                مستوى صوت الأذان
+                            <small id="adhanVolumeValue">
+                                80%
                             </small>
 
                         </div>
@@ -1174,22 +1277,19 @@
                             type="range"
                             id="adhanVolume"
                             min="0"
-                            max="1"
-                            step="0.05"
-                            value="1"
+                            max="100"
+                            step="5"
+                            value="80"
                             style="width:130px;">
 
                     </div>
 
-
                 </div>
-
 
 
                 <div
                     class="adhan-buttons"
                     style="margin-top:20px;">
-
 
                     <button
                         class="primary-button"
@@ -1210,12 +1310,8 @@
 
                     </button>
 
-
                 </div>
 
-
-                <!-- IMPORTANT:
-                     adhan1.mp3 is in ROOT -->
 
                 <audio
                     id="adhanAudio"
@@ -1230,7 +1326,6 @@
             </div>
 
 
-
             <!-- NOTIFICATIONS -->
 
             <div class="content-card">
@@ -1241,7 +1336,6 @@
 
 
                 <div class="settings-list">
-
 
                     <div class="setting-item">
 
@@ -1277,7 +1371,6 @@
                     class="adhan-buttons"
                     style="margin-top:18px;">
 
-
                     <button
                         class="primary-button"
                         id="enableNotifications"
@@ -1292,7 +1385,6 @@
             </div>
 
 
-
             <!-- APPEARANCE -->
 
             <div class="content-card">
@@ -1303,7 +1395,6 @@
 
 
                 <div class="settings-list">
-
 
                     <div class="setting-item">
 
@@ -1373,7 +1464,6 @@
             </div>
 
 
-
             <!-- APP DATA -->
 
             <div class="content-card">
@@ -1384,7 +1474,6 @@
 
 
                 <div class="adhan-buttons">
-
 
                     <button
                         class="secondary-button"
@@ -1410,7 +1499,6 @@
             </div>
 
 
-
             <!-- ABOUT -->
 
             <div class="content-card">
@@ -1428,6 +1516,7 @@
 
 
                     <p
+                        id="appVersion"
                         style="
                             margin-top:7px;
                             color:#718078;
@@ -1459,7 +1548,6 @@
     </main>
 
 
-
     <!-- =====================================================
          BOTTOM NAVIGATION
          ===================================================== -->
@@ -1468,11 +1556,9 @@
 
         <div class="nav-inner">
 
-
             <button
                 class="nav-button active"
                 type="button"
-                data-page="home"
                 data-section="home">
 
                 <span class="nav-icon">
@@ -1489,7 +1575,6 @@
             <button
                 class="nav-button"
                 type="button"
-                data-page="quran"
                 data-section="quran">
 
                 <span class="nav-icon">
@@ -1506,7 +1591,6 @@
             <button
                 class="nav-button"
                 type="button"
-                data-page="azkar"
                 data-section="azkar">
 
                 <span class="nav-icon">
@@ -1523,7 +1607,6 @@
             <button
                 class="nav-button"
                 type="button"
-                data-page="qibla"
                 data-section="qibla">
 
                 <span class="nav-icon">
@@ -1540,7 +1623,6 @@
             <button
                 class="nav-button"
                 type="button"
-                data-page="settings"
                 data-section="settings">
 
                 <span class="nav-icon">
@@ -1558,15 +1640,14 @@
     </nav>
 
 
-
     <!-- =====================================================
          PWA INSTALL BANNER
          ===================================================== -->
 
     <div
         class="install-banner"
-        id="installBanner">
-
+        id="installBanner"
+        hidden>
 
         <div class="install-banner-content">
 
@@ -1593,19 +1674,18 @@
     </div>
 
 
-
     <!-- =====================================================
          OFFLINE STATUS
          ===================================================== -->
 
     <div
         class="offline-status"
-        id="offlineStatus">
+        id="offlineStatus"
+        hidden>
 
         ⚠️ أنت غير متصل بالإنترنت
 
     </div>
-
 
 
     <!-- =====================================================
@@ -1616,35 +1696,24 @@
         id="amirToast"
         class="amir-toast"
         aria-live="polite">
-
     </div>
 
-
 </div>
-
 
 
 <!-- =========================================================
      V2 JAVASCRIPT MODULES
 
-     IMPORTANT:
      ترتيب الملفات مهم جدًا
      ========================================================= -->
 
 <script src="./js/storage.js"></script>
-
 <script src="./js/prayer.js"></script>
-
 <script src="./js/adhan.js"></script>
-
 <script src="./js/qibla.js"></script>
-
 <script src="./js/azkar.js"></script>
-
 <script src="./js/settings.js"></script>
-
 <script src="./js/app.js"></script>
-
 
 </body>
 </html>
