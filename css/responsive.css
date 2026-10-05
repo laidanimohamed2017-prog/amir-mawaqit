@@ -1,551 +1,481 @@
 /* =========================================================
-   أمير مواقيت V2
-   Responsive Design
-   الهاتف + iPhone + iPad + الكمبيوتر
+   AMIR MAWAQIT
+   RESPONSIVE DESIGN
    ========================================================= */
 
-/* =========================================================
-   أساسيات الشاشات الصغيرة
-   ========================================================= */
-
-html {
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-}
-
-body {
-    width: 100%;
-    min-width: 0;
-    overflow-x: hidden;
-}
-
-/* منع مشاكل iPhone */
-button,
-input,
-select,
-textarea {
-    font: inherit;
-}
-
-/* =========================================================
-   الهواتف الكبيرة
-   481px - 768px
-   ========================================================= */
-
-@media (max-width: 768px) {
-
-    .app-container,
-    .container,
-    .main-container {
-        width: 100%;
-        max-width: 100%;
-        padding-left: 16px;
-        padding-right: 16px;
-    }
-
-    .app-header,
-    header {
-        padding-left: 16px;
-        padding-right: 16px;
-    }
-
-    .hero {
-        margin-left: 0;
-        margin-right: 0;
-    }
-
-    .prayer-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
-    }
-
-    .quick-actions,
-    .quick-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .settings-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .azkar-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .qibla-container {
-        width: 100%;
-    }
-
-    .bottom-nav {
-        left: 0;
-        right: 0;
-        width: 100%;
-        border-radius: 0;
-    }
+@media (max-width: 1100px) {
 
     main {
-        padding-bottom: 100px;
+        max-width: 100%;
     }
 
-    .install-banner {
-        left: 12px;
-        right: 12px;
-        width: auto;
+    .prayer-times {
+        grid-template-columns: repeat(5, 1fr);
     }
 }
 
+
 /* =========================================================
-   الهواتف العادية
-   حتى 600px
+   TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    main {
+        padding: 20px 16px 110px;
+    }
+
+    .header-inner {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .prayer-times {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .quick-actions {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .prayer-hero {
+        padding: 25px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
    ========================================================= */
 
 @media (max-width: 600px) {
 
     body {
-        font-size: 15px;
+        overflow-x: hidden;
     }
 
-    h1 {
-        font-size: 25px;
+    main {
+        width: 100%;
+        padding: 16px 12px 105px;
     }
 
-    h2 {
-        font-size: 21px;
+
+    /* HEADER */
+
+    .top-header {
+        position: sticky;
+        top: 0;
     }
 
-    h3 {
-        font-size: 18px;
+    .header-inner {
+        min-height: 62px;
+        padding: 8px 12px;
     }
 
-    .header-content {
-        min-height: 60px;
-    }
-
-    .logo {
-        max-width: 180px;
-    }
-
-    .hero {
-        padding: 20px 16px;
-        border-radius: 18px;
-    }
-
-    .hero h1 {
-        font-size: 25px;
-        line-height: 1.35;
-    }
-
-    .hero p {
-        font-size: 14px;
-    }
-
-    .prayer-grid {
-        gap: 8px;
-    }
-
-    .prayer-card {
-        padding: 13px 9px;
-        min-height: 105px;
-    }
-
-    .prayer-card h3 {
-        font-size: 14px;
-    }
-
-    .prayer-card .prayer-time,
-    .prayer-time {
-        font-size: 20px;
-    }
-
-    .countdown-card {
-        padding: 18px 12px;
-    }
-
-    #countdown {
-        font-size: 31px;
-    }
-
-    .quick-actions,
-    .quick-grid {
+    .brand {
         gap: 9px;
     }
 
-    .quick-card {
-        min-height: 100px;
-        padding: 14px 10px;
+    .brand-logo {
+        width: 42px;
+        height: 42px;
+
+        border-radius: 13px;
+
+        font-size: 21px;
     }
 
-    .quick-card .icon {
-        font-size: 25px;
-    }
-
-    .quick-card h3 {
-        font-size: 14px;
-    }
-
-    .section-title {
-        font-size: 20px;
-    }
-
-    .card {
-        border-radius: 16px;
-    }
-
-    .settings-card {
-        padding: 15px;
-    }
-
-    .setting-row {
-        gap: 10px;
-        padding: 13px 0;
-    }
-
-    select,
-    input[type="text"],
-    input[type="number"] {
-        min-height: 44px;
-        max-width: 100%;
-    }
-
-    .action-buttons {
-        flex-direction: column;
-    }
-
-    .action-buttons button {
-        width: 100%;
-    }
-
-    .qibla-compass {
-        width: min(80vw, 310px);
-        height: min(80vw, 310px);
-    }
-
-    .qibla-arrow {
-        transform-origin: center center;
-    }
-
-    .azkar-card {
-        padding: 16px;
-    }
-
-    .zikr-text {
-        font-size: 18px;
-        line-height: 2;
-    }
-
-    .bottom-nav {
-        padding-bottom:
-            calc(8px + env(safe-area-inset-bottom));
-    }
-
-    .bottom-nav-item {
-        min-width: 0;
-        padding: 7px 3px;
-    }
-
-    .bottom-nav-item span {
-        font-size: 11px;
-    }
-
-    .bottom-nav-item .icon {
-        font-size: 20px;
-    }
-}
-
-/* =========================================================
-   الهواتف الصغيرة جدًا
-   حتى 390px
-   ========================================================= */
-
-@media (max-width: 390px) {
-
-    .app-container,
-    .container,
-    .main-container {
-        padding-left: 11px;
-        padding-right: 11px;
-    }
-
-    h1 {
-        font-size: 22px;
-    }
-
-    h2 {
-        font-size: 19px;
-    }
-
-    .hero {
-        padding: 17px 12px;
-    }
-
-    .hero h1 {
-        font-size: 22px;
-    }
-
-    .prayer-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 6px;
-    }
-
-    .prayer-card {
-        padding: 10px 6px;
-        min-height: 96px;
-    }
-
-    .prayer-card h3 {
-        font-size: 12px;
-    }
-
-    .prayer-time {
-        font-size: 18px !important;
-    }
-
-    #countdown {
-        font-size: 27px;
-    }
-
-    .quick-card {
-        min-height: 90px;
-        padding: 10px 6px;
-    }
-
-    .bottom-nav-item span {
-        font-size: 10px;
-    }
-
-    .bottom-nav-item .icon {
-        font-size: 18px;
-    }
-}
-
-/* =========================================================
-   iPhone X / XS / 11 Pro
-   iPhone 12 / 13 / 14 / 15 / 16
-   Safe Area
-   ========================================================= */
-
-@supports (padding: env(safe-area-inset-top)) {
-
-    body {
-        padding-top: env(safe-area-inset-top);
-    }
-
-    .app-header,
-    header {
-        padding-top:
-            calc(10px + env(safe-area-inset-top));
-    }
-
-    .bottom-nav {
-        padding-bottom:
-            calc(8px + env(safe-area-inset-bottom));
-    }
-
-    main {
-        padding-bottom:
-            calc(100px + env(safe-area-inset-bottom));
-    }
-}
-
-/* =========================================================
-   iPhone في الوضع الأفقي
-   ========================================================= */
-
-@media screen and (orientation: landscape)
-and (max-height: 500px) {
-
-    .hero {
-        padding: 14px 20px;
-    }
-
-    .prayer-grid {
-        grid-template-columns:
-            repeat(3, minmax(0, 1fr));
-    }
-
-    .bottom-nav {
-        padding-top: 5px;
-        padding-bottom: 5px;
-    }
-
-    .bottom-nav-item {
-        padding: 4px;
-    }
-
-    .bottom-nav-item .icon {
+    .brand-text h1 {
         font-size: 17px;
     }
 
-    .bottom-nav-item span {
+    .brand-text p {
         font-size: 10px;
     }
 
-    main {
-        padding-bottom: 75px;
+    .header-actions {
+        gap: 5px;
+    }
+
+    .icon-button {
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+    }
+
+
+    /* SECTION TITLE */
+
+    .section-title {
+        margin-bottom: 15px;
+
+        align-items: flex-start;
+    }
+
+    .section-title h2 {
+        font-size: 21px;
+    }
+
+    .section-title p {
+        font-size: 11px;
+    }
+
+
+    /* PRAYER HERO */
+
+    .prayer-hero {
+        padding: 21px 17px;
+
+        border-radius: 20px;
+
+        margin-bottom: 15px;
+    }
+
+    .prayer-hero-top {
+        gap: 10px;
+    }
+
+    .prayer-location {
+        font-size: 11px;
+    }
+
+    .prayer-location strong {
+        font-size: 15px;
+    }
+
+    .current-prayer {
+        margin-top: 20px;
+    }
+
+    .current-prayer-label {
+        font-size: 11px;
+    }
+
+    .current-prayer-name {
+        font-size: 28px;
+    }
+
+    .current-prayer-time {
+        font-size: 16px;
+    }
+
+    .next-prayer {
+        margin-top: 17px;
+        padding-top: 14px;
+    }
+
+    .next-prayer span {
+        font-size: 11px;
+    }
+
+    .next-prayer strong {
+        font-size: 14px;
+    }
+
+
+    /* PRAYER TIMES */
+
+    .prayer-times {
+        grid-template-columns: repeat(2, 1fr);
+
+        gap: 8px;
+
+        margin-bottom: 17px;
+    }
+
+    .prayer-card {
+        padding: 14px 8px;
+
+        border-radius: 14px;
+    }
+
+    .prayer-card .prayer-icon {
+        width: 35px;
+        height: 35px;
+
+        margin-bottom: 7px;
+
+        border-radius: 10px;
+
+        font-size: 16px;
+    }
+
+    .prayer-card h3 {
+        font-size: 13px;
+    }
+
+    .prayer-card .prayer-time {
+        font-size: 16px;
+    }
+
+    .prayer-card small {
+        font-size: 10px;
+    }
+
+
+    /* DATE */
+
+    .date-card {
+        margin-bottom: 17px;
+
+        padding: 13px;
+
+        border-radius: 14px;
+    }
+
+    .date-icon {
+        width: 38px;
+        height: 38px;
+
+        border-radius: 11px;
+
+        font-size: 18px;
+    }
+
+    .date-info strong {
+        font-size: 13px;
+    }
+
+    .date-info span {
+        font-size: 10px;
+    }
+
+
+    /* QUICK ACTIONS */
+
+    .quick-actions {
+        grid-template-columns: repeat(2, 1fr);
+
+        gap: 8px;
+
+        margin-bottom: 20px;
+    }
+
+    .quick-card {
+        padding: 15px 8px;
+
+        border-radius: 14px;
+    }
+
+    .quick-icon {
+        width: 43px;
+        height: 43px;
+
+        margin-bottom: 8px;
+
+        border-radius: 13px;
+
+        font-size: 19px;
+    }
+
+    .quick-card strong {
+        font-size: 13px;
+    }
+
+    .quick-card span {
+        font-size: 10px;
+    }
+
+
+    /* CONTENT */
+
+    .content-card {
+        padding: 16px;
+
+        border-radius: 17px;
+    }
+
+
+    /* SETTINGS */
+
+    .setting-item {
+        min-height: 60px;
+
+        padding: 11px 13px;
+
+        border-radius: 13px;
+    }
+
+    .setting-info strong {
+        font-size: 13px;
+    }
+
+    .setting-info span {
+        font-size: 10px;
+    }
+
+    .setting-select {
+        min-width: 105px;
+
+        padding: 8px 9px;
+
+        font-size: 12px;
+    }
+
+
+    /* ZIKR */
+
+    .zikr-card {
+        padding: 18px;
+
+        border-radius: 17px;
+    }
+
+    .zikr-text {
+        font-size: 17px;
+
+        line-height: 1.9;
+    }
+
+
+    /* BOTTOM NAV */
+
+    .bottom-nav {
+        left: 8px;
+        right: 8px;
+        bottom: 7px;
+
+        transform: none;
+
+        width: auto;
+
+        min-height: 62px;
+
+        padding: 6px;
+
+        border-radius: 18px;
+    }
+
+    .nav-button {
+        min-height: 49px;
+
+        padding: 4px;
+
+        border-radius: 13px;
+    }
+
+    .nav-button span:first-child {
+        font-size: 18px;
+    }
+
+    .nav-button span:last-child {
+        font-size: 9px;
+    }
+
+
+    /* INSTALL */
+
+    #installBanner {
+        left: 12px;
+        right: 12px;
+        bottom: 80px;
+
+        transform: none;
+
+        width: auto;
+
+        padding: 13px;
+
+        border-radius: 15px;
+    }
+
+
+    /* TOAST */
+
+    #amirToast {
+        bottom: 82px;
+
+        max-width: calc(100% - 24px);
+    }
+
+
+    /* OFFLINE */
+
+    #offlineStatus {
+        top: 72px;
+
+        font-size: 10px;
     }
 }
 
+
 /* =========================================================
-   iPad
+   SMALL PHONES
    ========================================================= */
 
-@media (min-width: 769px)
-and (max-width: 1100px) {
+@media (max-width: 380px) {
 
-    .app-container,
-    .container,
-    .main-container {
-        max-width: 900px;
-        margin-left: auto;
-        margin-right: auto;
-        padding-left: 24px;
-        padding-right: 24px;
+    main {
+        padding-left: 9px;
+        padding-right: 9px;
     }
 
-    .prayer-grid {
-        grid-template-columns:
-            repeat(3, minmax(0, 1fr));
-        gap: 14px;
+    .brand-text p {
+        display: none;
     }
 
-    .quick-actions,
-    .quick-grid {
-        grid-template-columns:
-            repeat(3, minmax(0, 1fr));
+    .brand-text h1 {
+        font-size: 16px;
     }
 
-    .settings-grid {
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
+    .icon-button {
+        width: 35px;
+        height: 35px;
     }
 
-    .qibla-compass {
-        width: 330px;
-        height: 330px;
+    .prayer-hero {
+        padding: 18px 14px;
+    }
+
+    .current-prayer-name {
+        font-size: 25px;
+    }
+
+    .prayer-card {
+        padding: 12px 6px;
+    }
+
+    .quick-card {
+        padding: 13px 6px;
+    }
+
+    .quick-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .nav-button span:first-child {
+        font-size: 17px;
+    }
+
+    .nav-button span:last-child {
+        font-size: 8px;
+    }
+}
+
+
+/* =========================================================
+   LANDSCAPE MOBILE
+   ========================================================= */
+
+@media (max-height: 500px) and (orientation: landscape) {
+
+    .top-header {
+        position: relative;
     }
 
     .bottom-nav {
-        max-width: 700px;
-        left: 50%;
-        right: auto;
-        transform: translateX(-50%);
-    }
-}
-
-/* =========================================================
-   الكمبيوتر
-   ========================================================= */
-
-@media (min-width: 1101px) {
-
-    .app-container,
-    .container,
-    .main-container {
-        width: min(1200px, calc(100% - 48px));
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .prayer-grid {
-        grid-template-columns:
-            repeat(5, minmax(0, 1fr));
-    }
-
-    .quick-actions,
-    .quick-grid {
-        grid-template-columns:
-            repeat(4, minmax(0, 1fr));
-    }
-
-    .settings-grid {
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
-    }
-
-    .bottom-nav {
-        max-width: 760px;
-        left: 50%;
-        right: auto;
-        transform: translateX(-50%);
-        border-radius: 22px;
-        bottom: 18px;
+        bottom: 5px;
     }
 
     main {
-        padding-bottom: 110px;
+        padding-bottom: 90px;
     }
 }
 
-/* =========================================================
-   الشاشات الكبيرة جدًا
-   ========================================================= */
-
-@media (min-width: 1500px) {
-
-    .app-container,
-    .container,
-    .main-container {
-        width: 1280px;
-    }
-
-    .prayer-grid {
-        gap: 18px;
-    }
-
-    .quick-actions,
-    .quick-grid {
-        gap: 18px;
-    }
-}
 
 /* =========================================================
-   تحسين اللمس على الهاتف
-   ========================================================= */
-
-@media (pointer: coarse) {
-
-    button,
-    a,
-    select,
-    input[type="checkbox"],
-    input[type="range"] {
-        touch-action: manipulation;
-    }
-
-    button {
-        min-height: 44px;
-    }
-
-    .bottom-nav-item {
-        min-height: 48px;
-    }
-}
-
-/* =========================================================
-   منع تحديد النص في عناصر التحكم
-   ========================================================= */
-
-button,
-.bottom-nav,
-.switch,
-.install-banner {
-    -webkit-user-select: none;
-    user-select: none;
-}
-
-/* =========================================================
-   الوضع الداكن على مستوى النظام
-   ========================================================= */
-
-@media (prefers-color-scheme: dark) {
-
-    html:not(.light-mode) {
-        color-scheme: dark;
-    }
-}
-
-/* =========================================================
-   إمكانية الوصول
+   REDUCED MOTION
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
@@ -553,36 +483,8 @@ button,
     *,
     *::before,
     *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
+        animation: none !important;
+        transition: none !important;
         scroll-behavior: auto !important;
-    }
-}
-
-/* =========================================================
-   شاشات اللمس الصغيرة جدًا
-   ========================================================= */
-
-@media (max-width: 360px) {
-
-    .prayer-grid {
-        gap: 5px;
-    }
-
-    .prayer-card {
-        min-height: 88px;
-    }
-
-    .prayer-card h3 {
-        font-size: 11px;
-    }
-
-    .prayer-time {
-        font-size: 16px !important;
-    }
-
-    .bottom-nav-item span {
-        font-size: 9px;
     }
 }
