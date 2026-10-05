@@ -1,1109 +1,1487 @@
 /* =========================================================
    أمير مواقيت V2
-   settings.js
-   إدارة إعدادات التطبيق
+   Settings Module
+   الإعدادات العامة
    ========================================================= */
 
-(() => {
-  "use strict";
+(function () {
+    "use strict";
 
-  /* =========================================================
-     أدوات التخزين
-     ========================================================= */
+    const CITY_NAMES = {
+        algiers: "الجزائر العاصمة",
+        oran: "وهران",
+        constantine: "قسنطينة",
+        annaba: "عنابة",
+        blida: "البليدة",
+        setif: "سطيف",
+        tlemcen: "تلمسان",
+        ain_oussera: "عين وسارة"
+    };
 
-  function getStorage() {
-    return window.AmirStorage || null;
-  }
+    const DEFAULTS = {
+        city: "ain_oussera",
+        theme: "auto",
+        calculationMethod: "19",
+        madhhab: "0",
+        adhanEnabled: true,
+        adhanTiming: "at",
+        adhanSound: true,
+        adhanVolume: 80,
+        notificationsEnabled: false
+    };
 
-  function getCity() {
-    const storage = getStorage();
+    /* ---------------------------------------------------------
+       Helpers
+    --------------------------------------------------------- */
 
-    if (
-      storage &&
-      typeof storage.getCity === "function"
-    ) {
-      return (
-        storage.getCity() ||
-        "ain_oussera"
-      );
+    function $(id) {
+        return document.getElementById(id);
     }
 
-    return (
-      localStorage.getItem(
-        "amirCity"
-      ) ||
-      "ain_oussera"
-    );
-  }
+    function showMessage(message, type = "info") {
+        const toast = $("amirToast");
 
-  function setCity(city) {
-    const storage = getStorage();
+        if (!toast) {
+            return;
+        }
 
-    if (
-      storage &&
-      typeof storage.setCity === "function"
-    ) {
-      storage.setCity(city);
-      return;
+        toast.textContent = message;
+        toast.className = "amir-toast show";
+
+        if (type === "success") {
+            toast.classList.add("success");
+        }
+
+        if (type === "error") {
+            toast.classList.add("error");
+        }
+
+        clearTimeout(showMessage.timer);
+
+        showMessage.timer = setTimeout(() => {
+            toast.classList.remove(
+                "show",
+                "success",
+                "error"
+            );
+        }, 3000);
     }
 
-    localStorage.setItem(
-      "amirCity",
-      city
-    );
-  }
+    function storageGet(key, fallback = null) {
+        try {
+            if (
+                window.AmirStorage &&
+                typeof window.AmirStorage.get === "function"
+            ) {
+                const value =
+                    window.AmirStorage.get(key);
 
-  /* =========================================================
-     المدن
-     ========================================================= */
+                return value === null ||
+                    value === undefined
+                    ? fallback
+                    : value;
+            }
+        } catch (error) {
+            console.warn(
+                "Storage get error:",
+                error
+            );
+        }
 
-  const CITIES = {
-    ain_oussera: "عين وسارة",
-    algiers: "الجزائر العاصمة",
-    oran: "وهران",
-    constantine: "قسنطينة",
-    annaba: "عنابة",
-    blida: "البليدة",
-    setif: "سطيف",
-    tlemcen: "تلمسان"
-  };
+        try {
+            const value =
+                localStorage.getItem(key);
 
-  /* =========================================================
-     الوضع
-     ========================================================= */
+            if (value === null) {
+                return fallback;
+            }
 
-  function getTheme() {
-    const storage = getStorage();
-
-    if (
-      storage &&
-      typeof storage.getTheme === "function"
-    ) {
-      return (
-        storage.getTheme() ||
-        "dark"
-      );
+            try {
+                return JSON.parse(value);
+            } catch {
+                return value;
+            }
+        } catch {
+            return fallback;
+        }
     }
 
-    return (
-      localStorage.getItem(
-        "amirTheme"
-      ) ||
-      "dark"
-    );
-  }
+    function storageSet(key, value) {
+        try {
+            if (
+                window.AmirStorage &&
+                typeof window.AmirStorage.set === "function"
+            ) {
+                window.AmirStorage.set(
+                    key,
+                    value
+                );
 
-  function setTheme(theme) {
-    const validThemes = [
-      "light",
-      "dark",
-      "auto"
-    ];
+                return;
+            }
+        } catch (error) {
+            console.warn(
+                "Storage set error:",
+                error
+            );
+        }
 
-    if (
-      !validThemes.includes(
-        theme
-      )
-    ) {
-      theme = "dark";
+        try {
+            localStorage.setItem(
+                key,
+                JSON.stringify(value)
+            );
+        } catch (error) {
+            console.warn(
+                "LocalStorage write error:",
+                error
+            );
+        }
     }
 
-    const storage = getStorage();
+    /* ---------------------------------------------------------
+       City
+    --------------------------------------------------------- */
 
-    if (
-      storage &&
-      typeof storage.setTheme === "function"
-    ) {
-      storage.setTheme(theme);
-    } else {
-      localStorage.setItem(
-        "amirTheme",
-        theme
-      );
+    function getCity() {
+        try {
+            if (
+                window.AmirStorage &&
+                typeof window.AmirStorage.getCity ===
+                    "function"
+            ) {
+                return (
+                    window.AmirStorage.getCity() ||
+                    DEFAULTS.city
+                );
+            }
+        } catch {
+            // fallback
+        }
+
+        return (
+            storageGet(
+                "amirCity",
+                DEFAULTS.city
+            ) || DEFAULTS.city
+        );
     }
 
-    applyTheme(theme);
-  }
+    function setCity(city) {
+        if (!city) {
+            return;
+        }
 
-  function getSystemTheme() {
-    if (
-      window.matchMedia &&
-      window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches
-    ) {
-      return "dark";
+        try {
+            if (
+                window.AmirStorage &&
+                typeof window.AmirStorage.setCity ===
+                    "function"
+            ) {
+                window.AmirStorage.setCity(
+                    city
+                );
+            } else {
+                storageSet(
+                    "amirCity",
+                    city
+                );
+            }
+        } catch {
+            storageSet(
+                "amirCity",
+                city
+            );
+        }
+
+        const select =
+            $("citySelect");
+
+        if (
+            select &&
+            select.value !== city
+        ) {
+            select.value = city;
+        }
+
+        /*
+         * إعلام بقية التطبيق بتغير المدينة.
+         */
+        window.dispatchEvent(
+            new CustomEvent(
+                "amirCityChanged",
+                {
+                    detail: {
+                        city
+                    }
+                }
+            )
+        );
+
+        showMessage(
+            "تم تغيير المدينة إلى " +
+                (CITY_NAMES[city] ||
+                    city),
+            "success"
+        );
     }
 
-    return "light";
-  }
+    function populateCities() {
+        const select =
+            $("citySelect");
 
-  function applyTheme(theme) {
-    const actualTheme =
-      theme === "auto"
-        ? getSystemTheme()
-        : theme;
+        if (!select) {
+            return;
+        }
 
-    document.documentElement.dataset.theme =
-      actualTheme;
+        /*
+         * لا نضيف المدن إذا كانت موجودة بالفعل.
+         */
+        if (
+            select.options.length === 0
+        ) {
+            Object.keys(
+                CITY_NAMES
+            ).forEach(city => {
+                const option =
+                    document.createElement(
+                        "option"
+                    );
 
-    document.body.classList.toggle(
-      "dark-mode",
-      actualTheme === "dark"
-    );
+                option.value = city;
+                option.textContent =
+                    CITY_NAMES[city];
 
-    document.body.classList.toggle(
-      "light-mode",
-      actualTheme === "light"
-    );
+                select.appendChild(
+                    option
+                );
+            });
+        }
 
-    document
-      .querySelectorAll(
-        "[data-theme-choice]"
-      )
-      .forEach(button => {
-        button.classList.toggle(
-          "active",
-          button.dataset.themeChoice ===
+        const current =
+            getCity();
+
+        select.value = current;
+
+        if (
+            select.value !== current
+        ) {
+            select.selectedIndex = 0;
+        }
+    }
+
+    /* ---------------------------------------------------------
+       Theme
+    --------------------------------------------------------- */
+
+    function getTheme() {
+        return (
+            storageGet(
+                "amirTheme",
+                DEFAULTS.theme
+            ) || DEFAULTS.theme
+        );
+    }
+
+    function saveTheme(theme) {
+        storageSet(
+            "amirTheme",
             theme
         );
-      });
-
-    const themeSelect =
-      document.getElementById(
-        "themeSelect"
-      );
-
-    if (themeSelect) {
-      themeSelect.value =
-        theme;
     }
-  }
 
-  /* =========================================================
-     إعدادات الأذان
-     ========================================================= */
-
-  function getAdhanSettings() {
-    const storage = getStorage();
-
-    if (
-      storage &&
-      typeof storage.getAdhanSettings ===
-        "function"
-    ) {
-      return (
-        storage.getAdhanSettings() || {
-          enabled: true,
-          timing: "at",
-          sound: "adhan1",
-          volume: 0.8
+    function getSystemTheme() {
+        if (
+            window.matchMedia &&
+            window.matchMedia(
+                "(prefers-color-scheme: dark)"
+            ).matches
+        ) {
+            return "dark";
         }
-      );
+
+        return "light";
     }
 
-    return {
-      enabled:
-        localStorage.getItem(
-          "amirAdhanEnabled"
-        ) !== "false",
-
-      timing:
-        localStorage.getItem(
-          "amirAdhanTiming"
-        ) ||
-        "at",
-
-      sound:
-        localStorage.getItem(
-          "amirAdhanSound"
-        ) ||
-        "adhan1",
-
-      volume: Number(
-        localStorage.getItem(
-          "amirAdhanVolume"
-        ) ||
-        0.8
-      )
-    };
-  }
-
-  function saveAdhanSettings(
-    settings
-  ) {
-    const storage = getStorage();
-
-    if (
-      storage &&
-      typeof storage.setAdhanSettings ===
-        "function"
-    ) {
-      storage.setAdhanSettings(
-        settings
-      );
-      return;
-    }
-
-    localStorage.setItem(
-      "amirAdhanEnabled",
-      String(settings.enabled)
-    );
-
-    localStorage.setItem(
-      "amirAdhanTiming",
-      settings.timing
-    );
-
-    localStorage.setItem(
-      "amirAdhanSound",
-      settings.sound
-    );
-
-    localStorage.setItem(
-      "amirAdhanVolume",
-      String(settings.volume)
-    );
-  }
-
-  /* =========================================================
-     الإشعارات
-     ========================================================= */
-
-  function getNotifications() {
-    const storage = getStorage();
-
-    if (
-      storage &&
-      typeof storage.getNotifications ===
-        "function"
-    ) {
-      return Boolean(
-        storage.getNotifications()
-      );
-    }
-
-    return (
-      localStorage.getItem(
-        "amirNotifications"
-      ) === "true"
-    );
-  }
-
-  async function enableNotifications() {
-    if (
-      window.AmirAdhan &&
-      typeof window.AmirAdhan
-        .requestNotificationPermission ===
-        "function"
-    ) {
-      return window.AmirAdhan
-        .requestNotificationPermission();
-    }
-
-    if (
-      !("Notification" in window)
-    ) {
-      return false;
-    }
-
-    try {
-      const permission =
-        await Notification.requestPermission();
-
-      const enabled =
-        permission === "granted";
-
-      const storage =
-        getStorage();
-
-      if (
-        storage &&
-        typeof storage.setNotifications ===
-          "function"
-      ) {
-        storage.setNotifications(
-          enabled
-        );
-      } else {
-        localStorage.setItem(
-          "amirNotifications",
-          String(enabled)
-        );
-      }
-
-      return enabled;
-    } catch {
-      return false;
-    }
-  }
-
-  /* =========================================================
-     تحديث عناصر الواجهة
-     ========================================================= */
-
-  function updateCityControls() {
-    const city =
-      getCity();
-
-    const select =
-      document.getElementById(
-        "citySelect"
-      );
-
-    if (select) {
-      select.value =
-        city;
-    }
-
-    document
-      .querySelectorAll(
-        "[data-current-city]"
-      )
-      .forEach(
-        element => {
-          element.textContent =
-            CITIES[city] ||
-            "عين وسارة";
+    function applyTheme(theme) {
+        if (!theme) {
+            theme = DEFAULTS.theme;
         }
-      );
-  }
 
-  function updateAdhanControls() {
-    const settings =
-      getAdhanSettings();
+        let actualTheme = theme;
 
-    const enabled =
-      document.getElementById(
-        "adhanEnabled"
-      );
+        if (theme === "auto") {
+            actualTheme =
+                getSystemTheme();
+        }
 
-    if (enabled) {
-      enabled.checked =
-        Boolean(
-          settings.enabled
+        document.documentElement.setAttribute(
+            "data-theme",
+            actualTheme
+        );
+
+        document.body.classList.toggle(
+            "dark-mode",
+            actualTheme === "dark"
+        );
+
+        document.body.classList.toggle(
+            "light-mode",
+            actualTheme === "light"
+        );
+
+        const darkMode =
+            $("darkMode");
+
+        if (darkMode) {
+            darkMode.checked =
+                actualTheme === "dark";
+        }
+
+        const themeSelect =
+            $("themeSelect");
+
+        if (
+            themeSelect &&
+            themeSelect.value !== theme
+        ) {
+            themeSelect.value =
+                theme;
+        }
+
+        document
+            .querySelectorAll(
+                "[data-theme-choice]"
+            )
+            .forEach(button => {
+                button.classList.toggle(
+                    "active",
+                    button.getAttribute(
+                        "data-theme-choice"
+                    ) === theme
+                );
+            });
+    }
+
+    function setTheme(theme) {
+        if (
+            ![
+                "light",
+                "dark",
+                "auto"
+            ].includes(theme)
+        ) {
+            theme = "auto";
+        }
+
+        saveTheme(theme);
+        applyTheme(theme);
+
+        showMessage(
+            "تم حفظ المظهر",
+            "success"
         );
     }
 
-    const timing =
-      document.getElementById(
-        "adhanTiming"
-      );
-
-    if (timing) {
-      timing.value =
-        settings.timing ||
-        "at";
-    }
-
-    const volume =
-      document.getElementById(
-        "adhanVolume"
-      );
-
-    if (volume) {
-      volume.value =
-        Math.round(
-          Number(
-            settings.volume
-          ) * 100
-        );
-    }
-
-    const volumeValue =
-      document.getElementById(
-        "adhanVolumeValue"
-      );
-
-    if (volumeValue) {
-      volumeValue.textContent =
-        `${Math.round(
-          Number(
-            settings.volume
-          ) * 100
-        )}%`;
-    }
-
-    const notificationToggle =
-      document.getElementById(
-        "notificationsEnabled"
-      );
-
-    if (notificationToggle) {
-      notificationToggle.checked =
-        getNotifications();
-    }
-  }
-
-  /* =========================================================
-     تغيير المدينة
-     ========================================================= */
-
-  async function handleCityChange(
-    city
-  ) {
-    if (
-      !CITIES[city]
-    ) {
-      return;
-    }
-
-    setCity(city);
-
-    updateCityControls();
-
-    if (
-      window.AmirPrayer &&
-      typeof window.AmirPrayer.changeCity ===
-        "function"
-    ) {
-      await window.AmirPrayer
-        .changeCity(city);
-    }
-
-    updateSettingsStatus(
-      `تم تغيير المدينة إلى ${CITIES[city]}`
-    );
-  }
-
-  /* =========================================================
-     تغيير إعداد الأذان
-     ========================================================= */
-
-  function handleAdhanEnabled(
-    enabled
-  ) {
-    const settings =
-      getAdhanSettings();
-
-    settings.enabled =
-      Boolean(enabled);
-
-    saveAdhanSettings(
-      settings
-    );
-
-    if (
-      window.AmirAdhan &&
-      typeof window.AmirAdhan.setEnabled ===
-        "function"
-    ) {
-      window.AmirAdhan.setEnabled(
-        enabled
-      );
-    }
-
-    updateSettingsStatus(
-      enabled
-        ? "تم تفعيل الأذان"
-        : "تم إيقاف الأذان"
-    );
-  }
-
-  function handleAdhanTiming(
-    timing
-  ) {
-    const valid = [
-      "off",
-      "before",
-      "at",
-      "both"
-    ];
-
-    if (
-      !valid.includes(
-        timing
-      )
-    ) {
-      timing = "at";
-    }
-
-    const settings =
-      getAdhanSettings();
-
-    settings.timing =
-      timing;
-
-    saveAdhanSettings(
-      settings
-    );
-
-    if (
-      window.AmirAdhan &&
-      typeof window.AmirAdhan.setTiming ===
-        "function"
-    ) {
-      window.AmirAdhan.setTiming(
-        timing
-      );
-    }
-
-    const names = {
-      off: "بدون أذان",
-      before: "قبل الصلاة بـ10 دقائق",
-      at: "عند دخول وقت الصلاة",
-      both: "قبل الصلاة وعند دخول الوقت"
-    };
-
-    updateSettingsStatus(
-      names[timing]
-    );
-  }
-
-  function handleAdhanVolume(
-    value
-  ) {
-    const volume =
-      Math.max(
-        0,
-        Math.min(
-          100,
-          Number(value)
-        )
-      );
-
-    const normalized =
-      volume / 100;
-
-    const settings =
-      getAdhanSettings();
-
-    settings.volume =
-      normalized;
-
-    saveAdhanSettings(
-      settings
-    );
-
-    if (
-      window.AmirAdhan &&
-      typeof window.AmirAdhan.setVolume ===
-        "function"
-    ) {
-      window.AmirAdhan.setVolume(
-        normalized
-      );
-    }
-
-    const output =
-      document.getElementById(
-        "adhanVolumeValue"
-      );
-
-    if (output) {
-      output.textContent =
-        `${Math.round(
-          volume
-        )}%`;
-    }
-  }
-
-  /* =========================================================
-     حالة الإعدادات
-     ========================================================= */
-
-  function updateSettingsStatus(
-    message
-  ) {
-    const elements =
-      document.querySelectorAll(
-        "[data-settings-status]"
-      );
-
-    elements.forEach(
-      element => {
-        element.textContent =
-          message;
-      }
-    );
-
-    const status =
-      document.getElementById(
-        "settingsStatus"
-      );
-
-    if (status) {
-      status.textContent =
-        message;
-    }
-  }
-
-  /* =========================================================
-     مسح البيانات
-     ========================================================= */
-
-  function clearAppData() {
-    const confirmed =
-      window.confirm(
-        "هل أنت متأكد من حذف جميع إعدادات أمير مواقيت والعدادات المحفوظة؟"
-      );
-
-    if (!confirmed) {
-      return;
-    }
-
-    const storage =
-      getStorage();
-
-    if (
-      storage &&
-      typeof storage.clear ===
-        "function"
-    ) {
-      storage.clear();
-    } else {
-      const keys = [
-        "amirCity",
-        "amirTheme",
-        "amirAdhanEnabled",
-        "amirAdhanTiming",
-        "amirAdhanSound",
-        "amirNotifications",
-        "amirAdhanVolume",
-        "amirPrayerSettings",
-        "amirMawaqitCache",
-        "amirLastRead",
-        "amirFavorites",
-        "amirQiblaSettings",
-        "amirInstallDismissed",
-        "amirFirstRun"
-      ];
-
-      keys.forEach(
-        key => {
-          localStorage.removeItem(
-            key
-          );
+    function bindSystemTheme() {
+        if (!window.matchMedia) {
+            return;
         }
-      );
-    }
 
-    window.location.reload();
-  }
+        const media =
+            window.matchMedia(
+                "(prefers-color-scheme: dark)"
+            );
 
-  /* =========================================================
-     تصدير الإعدادات
-     ========================================================= */
-
-  function exportSettings() {
-    const storage =
-      getStorage();
-
-    let data = {};
-
-    if (
-      storage &&
-      typeof storage.exportAll ===
-        "function"
-    ) {
-      data =
-        storage.exportAll();
-    } else {
-      data = {
-        city: getCity(),
-        theme: getTheme(),
-        adhan:
-          getAdhanSettings(),
-        notifications:
-          getNotifications()
-      };
-    }
-
-    const blob =
-      new Blob(
-        [
-          JSON.stringify(
-            data,
-            null,
-            2
-          )
-        ],
-        {
-          type:
-            "application/json"
-        }
-      );
-
-    const url =
-      URL.createObjectURL(
-        blob
-      );
-
-    const link =
-      document.createElement(
-        "a"
-      );
-
-    link.href =
-      url;
-
-    link.download =
-      "amir-mawaqit-settings.json";
-
-    document.body.appendChild(
-      link
-    );
-
-    link.click();
-
-    link.remove();
-
-    URL.revokeObjectURL(
-      url
-    );
-
-    updateSettingsStatus(
-      "تم تصدير الإعدادات"
-    );
-  }
-
-  /* =========================================================
-     ربط عناصر HTML
-     ========================================================= */
-
-  function bindUI() {
-    /* المدينة */
-
-    const citySelect =
-      document.getElementById(
-        "citySelect"
-      );
-
-    if (citySelect) {
-      citySelect.addEventListener(
-        "change",
-        event => {
-          handleCityChange(
-            event.target.value
-          );
-        }
-      );
-    }
-
-    /* المظهر */
-
-    const themeSelect =
-      document.getElementById(
-        "themeSelect"
-      );
-
-    if (themeSelect) {
-      themeSelect.value =
-        getTheme();
-
-      themeSelect.addEventListener(
-        "change",
-        event => {
-          setTheme(
-            event.target.value
-          );
-        }
-      );
-    }
-
-    document
-      .querySelectorAll(
-        "[data-theme-choice]"
-      )
-      .forEach(
-        button => {
-          button.addEventListener(
-            "click",
-            () => {
-              setTheme(
-                button.dataset
-                  .themeChoice
-              );
+        const handler = () => {
+            if (
+                getTheme() === "auto"
+            ) {
+                applyTheme("auto");
             }
-          );
+        };
+
+        if (
+            typeof media.addEventListener ===
+            "function"
+        ) {
+            media.addEventListener(
+                "change",
+                handler
+            );
+        } else if (
+            typeof media.addListener ===
+            "function"
+        ) {
+            media.addListener(
+                handler
+            );
         }
-      );
-
-    /* الأذان */
-
-    const adhanEnabled =
-      document.getElementById(
-        "adhanEnabled"
-      );
-
-    if (adhanEnabled) {
-      adhanEnabled.addEventListener(
-        "change",
-        event => {
-          handleAdhanEnabled(
-            event.target.checked
-          );
-        }
-      );
     }
 
-    const adhanTiming =
-      document.getElementById(
-        "adhanTiming"
-      );
+    /* ---------------------------------------------------------
+       Prayer settings
+    --------------------------------------------------------- */
 
-    if (adhanTiming) {
-      adhanTiming.addEventListener(
-        "change",
-        event => {
-          handleAdhanTiming(
-            event.target.value
-          );
+    function getPrayerSettings() {
+        let settings =
+            storageGet(
+                "amirPrayerSettings",
+                {}
+            );
+
+        if (
+            !settings ||
+            typeof settings !== "object"
+        ) {
+            settings = {};
         }
-      );
+
+        return {
+            calculationMethod:
+                String(
+                    settings.calculationMethod ??
+                        DEFAULTS.calculationMethod
+                ),
+
+            madhhab:
+                String(
+                    settings.madhhab ??
+                        DEFAULTS.madhhab
+                ),
+
+            adjustments:
+                settings.adjustments ||
+                {}
+        };
     }
 
-    const adhanVolume =
-      document.getElementById(
-        "adhanVolume"
-      );
+    function savePrayerSettings(
+        settings
+    ) {
+        const current =
+            getPrayerSettings();
 
-    if (adhanVolume) {
-      adhanVolume.addEventListener(
-        "input",
-        event => {
-          handleAdhanVolume(
-            event.target.value
-          );
-        }
-      );
+        const merged = {
+            ...current,
+            ...settings
+        };
+
+        storageSet(
+            "amirPrayerSettings",
+            merged
+        );
+
+        window.dispatchEvent(
+            new CustomEvent(
+                "amirPrayerSettingsChanged",
+                {
+                    detail: merged
+                }
+            )
+        );
     }
 
-    /* الإشعارات */
+    /* ---------------------------------------------------------
+       Adhan settings
+    --------------------------------------------------------- */
 
-    const notifications =
-      document.getElementById(
-        "notificationsEnabled"
-      );
+    function getAdhanSettings() {
+        try {
+            if (
+                window.AmirStorage &&
+                typeof window.AmirStorage.getAdhanSettings ===
+                    "function"
+            ) {
+                const value =
+                    window.AmirStorage.getAdhanSettings();
 
-    if (notifications) {
-      notifications.addEventListener(
-        "change",
-        async event => {
-          if (
-            event.target.checked
-          ) {
-            const enabled =
-              await enableNotifications();
+                if (value) {
+                    return {
+                        enabled:
+                            value.enabled ??
+                            DEFAULTS.adhanEnabled,
 
-            event.target.checked =
-              enabled;
-          } else {
-            const storage =
-              getStorage();
+                        timing:
+                            value.timing ??
+                            DEFAULTS.adhanTiming,
+
+                        sound:
+                            value.sound ??
+                            DEFAULTS.adhanSound,
+
+                        volume:
+                            Number(
+                                value.volume ??
+                                    DEFAULTS.adhanVolume
+                            )
+                    };
+                }
+            }
+        } catch {
+            // fallback
+        }
+
+        return {
+            enabled:
+                Boolean(
+                    storageGet(
+                        "amirAdhanEnabled",
+                        DEFAULTS.adhanEnabled
+                    )
+                ),
+
+            timing:
+                storageGet(
+                    "amirAdhanTiming",
+                    DEFAULTS.adhanTiming
+                ),
+
+            sound:
+                Boolean(
+                    storageGet(
+                        "amirAdhanSound",
+                        DEFAULTS.adhanSound
+                    )
+                ),
+
+            volume:
+                Number(
+                    storageGet(
+                        "amirAdhanVolume",
+                        DEFAULTS.adhanVolume
+                    )
+                )
+        };
+    }
+
+    function saveAdhanSettings(
+        settings
+    ) {
+        const current =
+            getAdhanSettings();
+
+        const merged = {
+            ...current,
+            ...settings
+        };
+
+        try {
+            if (
+                window.AmirStorage &&
+                typeof window.AmirStorage.setAdhanSettings ===
+                    "function"
+            ) {
+                window.AmirStorage.setAdhanSettings(
+                    merged
+                );
+            } else {
+                storageSet(
+                    "amirAdhanEnabled",
+                    merged.enabled
+                );
+
+                storageSet(
+                    "amirAdhanTiming",
+                    merged.timing
+                );
+
+                storageSet(
+                    "amirAdhanSound",
+                    merged.sound
+                );
+
+                storageSet(
+                    "amirAdhanVolume",
+                    merged.volume
+                );
+            }
+        } catch {
+            storageSet(
+                "amirAdhanEnabled",
+                merged.enabled
+            );
+
+            storageSet(
+                "amirAdhanTiming",
+                merged.timing
+            );
+
+            storageSet(
+                "amirAdhanSound",
+                merged.sound
+            );
+
+            storageSet(
+                "amirAdhanVolume",
+                merged.volume
+            );
+        }
+
+        if (
+            window.AmirAdhan &&
+            typeof window.AmirAdhan.reschedule ===
+                "function"
+        ) {
+            window.AmirAdhan.reschedule();
+        }
+
+        window.dispatchEvent(
+            new CustomEvent(
+                "amirAdhanSettingsChanged",
+                {
+                    detail: merged
+                }
+            )
+        );
+    }
+
+    /* ---------------------------------------------------------
+       Notifications
+    --------------------------------------------------------- */
+
+    function getNotificationsEnabled() {
+        return Boolean(
+            storageGet(
+                "amirNotifications",
+                DEFAULTS.notificationsEnabled
+            )
+        );
+    }
+
+    async function enableNotifications() {
+        if (
+            !("Notification" in window)
+        ) {
+            showMessage(
+                "الإشعارات غير مدعومة في هذا المتصفح",
+                "error"
+            );
+
+            return false;
+        }
+
+        try {
+            let permission =
+                Notification.permission;
 
             if (
-              storage &&
-              typeof storage.setNotifications ===
-                "function"
+                permission !== "granted"
             ) {
-              storage.setNotifications(
-                false
-              );
-            } else {
-              localStorage.setItem(
-                "amirNotifications",
-                "false"
-              );
+                permission =
+                    await Notification.requestPermission();
             }
 
-            updateSettingsStatus(
-              "تم إيقاف الإشعارات"
+            if (
+                permission !== "granted"
+            ) {
+                storageSet(
+                    "amirNotifications",
+                    false
+                );
+
+                updateNotificationUI(
+                    false
+                );
+
+                showMessage(
+                    "لم يتم السماح بالإشعارات",
+                    "error"
+                );
+
+                return false;
+            }
+
+            storageSet(
+                "amirNotifications",
+                true
             );
-          }
-        }
-      );
-    }
 
-    /* اختبار الأذان */
-
-    const testAdhan =
-      document.getElementById(
-        "testAdhan"
-      );
-
-    if (testAdhan) {
-      testAdhan.addEventListener(
-        "click",
-        async () => {
-          if (
-            window.AmirAdhan &&
-            typeof window.AmirAdhan.test ===
-              "function"
-          ) {
-            await window.AmirAdhan.test();
-          }
-        }
-      );
-    }
-
-    /* إيقاف الأذان */
-
-    const stopAdhan =
-      document.getElementById(
-        "stopAdhan"
-      );
-
-    if (stopAdhan) {
-      stopAdhan.addEventListener(
-        "click",
-        () => {
-          if (
-            window.AmirAdhan &&
-            typeof window.AmirAdhan.stop ===
-              "function"
-          ) {
-            window.AmirAdhan.stop();
-          }
-        }
-      );
-    }
-
-    /* إعادة ضبط البيانات */
-
-    const clearData =
-      document.getElementById(
-        "clearAppData"
-      );
-
-    if (clearData) {
-      clearData.addEventListener(
-        "click",
-        clearAppData
-      );
-    }
-
-    /* تصدير الإعدادات */
-
-    const exportButton =
-      document.getElementById(
-        "exportSettings"
-      );
-
-    if (exportButton) {
-      exportButton.addEventListener(
-        "click",
-        exportSettings
-      );
-    }
-
-    /* زر الإشعارات */
-
-    const enableNotificationButton =
-      document.getElementById(
-        "enableNotifications"
-      );
-
-    if (
-      enableNotificationButton
-    ) {
-      enableNotificationButton.addEventListener(
-        "click",
-        async () => {
-          const enabled =
-            await enableNotifications();
-
-          if (enabled) {
-            updateSettingsStatus(
-              "تم تفعيل الإشعارات بنجاح"
+            updateNotificationUI(
+                true
             );
-          }
+
+            showMessage(
+                "تم تفعيل الإشعارات",
+                "success"
+            );
+
+            return true;
+
+        } catch (error) {
+            console.error(
+                "Notification error:",
+                error
+            );
+
+            showMessage(
+                "تعذر تفعيل الإشعارات",
+                "error"
+            );
+
+            return false;
         }
-      );
     }
-  }
 
-  /* =========================================================
-     تحديث المظهر تلقائيًا عند تغيير
-     إعداد النظام
-     ========================================================= */
-
-  function watchSystemTheme() {
-    if (
-      !window.matchMedia
+    function updateNotificationUI(
+        enabled
     ) {
-      return;
+        const checkbox =
+            $("notificationsEnabled");
+
+        if (checkbox) {
+            checkbox.checked =
+                Boolean(enabled);
+        }
+
+        const button =
+            $("enableNotifications");
+
+        if (button) {
+            button.textContent =
+                enabled
+                    ? "الإشعارات مفعلة ✓"
+                    : "تفعيل الإشعارات";
+        }
     }
 
-    const media =
-      window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      );
+    /* ---------------------------------------------------------
+       Load settings into UI
+    --------------------------------------------------------- */
 
-    const handler =
-      () => {
+    function loadUI() {
+        populateCities();
+
+        const city =
+            getCity();
+
+        if ($("citySelect")) {
+            $("citySelect").value =
+                city;
+        }
+
+        const prayer =
+            getPrayerSettings();
+
+        if ($("calculationMethod")) {
+            $("calculationMethod").value =
+                prayer.calculationMethod;
+        }
+
+        if ($("madhhab")) {
+            $("madhhab").value =
+                prayer.madhhab;
+        }
+
+        const adhan =
+            getAdhanSettings();
+
+        if ($("adhanEnabled")) {
+            $("adhanEnabled").checked =
+                Boolean(
+                    adhan.enabled
+                );
+        }
+
+        if ($("adhanTiming")) {
+            $("adhanTiming").value =
+                adhan.timing;
+        }
+
+        if ($("adhanSound")) {
+            $("adhanSound").checked =
+                Boolean(
+                    adhan.sound
+                );
+        }
+
+        if ($("adhanVolume")) {
+            const volume =
+                Math.max(
+                    0,
+                    Math.min(
+                        100,
+                        Number(
+                            adhan.volume
+                        ) || 80
+                    )
+                );
+
+            $("adhanVolume").value =
+                volume;
+
+            updateVolumeLabel(
+                volume
+            );
+        }
+
+        const notifications =
+            getNotificationsEnabled();
+
+        updateNotificationUI(
+            notifications
+        );
+
+        const theme =
+            getTheme();
+
+        applyTheme(theme);
+    }
+
+    /* ---------------------------------------------------------
+       Volume
+    --------------------------------------------------------- */
+
+    function updateVolumeLabel(
+        value
+    ) {
+        const labels =
+            document.querySelectorAll(
+                "[data-volume-value]"
+            );
+
+        labels.forEach(label => {
+            label.textContent =
+                Number(value) + "%";
+        });
+    }
+
+    /* ---------------------------------------------------------
+       Event binding
+    --------------------------------------------------------- */
+
+    function bindEvents() {
+
+        /* المدينة */
+        const citySelect =
+            $("citySelect");
+
+        if (citySelect) {
+            citySelect.addEventListener(
+                "change",
+                function () {
+                    setCity(
+                        this.value
+                    );
+
+                    /*
+                     * تحديث مواقيت الصلاة فوراً.
+                     */
+                    if (
+                        window.AmirPrayer &&
+                        typeof window.AmirPrayer.load ===
+                            "function"
+                    ) {
+                        window.AmirPrayer.load();
+                    }
+                }
+            );
+        }
+
+        /* طريقة الحساب */
+        const calculationMethod =
+            $("calculationMethod");
+
+        if (calculationMethod) {
+            calculationMethod.addEventListener(
+                "change",
+                function () {
+                    savePrayerSettings({
+                        calculationMethod:
+                            this.value
+                    });
+
+                    if (
+                        window.AmirPrayer &&
+                        typeof window.AmirPrayer.load ===
+                            "function"
+                    ) {
+                        window.AmirPrayer.load();
+                    }
+
+                    showMessage(
+                        "تم تحديث طريقة الحساب",
+                        "success"
+                    );
+                }
+            );
+        }
+
+        /* المذهب */
+        const madhhab =
+            $("madhhab");
+
+        if (madhhab) {
+            madhhab.addEventListener(
+                "change",
+                function () {
+                    savePrayerSettings({
+                        madhhab:
+                            this.value
+                    });
+
+                    if (
+                        window.AmirPrayer &&
+                        typeof window.AmirPrayer.load ===
+                            "function"
+                    ) {
+                        window.AmirPrayer.load();
+                    }
+
+                    showMessage(
+                        "تم تحديث المذهب",
+                        "success"
+                    );
+                }
+            );
+        }
+
+        /* المظهر */
+        const themeSelect =
+            $("themeSelect");
+
+        if (themeSelect) {
+            themeSelect.addEventListener(
+                "change",
+                function () {
+                    setTheme(
+                        this.value
+                    );
+                }
+            );
+        }
+
+        document
+            .querySelectorAll(
+                "[data-theme-choice]"
+            )
+            .forEach(button => {
+                button.addEventListener(
+                    "click",
+                    function () {
+                        setTheme(
+                            this.getAttribute(
+                                "data-theme-choice"
+                            )
+                        );
+                    }
+                );
+            });
+
+        /* الوضع الداكن */
+        const darkMode =
+            $("darkMode");
+
+        if (darkMode) {
+            darkMode.addEventListener(
+                "change",
+                function () {
+                    setTheme(
+                        this.checked
+                            ? "dark"
+                            : "light"
+                    );
+                }
+            );
+        }
+
+        /* تشغيل الأذان */
+        const adhanEnabled =
+            $("adhanEnabled");
+
+        if (adhanEnabled) {
+            adhanEnabled.addEventListener(
+                "change",
+                function () {
+                    saveAdhanSettings({
+                        enabled:
+                            this.checked
+                    });
+
+                    showMessage(
+                        this.checked
+                            ? "تم تشغيل الأذان"
+                            : "تم إيقاف الأذان",
+                        "success"
+                    );
+                }
+            );
+        }
+
+        /* توقيت الأذان */
+        const adhanTiming =
+            $("adhanTiming");
+
+        if (adhanTiming) {
+            adhanTiming.addEventListener(
+                "change",
+                function () {
+                    saveAdhanSettings({
+                        timing:
+                            this.value
+                    });
+                }
+            );
+        }
+
+        /* صوت الأذان */
+        const adhanSound =
+            $("adhanSound");
+
+        if (adhanSound) {
+            adhanSound.addEventListener(
+                "change",
+                function () {
+                    saveAdhanSettings({
+                        sound:
+                            this.checked
+                    });
+                }
+            );
+        }
+
+        /* مستوى الصوت */
+        const adhanVolume =
+            $("adhanVolume");
+
+        if (adhanVolume) {
+            adhanVolume.addEventListener(
+                "input",
+                function () {
+                    const volume =
+                        Number(
+                            this.value
+                        );
+
+                    updateVolumeLabel(
+                        volume
+                    );
+
+                    if (
+                        window.AmirAdhan &&
+                        typeof window.AmirAdhan.setVolume ===
+                            "function"
+                    ) {
+                        window.AmirAdhan.setVolume(
+                            volume
+                        );
+                    }
+                }
+            );
+
+            adhanVolume.addEventListener(
+                "change",
+                function () {
+                    const volume =
+                        Number(
+                            this.value
+                        );
+
+                    saveAdhanSettings({
+                        volume
+                    });
+                }
+            );
+        }
+
+        /* اختبار الأذان */
+        const testAdhan =
+            $("testAdhan");
+
+        if (testAdhan) {
+            testAdhan.addEventListener(
+                "click",
+                function () {
+                    if (
+                        window.AmirAdhan &&
+                        typeof window.AmirAdhan.test ===
+                            "function"
+                    ) {
+                        window.AmirAdhan.test();
+                    }
+                }
+            );
+        }
+
+        /* زر الأذان الرئيسي */
+        const adhanTestButton =
+            $("adhanTestButton");
+
+        if (adhanTestButton) {
+            adhanTestButton.addEventListener(
+                "click",
+                function () {
+                    if (
+                        window.AmirAdhan &&
+                        typeof window.AmirAdhan.test ===
+                            "function"
+                    ) {
+                        window.AmirAdhan.test();
+                    }
+                }
+            );
+        }
+
+        /* إيقاف الأذان */
+        const stopAdhan =
+            $("stopAdhan");
+
+        if (stopAdhan) {
+            stopAdhan.addEventListener(
+                "click",
+                function () {
+                    if (
+                        window.AmirAdhan &&
+                        typeof window.AmirAdhan.stop ===
+                            "function"
+                    ) {
+                        window.AmirAdhan.stop();
+                    }
+                }
+            );
+        }
+
+        /* الإشعارات */
+        const notificationsEnabled =
+            $("notificationsEnabled");
+
+        if (notificationsEnabled) {
+            notificationsEnabled.addEventListener(
+                "change",
+                async function () {
+                    if (
+                        this.checked
+                    ) {
+                        await enableNotifications();
+                    } else {
+                        storageSet(
+                            "amirNotifications",
+                            false
+                        );
+
+                        updateNotificationUI(
+                            false
+                        );
+
+                        showMessage(
+                            "تم إيقاف الإشعارات"
+                        );
+                    }
+                }
+            );
+        }
+
+        /* زر تفعيل الإشعارات */
+        const enableNotificationsButton =
+            $("enableNotifications");
+
         if (
-          getTheme() ===
-          "auto"
+            enableNotificationsButton
         ) {
-          applyTheme(
-            "auto"
-          );
+            enableNotificationsButton.addEventListener(
+                "click",
+                async function () {
+                    await enableNotifications();
+                }
+            );
         }
-      };
 
-    if (
-      typeof media.addEventListener ===
-      "function"
-    ) {
-      media.addEventListener(
-        "change",
-        handler
-      );
-    } else if (
-      typeof media.addListener ===
-        "function"
-    ) {
-      media.addListener(
-        handler
-      );
+        /* تصدير الإعدادات */
+        const exportSettings =
+            $("exportSettings");
+
+        if (exportSettings) {
+            exportSettings.addEventListener(
+                "click",
+                function () {
+                    exportAllSettings();
+                }
+            );
+        }
+
+        /* مسح بيانات التطبيق */
+        const clearAppData =
+            $("clearAppData");
+
+        if (clearAppData) {
+            clearAppData.addEventListener(
+                "click",
+                function () {
+                    clearAllData();
+                }
+            );
+        }
+
+        /* تحديث تلقائي عند عودة التطبيق */
+        document.addEventListener(
+            "visibilitychange",
+            function () {
+                if (
+                    document.visibilityState ===
+                    "visible"
+                ) {
+                    loadUI();
+                }
+            }
+        );
     }
-  }
 
-  /* =========================================================
-     API عام
-     ========================================================= */
+    /* ---------------------------------------------------------
+       Export
+    --------------------------------------------------------- */
 
-  window.AmirSettings = {
-    getCity,
-    setCity,
+    function exportAllSettings() {
+        let data = {};
 
-    getTheme,
-    setTheme,
-    applyTheme,
+        try {
+            if (
+                window.AmirStorage &&
+                typeof window.AmirStorage.exportAll ===
+                    "function"
+            ) {
+                data =
+                    window.AmirStorage.exportAll();
+            } else {
+                data = {
+                    city: getCity(),
+                    theme: getTheme(),
+                    prayer:
+                        getPrayerSettings(),
+                    adhan:
+                        getAdhanSettings(),
+                    notifications:
+                        getNotificationsEnabled(),
+                    azkarProgress:
+                        storageGet(
+                            "amirAzkarProgress",
+                            {}
+                        ),
+                    azkarFavorites:
+                        storageGet(
+                            "amirAzkarFavorites",
+                            []
+                        ),
+                    tasbih:
+                        storageGet(
+                            "amirTasbihCount",
+                            0
+                        )
+                };
+            }
+        } catch (error) {
+            console.error(
+                "Export error:",
+                error
+            );
 
-    getAdhanSettings,
-    saveAdhanSettings,
+            showMessage(
+                "تعذر تصدير الإعدادات",
+                "error"
+            );
 
-    getNotifications,
-    enableNotifications,
+            return;
+        }
 
-    clearAppData,
-    exportSettings,
+        const payload = {
+            app: "Amir Mawaqit",
+            version: "2.0.0",
+            exportedAt:
+                new Date().toISOString(),
+            data
+        };
 
-    cities:
-      CITIES
-  };
+        const blob =
+            new Blob(
+                [
+                    JSON.stringify(
+                        payload,
+                        null,
+                        2
+                    )
+                ],
+                {
+                    type:
+                        "application/json"
+                }
+            );
 
-  /* =========================================================
-     التشغيل
-     ========================================================= */
+        const url =
+            URL.createObjectURL(
+                blob
+            );
 
-  document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-      applyTheme(
-        getTheme()
-      );
+        const link =
+            document.createElement(
+                "a"
+            );
 
-      updateCityControls();
+        link.href = url;
 
-      updateAdhanControls();
+        link.download =
+            "amir-mawaqit-settings.json";
 
-      bindUI();
+        document.body.appendChild(
+            link
+        );
 
-      watchSystemTheme();
+        link.click();
+
+        link.remove();
+
+        setTimeout(() => {
+            URL.revokeObjectURL(
+                url
+            );
+        }, 1000);
+
+        showMessage(
+            "تم تصدير الإعدادات",
+            "success"
+        );
     }
-  );
+
+    /* ---------------------------------------------------------
+       Clear data
+    --------------------------------------------------------- */
+
+    function clearAllData() {
+        const confirmed =
+            window.confirm(
+                "هل أنت متأكد من حذف إعدادات وتقدم أمير مواقيت؟\n\nسيتم حذف المدينة والمظهر وإعدادات الأذان وتقدم الأذكار والمفضلة."
+            );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            if (
+                window.AmirStorage &&
+                typeof window.AmirStorage.clearAll ===
+                    "function"
+            ) {
+                window.AmirStorage.clearAll();
+            } else if (
+                window.AmirStorage &&
+                typeof window.AmirStorage.clear ===
+                    "function"
+            ) {
+                window.AmirStorage.clear();
+            }
+        } catch (error) {
+            console.warn(
+                "Storage clear error:",
+                error
+            );
+        }
+
+        /*
+         * حذف مفاتيح V2 التي نستخدمها مباشرة.
+         */
+        const keys = [
+            "amirCity",
+            "amirTheme",
+            "amirAdhanEnabled",
+            "amirAdhanTiming",
+            "amirAdhanSound",
+            "amirAdhanVolume",
+            "amirNotifications",
+            "amirPrayerSettings",
+            "amirMawaqitCache",
+            "amirAzkarProgress",
+            "amirAzkarFavorites",
+            "amirTasbihCount",
+            "amirLastRead",
+            "amirFavorites",
+            "amirQiblaSettings"
+        ];
+
+        keys.forEach(key => {
+            try {
+                localStorage.removeItem(
+                    key
+                );
+            } catch {
+                // ignore
+            }
+        });
+
+        showMessage(
+            "تم حذف بيانات التطبيق",
+            "success"
+        );
+
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
+    }
+
+    /* ---------------------------------------------------------
+       Public API
+    --------------------------------------------------------- */
+
+    window.AmirSettings = {
+
+        defaults: DEFAULTS,
+
+        cityNames: CITY_NAMES,
+
+        getCity,
+
+        setCity,
+
+        getTheme,
+
+        setTheme,
+
+        applyTheme,
+
+        getPrayerSettings,
+
+        savePrayerSettings,
+
+        getAdhanSettings,
+
+        saveAdhanSettings,
+
+        getNotificationsEnabled,
+
+        enableNotifications,
+
+        loadUI,
+
+        exportAllSettings,
+
+        clearAllData
+    };
+
+    /* ---------------------------------------------------------
+       Initialization
+    --------------------------------------------------------- */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+            loadUI();
+            bindEvents();
+            bindSystemTheme();
+
+            /*
+             * مزامنة مستوى صوت الأذان.
+             */
+            const adhan =
+                getAdhanSettings();
+
+            if (
+                window.AmirAdhan &&
+                typeof window.AmirAdhan.setVolume ===
+                    "function"
+            ) {
+                window.AmirAdhan.setVolume(
+                    adhan.volume
+                );
+            }
+        }
+    );
 
 })();
