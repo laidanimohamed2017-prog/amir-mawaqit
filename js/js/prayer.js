@@ -1,15 +1,55 @@
 /* =========================================================
-   أمير مواقيت V2
-   prayer.js
-   نظام مواقيت الصلاة
+   أمير مواقيت V2 - Prayer Engine
+   js/prayer.js
    ========================================================= */
 
-(() => {
+(function () {
   "use strict";
 
   const API_BASE = "https://api.aladhan.com/v1";
-  const CALCULATION_METHOD = 19;
-  const SCHOOL = 0;
+
+  const CITIES = {
+    algiers: {
+      name: "الجزائر",
+      latitude: 36.7538,
+      longitude: 3.0588
+    },
+    oran: {
+      name: "وهران",
+      latitude: 35.6971,
+      longitude: -0.6308
+    },
+    constantine: {
+      name: "قسنطينة",
+      latitude: 36.3650,
+      longitude: 6.6147
+    },
+    annaba: {
+      name: "عنابة",
+      latitude: 36.9000,
+      longitude: 7.7667
+    },
+    blida: {
+      name: "البليدة",
+      latitude: 36.4700,
+      longitude: 2.8300
+    },
+    setif: {
+      name: "سطيف",
+      latitude: 36.1900,
+      longitude: 5.4100
+    },
+    tlemcen: {
+      name: "تلمسان",
+      latitude: 34.8828,
+      longitude: -1.3167
+    },
+    ain_oussera: {
+      name: "عين وسارة",
+      latitude: 35.4513,
+      longitude: 2.9067
+    }
+  };
 
   const PRAYERS = [
     {
@@ -18,9 +58,14 @@
       icon: "🌅"
     },
     {
+      key: "Sunrise",
+      name: "الشروق",
+      icon: "☀️"
+    },
+    {
       key: "Dhuhr",
       name: "الظهر",
-      icon: "☀️"
+      icon: "🕛"
     },
     {
       key: "Asr",
@@ -39,131 +84,70 @@
     }
   ];
 
-  const DEFAULT_CITIES = {
-    ain_oussera: {
-      name: "عين وسارة",
-      latitude: 35.4513,
-      longitude: 2.9067
-    },
-
-    algiers: {
-      name: "الجزائر العاصمة",
-      latitude: 36.7538,
-      longitude: 3.0588
-    },
-
-    oran: {
-      name: "وهران",
-      latitude: 35.6971,
-      longitude: -0.6308
-    },
-
-    constantine: {
-      name: "قسنطينة",
-      latitude: 36.3650,
-      longitude: 6.6147
-    },
-
-    annaba: {
-      name: "عنابة",
-      latitude: 36.9000,
-      longitude: 7.7667
-    },
-
-    blida: {
-      name: "البليدة",
-      latitude: 36.4700,
-      longitude: 2.8300
-    },
-
-    setif: {
-      name: "سطيف",
-      latitude: 36.1900,
-      longitude: 5.4100
-    },
-
-    tlemcen: {
-      name: "تلمسان",
-      latitude: 34.8828,
-      longitude: -1.3167
-    }
+  let state = {
+    cityKey: "ain_oussera",
+    city: null,
+    timings: null,
+    meta: null,
+    date: null,
+    loading: false,
+    error: null,
+    timer: null
   };
-
-  let todaySchedule = null;
-  let tomorrowSchedule = null;
-  let countdownTimer = null;
-  let midnightTimer = null;
-  let lastRenderedCity = null;
 
   /* =========================================================
      أدوات عامة
      ========================================================= */
 
-  function getCityKey() {
-    try {
-      if (
-        window.AmirStorage &&
-        typeof window.AmirStorage.getCity === "function"
-      ) {
-        return window.AmirStorage.getCity() || "ain_oussera";
-      }
-    } catch (error) {
-      console.warn("AmirStorage city error:", error);
-    }
-
-    return localStorage.getItem("amirCity") || "ain_oussera";
+  function getElement(selector) {
+    return document.querySelector(selector);
   }
 
-  function getCity() {
-    const cityKey = getCityKey();
-
-    return (
-      DEFAULT_CITIES[cityKey] ||
-      DEFAULT_CITIES.ain_oussera
-    );
+  function getElements(selector) {
+    return Array.from(document.querySelectorAll(selector));
   }
 
-  function formatDate(date) {
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-
-    return `${day}-${month}-${year}`;
+  function safeText(element, value) {
+    if (!element) return;
+    element.textContent = value == null ? "" : String(value);
   }
 
-  function dateKey(date) {
-    return date.toISOString().slice(0, 10);
+  function pad(number) {
+    return String(number).padStart(2, "0");
+  }
+
+  function localDateKey(date) {
+    const d = date instanceof Date ? date : new Date(date);
+
+    return [
+      d.getFullYear(),
+      pad(d.getMonth() + 1),
+      pad(d.getDate())
+    ].join("-");
+  }
+
+  function formatApiDate(date) {
+    const d = date instanceof Date ? date : new Date(date);
+
+    return [
+      pad(d.getDate()),
+      pad(d.getMonth() + 1),
+      d.getFullYear()
+    ].join("-");
   }
 
   function cleanTime(value) {
-    if (!value) return "--:--";
+    if (!value) return "";
 
-    let time = String(value);
-
-    /*
-      بعض نتائج API قد تحتوي على:
-      05:12 (+01)
-      أو
-      05:12 (CET)
-    */
-
-    time = time.replace(/\s*\(.+?\)/g, "").trim();
-
-    const match = time.match(/(\d{1,2}):(\d{2})/);
-
-    if (!match) return "--:--";
-
-    return (
-      String(Number(match[1])).padStart(2, "0") +
-      ":" +
-      match[2]
-    );
+    return String(value)
+      .replace(/\s*\(.+\)\s*$/, "")
+      .trim()
+      .slice(0, 5);
   }
 
   function timeToMinutes(time) {
-    if (!time || time === "--:--") return null;
-
-    const parts = time.split(":");
+    const clean = cleanTime(time);
+    const parts = clean.split(":");
 
     if (parts.length !== 2) return null;
 
@@ -171,8 +155,8 @@
     const minutes = Number(parts[1]);
 
     if (
-      Number.isNaN(hours) ||
-      Number.isNaN(minutes)
+      !Number.isFinite(hours) ||
+      !Number.isFinite(minutes)
     ) {
       return null;
     }
@@ -180,58 +164,252 @@
     return hours * 60 + minutes;
   }
 
-  function secondsFromMidnight(date = new Date()) {
-    return (
-      date.getHours() * 3600 +
-      date.getMinutes() * 60 +
-      date.getSeconds()
-    );
+  function formatRemaining(totalSeconds) {
+    if (totalSeconds < 0) totalSeconds = 0;
+
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    if (hours > 0) {
+      return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+    }
+
+    return `${pad(minutes)}:${pad(seconds)}`;
   }
 
-  function secondsForTime(time) {
-    const minutes = timeToMinutes(time);
+  function getArabicDayName(date) {
+    const days = [
+      "الأحد",
+      "الاثنين",
+      "الثلاثاء",
+      "الأربعاء",
+      "الخميس",
+      "الجمعة",
+      "السبت"
+    ];
 
-    if (minutes === null) return null;
-
-    return minutes * 60;
+    return days[date.getDay()];
   }
 
-  function getArabicDate(date = new Date()) {
+  function getArabicMonthName(month) {
+    const months = [
+      "يناير",
+      "فبراير",
+      "مارس",
+      "أبريل",
+      "ماي",
+      "يونيو",
+      "يوليو",
+      "أغسطس",
+      "سبتمبر",
+      "أكتوبر",
+      "نوفمبر",
+      "ديسمبر"
+    ];
+
+    return months[month];
+  }
+
+  function formatGregorianDate(date) {
+    return `${getArabicDayName(date)}، ${date.getDate()} ${getArabicMonthName(
+      date.getMonth()
+    )} ${date.getFullYear()}`;
+  }
+
+  function showToast(message, type) {
+    if (window.AmirApp && typeof window.AmirApp.showToast === "function") {
+      window.AmirApp.showToast(message, type || "info");
+      return;
+    }
+
+    const toast = getElement("#amirToast");
+
+    if (!toast) return;
+
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    clearTimeout(toast.__timer);
+
+    toast.__timer = setTimeout(function () {
+      toast.classList.remove("show");
+    }, 3000);
+  }
+
+  /* =========================================================
+     الإعدادات
+     ========================================================= */
+
+  function getPrayerSettings() {
+    const defaults = {
+      calculationMethod: "19",
+      madhhab: "0"
+    };
+
     try {
-      return new Intl.DateTimeFormat("ar-DZ", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric"
-      }).format(date);
-    } catch {
-      return date.toLocaleDateString("ar-DZ");
+      if (
+        window.AmirStorage &&
+        typeof window.AmirStorage.getPrayerSettings === "function"
+      ) {
+        const saved = window.AmirStorage.getPrayerSettings();
+
+        return {
+          ...defaults,
+          ...(saved || {})
+        };
+      }
+    } catch (error) {
+      console.warn("تعذر قراءة إعدادات الصلاة:", error);
+    }
+
+    try {
+      const raw = localStorage.getItem("amirPrayerSettings");
+
+      if (raw) {
+        return {
+          ...defaults,
+          ...JSON.parse(raw)
+        };
+      }
+    } catch (error) {
+      console.warn("تعذر قراءة إعدادات الصلاة من التخزين:", error);
+    }
+
+    return defaults;
+  }
+
+  function getSelectedCityKey() {
+    let cityKey = "ain_oussera";
+
+    try {
+      if (
+        window.AmirStorage &&
+        typeof window.AmirStorage.getCity === "function"
+      ) {
+        cityKey = window.AmirStorage.getCity() || cityKey;
+      } else {
+        cityKey =
+          localStorage.getItem("amirCity") ||
+          cityKey;
+      }
+    } catch (error) {
+      cityKey = "ain_oussera";
+    }
+
+    if (!CITIES[cityKey]) {
+      cityKey = "ain_oussera";
+    }
+
+    return cityKey;
+  }
+
+  function getCity(cityKey) {
+    return CITIES[cityKey] || CITIES.ain_oussera;
+  }
+
+  /* =========================================================
+     التخزين المؤقت
+     ========================================================= */
+
+  function cacheKey(cityKey, dateKey) {
+    return `${cityKey}_${dateKey}`;
+  }
+
+  function getCachedPrayer(cityKey, dateKey) {
+    try {
+      if (
+        window.AmirStorage &&
+        typeof window.AmirStorage.getPrayerCache === "function"
+      ) {
+        const cache = window.AmirStorage.getPrayerCache();
+
+        if (cache && cache[cacheKey(cityKey, dateKey)]) {
+          return cache[cacheKey(cityKey, dateKey)];
+        }
+      }
+
+      const raw = localStorage.getItem("amirMawaqitCache");
+
+      if (!raw) return null;
+
+      const cache = JSON.parse(raw);
+
+      return cache && cache[cacheKey(cityKey, dateKey)]
+        ? cache[cacheKey(cityKey, dateKey)]
+        : null;
+    } catch (error) {
+      console.warn("تعذر قراءة التخزين المؤقت:", error);
+      return null;
+    }
+  }
+
+  function saveCachedPrayer(cityKey, dateKey, data) {
+    try {
+      if (
+        window.AmirStorage &&
+        typeof window.AmirStorage.setPrayerCache === "function"
+      ) {
+        const existing =
+          typeof window.AmirStorage.getPrayerCache === "function"
+            ? window.AmirStorage.getPrayerCache() || {}
+            : {};
+
+        existing[cacheKey(cityKey, dateKey)] = data;
+
+        window.AmirStorage.setPrayerCache(existing);
+        return;
+      }
+
+      const raw = localStorage.getItem("amirMawaqitCache");
+
+      const cache = raw ? JSON.parse(raw) : {};
+
+      cache[cacheKey(cityKey, dateKey)] = data;
+
+      localStorage.setItem(
+        "amirMawaqitCache",
+        JSON.stringify(cache)
+      );
+    } catch (error) {
+      console.warn("تعذر حفظ المواقيت:", error);
     }
   }
 
   /* =========================================================
-     جلب بيانات المواقيت
+     جلب المواقيت من API
      ========================================================= */
 
-  async function fetchPrayerData(date, city) {
-    const dateString = formatDate(date);
+  async function fetchPrayerTimes(date, cityKey) {
+    const city = getCity(cityKey);
+    const settings = getPrayerSettings();
+
+    const method = encodeURIComponent(
+      settings.calculationMethod || "19"
+    );
+
+    const school = encodeURIComponent(
+      settings.madhhab || "0"
+    );
+
+    const apiDate = formatApiDate(date);
 
     const url =
-      `${API_BASE}/timings/${dateString}` +
+      `${API_BASE}/timings/${apiDate}` +
       `?latitude=${encodeURIComponent(city.latitude)}` +
       `&longitude=${encodeURIComponent(city.longitude)}` +
-      `&method=${CALCULATION_METHOD}` +
-      `&school=${SCHOOL}`;
+      `&method=${method}` +
+      `&school=${school}`;
 
     const response = await fetch(url, {
       method: "GET",
-      cache: "no-store"
+      headers: {
+        Accept: "application/json"
+      }
     });
 
     if (!response.ok) {
-      throw new Error(
-        `Prayer API HTTP ${response.status}`
-      );
+      throw new Error(`HTTP ${response.status}`);
     }
 
     const json = await response.json();
@@ -242,831 +420,493 @@
       !json.data ||
       !json.data.timings
     ) {
-      throw new Error("Invalid prayer API response");
+      throw new Error("بيانات المواقيت غير صالحة");
     }
 
-    return normalizeSchedule(
-      json.data,
-      date,
-      city
-    );
-  }
-
-  function normalizeSchedule(data, date, city) {
-    const timings = data.timings || {};
-
-    const result = {
-      date: dateKey(date),
-      displayDate: getArabicDate(date),
-      city: city.name,
-      latitude: city.latitude,
-      longitude: city.longitude,
-
-      hijri: data.date?.hijri || null,
-
-      prayers: {}
+    return {
+      timings: json.data.timings,
+      meta: json.data.meta || null,
+      date: json.data.date || null,
+      fetchedAt: Date.now(),
+      cityKey,
+      method: settings.calculationMethod || "19",
+      school: settings.madhhab || "0"
     };
-
-    PRAYERS.forEach(prayer => {
-      result.prayers[prayer.key] =
-        cleanTime(timings[prayer.key]);
-    });
-
-    return result;
   }
 
   /* =========================================================
-     التخزين المؤقت
+     تحميل المواقيت
      ========================================================= */
 
-  function saveScheduleToCache(schedule) {
-    if (!schedule) return;
+  async function load(options) {
+    options = options || {};
 
-    try {
-      if (
-        window.AmirStorage &&
-        typeof window.AmirStorage.savePrayerCache === "function"
-      ) {
-        window.AmirStorage.savePrayerCache(
-          schedule
-        );
-        return;
+    const forceRefresh = Boolean(options.force);
+    const date = options.date
+      ? new Date(options.date)
+      : new Date();
+
+    const cityKey =
+      options.cityKey ||
+      getSelectedCityKey();
+
+    const dateKey = localDateKey(date);
+
+    state.cityKey = cityKey;
+    state.city = getCity(cityKey);
+    state.date = date;
+
+    updateCityUI();
+
+    if (!forceRefresh) {
+      const cached = getCachedPrayer(cityKey, dateKey);
+
+      if (cached && cached.timings) {
+        applyData(cached, date);
+        updateStatus("تم تحميل المواقيت المحفوظة");
+
+        // تحديث في الخلفية
+        refreshFromNetwork(date, cityKey, dateKey);
+
+        return cached;
       }
-
-      localStorage.setItem(
-        "amirMawaqitCache",
-        JSON.stringify(schedule)
-      );
-    } catch (error) {
-      console.warn(
-        "Could not save prayer cache:",
-        error
-      );
     }
-  }
 
-  function getCachedSchedule() {
-    try {
-      if (
-        window.AmirStorage &&
-        typeof window.AmirStorage.getPrayerCache === "function"
-      ) {
-        return window.AmirStorage.getPrayerCache();
-      }
+    state.loading = true;
+    state.error = null;
 
-      const raw =
-        localStorage.getItem("amirMawaqitCache");
-
-      if (!raw) return null;
-
-      return JSON.parse(raw);
-    } catch (error) {
-      console.warn(
-        "Could not read prayer cache:",
-        error
-      );
-
-      return null;
-    }
-  }
-
-  /* =========================================================
-     تحميل مواقيت اليوم
-     ========================================================= */
-
-  async function loadPrayerTimes(options = {}) {
-    const force =
-      options.force === true;
-
-    const today = new Date();
-    const city = getCity();
-
-    updateCityUI(city);
-    updateDateUI(today);
+    updateStatus("جاري تحديث المواقيت…");
 
     try {
-      setUpdateStatus("جاري تحديث المواقيت…");
+      const data = await fetchPrayerTimes(date, cityKey);
 
-      const schedule =
-        await fetchPrayerData(
-          today,
-          city
-        );
+      saveCachedPrayer(cityKey, dateKey, data);
 
-      todaySchedule = schedule;
+      applyData(data, date);
 
-      saveScheduleToCache(schedule);
+      updateStatus("تم تحديث المواقيت");
 
-      renderPrayerCards(schedule);
-      updateHijriDate(schedule);
-      updateCityUI(city);
-
-      setUpdateStatus(
-        `آخر تحديث: ${new Date().toLocaleTimeString(
-          "ar-DZ",
-          {
-            hour: "2-digit",
-            minute: "2-digit"
-          }
-        )}`
-      );
-
-      /*
-        نحضر مواقيت الغد في الخلفية حتى يكون
-        الانتقال من العشاء إلى فجر الغد دقيقًا.
-      */
-      loadTomorrowPrayerTimes(city);
-
-      startCountdown();
-
-      lastRenderedCity =
-        getCityKey();
-
-      return schedule;
+      return data;
     } catch (error) {
-      console.error(
-        "Prayer times error:",
-        error
-      );
+      console.error("Prayer API error:", error);
 
-      const cached =
-        getCachedSchedule();
+      const cached = getCachedPrayer(cityKey, dateKey);
 
-      if (
-        cached &&
-        cached.prayers
-      ) {
-        todaySchedule = cached;
-
-        renderPrayerCards(cached);
-        updateHijriDate(cached);
-
-        setUpdateStatus(
-          "وضع عدم الاتصال — آخر مواقيت محفوظة"
-        );
-
-        startCountdown();
+      if (cached && cached.timings) {
+        applyData(cached, date);
+        updateStatus("وضع عدم الاتصال — آخر مواقيت محفوظة");
 
         return cached;
       }
 
-      setUpdateStatus(
-        "تعذر تحميل المواقيت. تحقق من الاتصال بالإنترنت."
-      );
+      state.error = error;
+      updateStatus("تعذر تحميل المواقيت");
 
-      showPrayerError();
+      showToast(
+        "تعذر تحميل مواقيت الصلاة. تحقق من الاتصال بالإنترنت.",
+        "error"
+      );
 
       return null;
     } finally {
-      if (force) {
-        startCountdown();
-      }
+      state.loading = false;
     }
   }
 
-  async function loadTomorrowPrayerTimes(city) {
+  async function refreshFromNetwork(date, cityKey, dateKey) {
     try {
-      const tomorrow =
-        new Date();
+      const data = await fetchPrayerTimes(date, cityKey);
 
-      tomorrow.setDate(
-        tomorrow.getDate() + 1
-      );
+      saveCachedPrayer(cityKey, dateKey, data);
 
-      tomorrowSchedule =
-        await fetchPrayerData(
-          tomorrow,
-          city
-        );
+      applyData(data, date);
+
+      updateStatus("تم تحديث المواقيت");
     } catch (error) {
-      console.warn(
-        "Tomorrow prayer times unavailable:",
-        error
-      );
-
-      tomorrowSchedule = null;
+      console.warn("تحديث المواقيت في الخلفية فشل:", error);
     }
   }
 
   /* =========================================================
-     عرض المواقيت
+     تطبيق البيانات
      ========================================================= */
 
-  function renderPrayerCards(schedule) {
-    const grid =
-      document.getElementById(
-        "prayerGrid"
-      );
+  function applyData(data, date) {
+    if (!data || !data.timings) return;
 
-    if (!grid || !schedule) return;
+    state.timings = normalizeTimings(data.timings);
+    state.meta = data.meta || null;
+    state.date = date || new Date();
 
-    grid.innerHTML = "";
+    renderPrayerCards();
+    updateDates(data);
+    updateCityUI();
+    updateNextPrayer();
 
-    PRAYERS.forEach(prayer => {
-      const time =
-        schedule.prayers[
-          prayer.key
-        ] || "--:--";
+    restartTimer();
+  }
 
-      const card =
-        document.createElement("div");
+  function normalizeTimings(timings) {
+    const normalized = {};
 
-      card.className =
-        "prayer-card";
+    Object.keys(timings || {}).forEach(function (key) {
+      normalized[key] = cleanTime(timings[key]);
+    });
 
-      card.dataset.prayer =
-        prayer.key;
+    return normalized;
+  }
+
+  /* =========================================================
+     واجهة المدينة والتاريخ
+     ========================================================= */
+
+  function updateCityUI() {
+    const city = state.city || getCity(state.cityKey);
+
+    safeText(
+      getElement("#cityName"),
+      city ? city.name : "عين وسارة"
+    );
+
+    getElements("[data-current-city]").forEach(function (element) {
+      element.textContent = city ? city.name : "";
+    });
+
+    const select = getElement("#citySelect");
+
+    if (select && city) {
+      if (select.value !== state.cityKey) {
+        select.value = state.cityKey;
+      }
+    }
+  }
+
+  function updateDates(data) {
+    const date = state.date || new Date();
+
+    safeText(
+      getElement("#gregorianDate"),
+      formatGregorianDate(date)
+    );
+
+    let hijri = "";
+
+    try {
+      if (
+        data &&
+        data.date &&
+        data.date.hijri
+      ) {
+        const h = data.date.hijri;
+
+        if (h.day && h.month && h.year) {
+          hijri =
+            `${h.day} ${h.month.ar || ""} ${h.year} هـ`;
+        }
+      }
+    } catch (error) {
+      console.warn("تعذر قراءة التاريخ الهجري:", error);
+    }
+
+    safeText(
+      getElement("#hijriDate"),
+      hijri || "التاريخ الهجري"
+    );
+  }
+
+  function updateStatus(message) {
+    safeText(
+      getElement("#prayerUpdateStatus"),
+      message
+    );
+  }
+
+  /* =========================================================
+     بطاقات الصلاة
+     ========================================================= */
+
+  function renderPrayerCards() {
+    const container = getElement("#prayerGrid");
+
+    if (!container || !state.timings) return;
+
+    container.innerHTML = "";
+
+    PRAYERS.forEach(function (prayer) {
+      const time = state.timings[prayer.key];
+
+      if (!time) return;
+
+      const card = document.createElement("article");
+
+      card.className = "prayer-card";
+
+      card.dataset.prayer = prayer.key;
 
       card.innerHTML = `
-        <div class="prayer-icon">
-          ${prayer.icon}
-        </div>
-
-        <div class="prayer-info">
-          <div class="prayer-name">
-            ${prayer.name}
-          </div>
-
-          <div class="prayer-key">
-            ${prayer.key}
-          </div>
-        </div>
-
-        <div class="prayer-time">
-          ${time}
+        <div class="prayer-card-icon">${prayer.icon}</div>
+        <div class="prayer-card-info">
+          <div class="prayer-card-name">${prayer.name}</div>
+          <div class="prayer-card-time">${time}</div>
         </div>
       `;
 
-      grid.appendChild(card);
+      container.appendChild(card);
     });
 
-    updateActivePrayer();
+    markCurrentPrayer();
   }
 
-  function showPrayerError() {
-    const grid =
-      document.getElementById(
-        "prayerGrid"
+  function markCurrentPrayer() {
+    getElements(".prayer-card").forEach(function (card) {
+      card.classList.remove(
+        "active",
+        "current",
+        "next-prayer"
       );
+    });
 
-    if (!grid) return;
+    const info = getNextPrayerInfo();
 
-    grid.innerHTML = `
-      <div class="prayer-error">
-        <div class="prayer-error-icon">⚠️</div>
-        <strong>تعذر تحميل المواقيت</strong>
-        <span>تحقق من اتصال الإنترنت ثم حاول مرة أخرى.</span>
-        <button
-          type="button"
-          onclick="window.loadPrayerTimes({force:true})"
-        >
-          إعادة المحاولة
-        </button>
-      </div>
-    `;
+    if (!info) return;
+
+    const currentCard = getElement(
+      `.prayer-card[data-prayer="${info.currentKey}"]`
+    );
+
+    const nextCard = getElement(
+      `.prayer-card[data-prayer="${info.nextKey}"]`
+    );
+
+    if (currentCard) {
+      currentCard.classList.add("current");
+    }
+
+    if (nextCard) {
+      nextCard.classList.add("next-prayer");
+    }
   }
 
   /* =========================================================
-     معرفة الصلاة القادمة
+     حساب الصلاة القادمة
      ========================================================= */
 
-  function getPrayerSeconds(
-    schedule,
-    prayerKey
-  ) {
-    if (!schedule) return null;
+  function getPrayerEntries(date) {
+    if (!state.timings) return [];
 
-    return secondsForTime(
-      schedule.prayers[
-        prayerKey
-      ]
-    );
+    const currentDate = date || new Date();
+
+    return PRAYERS
+      .filter(function (prayer) {
+        return Boolean(state.timings[prayer.key]);
+      })
+      .map(function (prayer) {
+        const minutes =
+          timeToMinutes(state.timings[prayer.key]);
+
+        if (minutes === null) return null;
+
+        const prayerDate = new Date(currentDate);
+
+        prayerDate.setHours(
+          Math.floor(minutes / 60),
+          minutes % 60,
+          0,
+          0
+        );
+
+        return {
+          ...prayer,
+          time: state.timings[prayer.key],
+          minutes,
+          date: prayerDate
+        };
+      })
+      .filter(Boolean);
   }
 
-  function getCurrentPrayerState() {
-    if (!todaySchedule) {
-      return {
-        current: null,
-        next: null,
-        currentSeconds: null,
-        nextSeconds: null,
-        afterIsha: false
-      };
+  function getNextPrayerInfo(now) {
+    if (!state.timings) return null;
+
+    const currentTime = now || new Date();
+
+    const entries = getPrayerEntries(currentTime);
+
+    if (!entries.length) return null;
+
+    let next = null;
+    let current = null;
+
+    for (let i = 0; i < entries.length; i++) {
+      if (currentTime < entries[i].date) {
+        next = entries[i];
+        break;
+      }
+
+      current = entries[i];
     }
 
-    const now =
-      secondsFromMidnight();
+    let tomorrow = false;
 
-    const prayerSeconds =
-      PRAYERS.map(prayer => ({
-        ...prayer,
-        seconds:
-          getPrayerSeconds(
-            todaySchedule,
-            prayer.key
-          )
-      })).filter(
-        item =>
-          item.seconds !== null
+    if (!next) {
+      next = {
+        ...entries[0],
+        date: new Date(entries[0].date)
+      };
+
+      next.date.setDate(
+        next.date.getDate() + 1
       );
 
-    /*
-      قبل الفجر:
-      الصلاة القادمة = الفجر
-    */
+      tomorrow = true;
 
-    if (
-      prayerSeconds.length &&
-      now <
-        prayerSeconds[0].seconds
-    ) {
-      return {
-        current: null,
-        next: prayerSeconds[0],
-        currentSeconds: null,
-        nextSeconds:
-          prayerSeconds[0].seconds,
-        afterIsha: false
-      };
+      current = entries[entries.length - 1];
     }
 
-    for (
-      let i = 0;
-      i < prayerSeconds.length - 1;
-      i++
-    ) {
-      const current =
-        prayerSeconds[i];
-
-      const next =
-        prayerSeconds[i + 1];
-
-      if (
-        now >= current.seconds &&
-        now < next.seconds
-      ) {
-        return {
-          current,
-          next,
-          currentSeconds:
-            current.seconds,
-          nextSeconds:
-            next.seconds,
-          afterIsha: false
-        };
-      }
-    }
-
-    /*
-      بعد العشاء:
-      الصلاة القادمة = فجر الغد
-    */
-
-    const last =
-      prayerSeconds[
-        prayerSeconds.length - 1
-      ];
-
-    if (
-      last &&
-      now >= last.seconds
-    ) {
-      const tomorrowFajr =
-        tomorrowSchedule?.prayers?.Fajr;
-
-      if (tomorrowFajr) {
-        const fajrSeconds =
-          secondsForTime(
-            tomorrowFajr
-          );
-
-        return {
-          current: last,
-          next: {
-            key: "Fajr",
-            name: "الفجر",
-            icon: "🌅"
-          },
-          currentSeconds:
-            last.seconds,
-          nextSeconds:
-            fajrSeconds + 86400,
-          afterIsha: true
-        };
-      }
-
-      /*
-        إذا لم تصل بيانات الغد،
-        نحسب تقديرًا مؤقتًا اعتمادًا
-        على فجر اليوم.
-      */
-      const todayFajr =
-        prayerSeconds[0];
-
-      return {
-        current: last,
-        next: {
-          key: "Fajr",
-          name: "الفجر",
-          icon: "🌅"
-        },
-        currentSeconds:
-          last.seconds,
-        nextSeconds:
-          todayFajr.seconds +
-          86400,
-        afterIsha: true
-      };
+    if (!current) {
+      current = entries[entries.length - 1];
     }
 
     return {
-      current: null,
-      next: null,
-      currentSeconds: null,
-      nextSeconds: null,
-      afterIsha: false
+      currentKey: current ? current.key : null,
+      currentName: current ? current.name : "",
+      currentTime: current ? current.time : "",
+      nextKey: next.key,
+      nextName: next.name,
+      nextTime: next.time,
+      nextDate: next.date,
+      tomorrow
     };
   }
 
-  /* =========================================================
-     العد التنازلي
-     ========================================================= */
+  function updateNextPrayer() {
+    const info = getNextPrayerInfo();
 
-  function startCountdown() {
-    if (countdownTimer) {
-      clearInterval(
-        countdownTimer
-      );
-    }
-
-    updateCountdown();
-
-    countdownTimer =
-      setInterval(
-        updateCountdown,
-        1000
-      );
-  }
-
-  function updateCountdown() {
-    if (!todaySchedule) return;
-
-    const state =
-      getCurrentPrayerState();
-
-    if (!state.next) return;
-
-    let now =
-      secondsFromMidnight();
-
-    let nextSeconds =
-      state.nextSeconds;
-
-    /*
-      بعد منتصف الليل مع فجر الغد
-      now يجب أن يتحول إلى اليوم التالي.
-    */
-    if (state.afterIsha) {
-      now += 86400;
-    }
-
-    let remaining =
-      nextSeconds - now;
-
-    if (remaining < 0) {
-      remaining = 0;
-    }
-
-    const hours =
-      Math.floor(
-        remaining / 3600
+    if (!info) {
+      safeText(
+        getElement("#nextPrayerName"),
+        "—"
       );
 
-    const minutes =
-      Math.floor(
-        (remaining % 3600) / 60
+      safeText(
+        getElement("#countdown"),
+        "--:--:--"
       );
 
-    const seconds =
-      Math.floor(
-        remaining % 60
-      );
-
-    const countdownText =
-      [
-        String(hours).padStart(
-          2,
-          "0"
-        ),
-        String(minutes).padStart(
-          2,
-          "0"
-        ),
-        String(seconds).padStart(
-          2,
-          "0"
-        )
-      ].join(":");
-
-    const countdown =
-      document.getElementById(
-        "countdown"
-      );
-
-    if (countdown) {
-      countdown.textContent =
-        countdownText;
-    }
-
-    const nextName =
-      document.getElementById(
-        "nextPrayerName"
-      );
-
-    if (nextName) {
-      nextName.textContent =
-        `الصلاة القادمة: ${state.next.name}`;
-    }
-
-    updateProgress(
-      state,
-      now
-    );
-
-    updateActivePrayer();
-
-    /*
-      عندما يصل الوقت إلى الصلاة،
-      نعيد الحساب فورًا.
-    */
-    if (remaining <= 0) {
-      setTimeout(
-        updateCountdown,
-        1500
-      );
-    }
-  }
-
-  /* =========================================================
-     شريط التقدم
-     ========================================================= */
-
-  function updateProgress(
-    state,
-    now
-  ) {
-    const bar =
-      document.getElementById(
-        "prayerProgress"
-      );
-
-    if (!bar) return;
-
-    if (
-      state.currentSeconds === null ||
-      state.nextSeconds === null
-    ) {
-      bar.style.width = "0%";
       return;
     }
 
-    let start =
-      state.currentSeconds;
+    safeText(
+      getElement("#nextPrayerName"),
+      info.tomorrow
+        ? `${info.nextName} غدًا`
+        : info.nextName
+    );
 
-    let end =
-      state.nextSeconds;
+    const now = new Date();
 
-    if (
-      state.afterIsha &&
-      end > 86400
-    ) {
-      /*
-        بعد العشاء:
-        بداية الفترة = عشاء اليوم
-        نهاية الفترة = فجر الغد
-      */
+    const seconds = Math.max(
+      0,
+      Math.floor(
+        (info.nextDate.getTime() - now.getTime()) / 1000
+      )
+    );
+
+    safeText(
+      getElement("#countdown"),
+      formatRemaining(seconds)
+    );
+
+    updateProgress(info);
+    markCurrentPrayer();
+  }
+
+  function updateProgress(info) {
+    const progress = getElement("#prayerProgress");
+
+    if (!progress || !info) return;
+
+    const now = new Date();
+
+    const entries = getPrayerEntries(now);
+
+    if (!entries.length) {
+      progress.style.width = "0%";
+      return;
+    }
+
+    let previousDate = null;
+
+    if (info.currentKey) {
+      const current = entries.find(function (item) {
+        return item.key === info.currentKey;
+      });
+
+      if (current) {
+        previousDate = current.date;
+      }
+    }
+
+    if (!previousDate) {
+      previousDate = new Date(now);
+      previousDate.setHours(0, 0, 0, 0);
     }
 
     const total =
-      end - start;
-
-    if (total <= 0) {
-      bar.style.width = "0%";
-      return;
-    }
+      info.nextDate.getTime() -
+      previousDate.getTime();
 
     const elapsed =
-      now - start;
+      now.getTime() -
+      previousDate.getTime();
 
     let percent =
-      (elapsed / total) * 100;
+      total > 0
+        ? (elapsed / total) * 100
+        : 0;
 
-    percent =
-      Math.max(
-        0,
-        Math.min(
-          100,
-          percent
-        )
-      );
-
-    bar.style.width =
-      `${percent}%`;
-  }
-
-  /* =========================================================
-     تمييز الصلاة الحالية
-     ========================================================= */
-
-  function updateActivePrayer() {
-    const cards =
-      document.querySelectorAll(
-        ".prayer-card"
-      );
-
-    if (!cards.length) return;
-
-    const state =
-      getCurrentPrayerState();
-
-    cards.forEach(card => {
-      card.classList.remove(
-        "active"
-      );
-      card.classList.remove(
-        "next"
-      );
-
-      const key =
-        card.dataset.prayer;
-
-      if (
-        state.current &&
-        state.current.key === key
-      ) {
-        card.classList.add(
-          "active"
-        );
-      }
-
-      if (
-        state.next &&
-        state.next.key === key
-      ) {
-        card.classList.add(
-          "next"
-        );
-      }
-    });
-  }
-
-  /* =========================================================
-     التاريخ الهجري
-     ========================================================= */
-
-  function updateHijriDate(schedule) {
-    const element =
-      document.getElementById(
-        "hijriDate"
-      );
-
-    if (!element) return;
-
-    if (
-      schedule &&
-      schedule.hijri
-    ) {
-      const hijri =
-        schedule.hijri;
-
-      const day =
-        hijri.day || "";
-
-      const month =
-        hijri.month?.ar ||
-        hijri.month?.en ||
-        "";
-
-      const year =
-        hijri.year || "";
-
-      element.textContent =
-        `${day} ${month} ${year} هـ`;
-
-      return;
-    }
-
-    element.textContent =
-      "التاريخ الهجري";
-  }
-
-  /* =========================================================
-     التاريخ الميلادي
-     ========================================================= */
-
-  function updateDateUI(date) {
-    const element =
-      document.getElementById(
-        "gregorianDate"
-      );
-
-    if (!element) return;
-
-    element.textContent =
-      getArabicDate(date);
-  }
-
-  /* =========================================================
-     المدينة
-     ========================================================= */
-
-  function updateCityUI(city) {
-    if (!city) return;
-
-    const cityElements =
-      document.querySelectorAll(
-        "[data-current-city]"
-      );
-
-    cityElements.forEach(
-      element => {
-        element.textContent =
-          city.name;
-      }
+    percent = Math.max(
+      0,
+      Math.min(100, percent)
     );
 
-    const cityName =
-      document.getElementById(
-        "cityName"
-      );
-
-    if (cityName) {
-      cityName.textContent =
-        city.name;
-    }
-
-    const select =
-      document.getElementById(
-        "citySelect"
-      );
-
-    if (
-      select &&
-      DEFAULT_CITIES[
-        getCityKey()
-      ]
-    ) {
-      select.value =
-        getCityKey();
-    }
+    progress.style.width = `${percent}%`;
   }
 
   /* =========================================================
-     حالة التحديث
+     المؤقت
      ========================================================= */
 
-  function setUpdateStatus(
-    message
-  ) {
-    const element =
-      document.getElementById(
-        "prayerUpdateStatus"
-      );
-
-    if (element) {
-      element.textContent =
-        message;
+  function restartTimer() {
+    if (state.timer) {
+      clearInterval(state.timer);
     }
+
+    updateNextPrayer();
+
+    state.timer = setInterval(function () {
+      updateNextPrayer();
+    }, 1000);
   }
 
   /* =========================================================
      تغيير المدينة
      ========================================================= */
 
-  async function changeCity(
-    cityKey
-  ) {
-    if (
-      !DEFAULT_CITIES[
-        cityKey
-      ]
-    ) {
-      console.warn(
-        "Unknown city:",
-        cityKey
-      );
-      return;
+  async function setCity(cityKey) {
+    if (!CITIES[cityKey]) {
+      cityKey = "ain_oussera";
     }
+
+    state.cityKey = cityKey;
+    state.city = CITIES[cityKey];
 
     try {
       if (
         window.AmirStorage &&
-        typeof window.AmirStorage.setCity ===
-          "function"
+        typeof window.AmirStorage.setCity === "function"
       ) {
-        window.AmirStorage.setCity(
-          cityKey
-        );
+        window.AmirStorage.setCity(cityKey);
       } else {
         localStorage.setItem(
           "amirCity",
@@ -1074,172 +914,162 @@
         );
       }
     } catch (error) {
-      console.warn(
-        "Could not save city:",
-        error
-      );
+      console.warn("تعذر حفظ المدينة:", error);
     }
 
-    todaySchedule = null;
-    tomorrowSchedule = null;
+    updateCityUI();
 
-    updateCityUI(
-      DEFAULT_CITIES[
-        cityKey
-      ]
+    document.dispatchEvent(
+      new CustomEvent("amirCityChanged", {
+        detail: {
+          cityKey,
+          city: CITIES[cityKey]
+        }
+      })
     );
 
-    await loadPrayerTimes({
+    return load({
+      force: true,
+      cityKey
+    });
+  }
+
+  /* =========================================================
+     تغيير إعدادات الحساب
+     ========================================================= */
+
+  async function reloadAfterSettingsChange() {
+    return load({
+      force: true,
+      cityKey: getSelectedCityKey()
+    });
+  }
+
+  /* =========================================================
+     بيانات عامة
+     ========================================================= */
+
+  function getTodaySchedule() {
+    if (!state.timings) return [];
+
+    return PRAYERS
+      .filter(function (prayer) {
+        return Boolean(state.timings[prayer.key]);
+      })
+      .map(function (prayer) {
+        return {
+          key: prayer.key,
+          name: prayer.name,
+          time: state.timings[prayer.key]
+        };
+      });
+  }
+
+  function getCurrentState() {
+    return {
+      cityKey: state.cityKey,
+      city: state.city,
+      timings: state.timings,
+      meta: state.meta,
+      date: state.date,
+      loading: state.loading,
+      error: state.error,
+      nextPrayer: getNextPrayerInfo()
+    };
+  }
+
+  function getCityList() {
+    return Object.keys(CITIES).map(function (key) {
+      return {
+        key,
+        ...CITIES[key]
+      };
+    });
+  }
+
+  /* =========================================================
+     التوافق مع النسخ القديمة
+     ========================================================= */
+
+  window.loadPrayerTimes = function () {
+    return load({
       force: true
     });
-
-    /*
-      إذا كان نظام الأذان موجودًا،
-      نطلب منه إعادة جدولة الأذان.
-    */
-    if (
-      window.AmirAdhan &&
-      typeof window.AmirAdhan.reschedule ===
-        "function"
-    ) {
-      window.AmirAdhan.reschedule();
-    }
-  }
+  };
 
   /* =========================================================
-     إعادة التحميل عند تغير اليوم
-     ========================================================= */
-
-  function scheduleMidnightRefresh() {
-    if (midnightTimer) {
-      clearTimeout(
-        midnightTimer
-      );
-    }
-
-    const now =
-      new Date();
-
-    const nextDay =
-      new Date(now);
-
-    nextDay.setHours(
-      24,
-      0,
-      5,
-      0
-    );
-
-    const delay =
-      nextDay.getTime() -
-      now.getTime();
-
-    midnightTimer =
-      setTimeout(
-        async () => {
-          todaySchedule = null;
-          tomorrowSchedule = null;
-
-          await loadPrayerTimes({
-            force: true
-          });
-
-          scheduleMidnightRefresh();
-        },
-        Math.max(
-          delay,
-          1000
-        )
-      );
-  }
-
-  /* =========================================================
-     مراقبة تغير المدينة
-     ========================================================= */
-
-  function checkCityChange() {
-    const currentCity =
-      getCityKey();
-
-    if (
-      lastRenderedCity &&
-      currentCity !==
-        lastRenderedCity
-    ) {
-      loadPrayerTimes({
-        force: true
-      });
-    }
-  }
-
-  /* =========================================================
-     API عام
+     API العامة
      ========================================================= */
 
   window.AmirPrayer = {
+    CITIES,
     PRAYERS,
-    CITIES: DEFAULT_CITIES,
 
-    load: loadPrayerTimes,
+    load,
+    setCity,
+    reloadAfterSettingsChange,
 
-    changeCity,
+    getTodaySchedule,
+    getCurrentState,
+    getNextPrayerInfo,
+    getCityList,
 
-    getTodaySchedule: () =>
-      todaySchedule,
+    getSelectedCityKey,
+    getPrayerSettings,
 
-    getTomorrowSchedule: () =>
-      tomorrowSchedule,
-
-    getCurrentPrayerState,
-
-    getCity,
-
-    getCityKey,
-
-    refresh: () =>
-      loadPrayerTimes({
-        force: true
-      })
+    timeToMinutes,
+    formatRemaining
   };
 
-  /*
-    توافق مع index.html الحالي
-  */
-  window.loadPrayerTimes =
-    loadPrayerTimes;
+  /* =========================================================
+     أحداث التطبيق
+     ========================================================= */
+
+  document.addEventListener(
+    "amirCityChanged",
+    function (event) {
+      const cityKey =
+        event &&
+        event.detail &&
+        event.detail.cityKey;
+
+      if (!cityKey || !CITIES[cityKey]) {
+        return;
+      }
+
+      state.cityKey = cityKey;
+      state.city = CITIES[cityKey];
+
+      load({
+        force: false,
+        cityKey
+      });
+    }
+  );
+
+  document.addEventListener(
+    "amirPrayerSettingsChanged",
+    function () {
+      reloadAfterSettingsChange();
+    }
+  );
 
   /* =========================================================
-     التشغيل
+     بدء التطبيق
      ========================================================= */
 
   document.addEventListener(
     "DOMContentLoaded",
-    () => {
-      updateCityUI(
-        getCity()
-      );
+    function () {
+      state.cityKey = getSelectedCityKey();
+      state.city = getCity(state.cityKey);
 
-      updateDateUI(
-        new Date()
-      );
+      updateCityUI();
 
-      scheduleMidnightRefresh();
-
-      /*
-        نعطي الصفحة لحظة حتى تكتمل
-        ملفات CSS وواجهة HTML.
-      */
-      setTimeout(
-        () => {
-          loadPrayerTimes();
-        },
-        250
-      );
-
-      setInterval(
-        checkCityChange,
-        3000
-      );
+      load({
+        force: false,
+        cityKey: state.cityKey
+      });
     }
   );
 
