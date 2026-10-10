@@ -856,3 +856,121 @@ html[data-theme="dark"] .prayer-time { color: #a9e7c4; }
     transition-duration: .01ms !important;
   }
 }
+
+/* FIX: منع تداخل الأزرار في جميع صفحات أمير مواقيت */
+
+button {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+
+.hero-actions,
+.quran-actions,
+.adhan-buttons,
+.zikr-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero-actions > button {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.quran-actions > button,
+.adhan-buttons > button {
+  flex: 1 1 125px;
+  min-width: 0;
+}
+
+.zikr-controls > button {
+  flex: 0 1 auto;
+  min-width: 42px;
+}
+
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.quick-card {
+  width: 100%;
+  min-width: 0;
+  min-height: 76px;
+  overflow-wrap: anywhere;
+}
+
+.bottom-nav {
+  display: flex;
+  align-items: stretch;
+  gap: 3px;
+}
+
+.bottom-nav button {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 54px;
+  padding: 6px 2px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.quran-toolbar,
+.quran-search-box {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.quran-search-box input {
+  width: 100%;
+  min-width: 0;
+}
+
+#quranSurahList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+#quranSurahList > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+#settingsSection button,
+#qiblaSection button,
+#azkarSection button {
+  max-width: 100%;
+  margin-inline: 0;
+}
+
+@media (max-width: 480px) {
+  .hero-actions {
+    gap: 6px;
+  }
+
+  .hero-actions > button {
+    flex: 1 1 90px;
+    font-size: 11px;
+  }
+
+  .quran-actions > button,
+  .adhan-buttons > button {
+    flex: 1 1 105px;
+    padding: 9px 7px;
+    font-size: 12px;
+  }
+
+  #quranSurahList {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .bottom-nav button {
+    font-size: 9px;
+  }
+}
