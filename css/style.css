@@ -1994,3 +1994,17 @@ html[data-theme="dark"] .quran-reader-header {
   .bottom-nav > .nav-inner > .nav-button > span:last-child { font-size: 8px !important; }
 }
 
+
+/* GLOBAL LAYOUT SAFETY: prevent vertical text rendering across every app section */
+html,
+body,
+body *,
+body *::before,
+body *::after {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+}
+body * {
+  word-break: normal;
+}
+
