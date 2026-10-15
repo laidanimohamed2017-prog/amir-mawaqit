@@ -1888,3 +1888,67 @@ html[data-theme="dark"] .quran-reader-header {
     transition-duration: .01ms !important;
   }
 }
+
+
+/* EMERGENCY LAYOUT OVERRIDE — keep Arabic labels horizontal */
+.quick-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  width: 100% !important;
+  direction: rtl !important;
+}
+.quick-grid > button.quick-card {
+  display: grid !important;
+  grid-template-columns: 38px minmax(0, 1fr) !important;
+  grid-template-rows: auto auto !important;
+  align-items: center !important;
+  justify-items: stretch !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  padding: 12px !important;
+  text-align: right !important;
+  writing-mode: horizontal-tb !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+}
+.quick-grid > button.quick-card .quick-icon {
+  grid-column: 1 !important;
+  grid-row: 1 / 3 !important;
+}
+.quick-grid > button.quick-card strong,
+.quick-grid > button.quick-card small {
+  grid-column: 2 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  text-align: right !important;
+  writing-mode: horizontal-tb !important;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+}
+.quick-grid > button.quick-card strong {
+  grid-row: 1 !important;
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+}
+.quick-grid > button.quick-card small {
+  grid-row: 2 !important;
+  font-size: 10px !important;
+  line-height: 1.5 !important;
+}
+@media (max-width: 480px) {
+  .quick-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 8px !important; }
+  .quick-grid > button.quick-card {
+    grid-template-columns: 30px minmax(0, 1fr) !important;
+    padding: 9px 7px !important;
+  }
+  .quick-grid > button.quick-card .quick-icon {
+    width: 30px !important;
+    height: 30px !important;
+    font-size: 17px !important;
+  }
+  .quick-grid > button.quick-card strong { font-size: 12px !important; }
+  .quick-grid > button.quick-card small { font-size: 9px !important; }
+}
+
