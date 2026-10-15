@@ -611,9 +611,21 @@ main > *,
 .quick-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  justify-items: stretch;
   gap: 12px;
 
+  width: 100%;
   min-width: 0;
+}
+
+.quick-grid > .quick-card {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  justify-self: stretch;
+  margin: 0;
 }
 
 .quick-card {
@@ -1638,8 +1650,20 @@ html[data-theme="dark"] .quran-reader-header {
   }
 
   .quick-grid {
+    display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    justify-items: stretch;
     gap: 9px;
+    width: 100%;
+  }
+
+  .quick-grid > .quick-card {
+    grid-column: auto;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    justify-self: stretch;
   }
 
   .quick-card {
