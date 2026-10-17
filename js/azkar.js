@@ -10,6 +10,8 @@
   const STORAGE_FAVORITES = "amirAzkarFavorites";
   const STORAGE_TASBIH = "amirTasbihCount";
 
+  let initialized = false;
+
   const categories = {
     morning: {
       title: "أذكار الصباح",
@@ -790,6 +792,9 @@
   }
 
   function init() {
+    if (initialized) return;
+    initialized = true;
+
     setupCategories();
     setupSearch();
     setupResetButtons();
