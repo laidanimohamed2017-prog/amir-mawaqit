@@ -173,7 +173,7 @@
   }
 
   function setupNavigation() {
-    $(".nav-button[data-section]").forEach(function (item) {
+    $$(".nav-button[data-section]").forEach(function (item) {
       item.addEventListener("click", function (event) {
         event.preventDefault();
 
