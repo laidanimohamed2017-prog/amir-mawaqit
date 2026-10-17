@@ -92,6 +92,7 @@
   };
 
   let countdownTimer = null;
+  let initialized = false;
 
   /* =========================================================
      التخزين
@@ -984,6 +985,9 @@
      ========================================================= */
 
   function init() {
+    if (initialized) return;
+    initialized = true;
+
     state.cityKey = getSavedCity();
     state.city = CITIES[state.cityKey] || CITIES.ain_oussera;
 
