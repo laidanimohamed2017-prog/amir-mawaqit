@@ -18,6 +18,7 @@
 
     const state = {
         surahs: [],
+        localAyahs: {},
         currentSurah: null,
         currentEdition: "quran-uthmani",
         fontSize: DEFAULT_FONT_SIZE,
@@ -147,41 +148,126 @@
     }
 
     /* =====================================================
+       LOCAL QURAN DATA
+       ===================================================== */
+
+    const LOCAL_QURAN_URL = "./data/quran-uthmani.txt";
+
+    const SURAH_NAMES_AR = ["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
+
+    function parseLocalQuran(text) {
+        const ayahsBySurah = Array.from({ length: 114 }, () => []);
+        let totalAyahs = 0;
+
+        for (const line of String(text).split(/\r?\n/u)) {
+            if (!line || line.startsWith("#")) continue;
+
+            const match = line.match(/^(\d+)\|(\d+)\|(.*)$/u);
+            if (!match) continue;
+
+            const surahNumber = Number(match[1]);
+            const ayahNumber = Number(match[2]);
+            const ayahText = match[3];
+
+            if (
+                surahNumber < 1 || surahNumber > 114 ||
+                !Number.isInteger(surahNumber) ||
+                !Number.isInteger(ayahNumber) ||
+                ayahNumber < 1 ||
+                !ayahText
+            ) {
+                throw new Error("تنسيق ملف القرآن غير صالح");
+            }
+
+            const surahAyahs = ayahsBySurah[surahNumber - 1];
+            if (ayahNumber !== surahAyahs.length + 1) {
+                throw new Error("ترتيب آيات القرآن في الملف غير متسلسل");
+            }
+
+            surahAyahs.push({
+                number: ayahNumber,
+                numberInSurah: ayahNumber,
+                text: ayahText
+            });
+            totalAyahs += 1;
+        }
+
+        if (
+            totalAyahs !== 6236 ||
+            ayahsBySurah.length !== 114 ||
+            ayahsBySurah.some(ayahs => ayahs.length === 0)
+        ) {
+            throw new Error("لم يجتز ملف القرآن فحص عدد السور والآيات");
+        }
+
+        state.localAyahs = {};
+        const surahs = ayahsBySurah.map((ayahs, index) => {
+            const number = index + 1;
+            state.localAyahs[number] = ayahs;
+
+            return {
+                number,
+                name: SURAH_NAMES_AR[index],
+                englishName: "",
+                numberOfAyahs: ayahs.length,
+                revelationType: "",
+                ayahs
+            };
+        });
+
+        return surahs;
+    }
+
+    /* =====================================================
        LOAD SURAHS
        ===================================================== */
 
     async function loadSurahs() {
 
-        const list =
-            $("#quranSurahList");
+        const list = $("#quranSurahList");
 
         if (!list || state.loading) {
             return;
         }
 
         state.loading = true;
-
         list.innerHTML = `
             <div class="quran-loading">
                 <div class="quran-spinner"></div>
-                <span>جاري تحميل سور القرآن...</span>
+                <span>جاري تجهيز القرآن...</span>
             </div>
         `;
 
         try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(
-                () => controller.abort(),
-                12000
-            );
+            /* النص المحلي هو المصدر الأساسي ويعمل دون إنترنت */
+            const localResponse = await fetch(LOCAL_QURAN_URL, {
+                cache: "no-store"
+            });
 
+            if (!localResponse.ok) {
+                throw new Error("تعذر قراءة ملف القرآن المحلي");
+            }
+
+            const localText = await localResponse.text();
+            state.surahs = parseLocalQuran(localText);
+            renderSurahs();
+            return;
+
+        } catch (localError) {
+            console.warn("تعذر تحميل القرآن المحلي:", localError);
+            state.localAyahs = {};
+        }
+
+        /* احتياط: إبقاء تحميل قائمة السور من الخدمة عند غياب الملف المحلي */
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 12000);
             let response;
 
             try {
-                response = await fetch(
-                    `${API_URL}/surah`,
-                    { signal: controller.signal }
-                );
+                response = await fetch(`${API_URL}/surah`, {
+                    signal: controller.signal
+                });
             } finally {
                 clearTimeout(timeoutId);
             }
@@ -192,22 +278,14 @@
 
             const json = await response.json();
 
-            if (
-                !json ||
-                json.code !== 200 ||
-                !Array.isArray(json.data) ||
-                json.data.length !== 114
-            ) {
+            if (!json || json.code !== 200 || !Array.isArray(json.data) || json.data.length !== 114) {
                 throw new Error("بيانات غير صالحة");
             }
 
             state.surahs = json.data;
 
             try {
-                localStorage.setItem(
-                    "amirQuranSurahListCache",
-                    JSON.stringify(state.surahs)
-                );
+                localStorage.setItem("amirQuranSurahListCache", JSON.stringify(state.surahs));
             } catch (storageError) {
                 console.warn("تعذر حفظ قائمة السور محليًا:", storageError);
             }
@@ -218,54 +296,32 @@
             console.error("Quran API error:", error);
 
             let cachedSurahs = null;
-
             try {
-                cachedSurahs = JSON.parse(
-                    localStorage.getItem("amirQuranSurahListCache") || "null"
-                );
+                cachedSurahs = JSON.parse(localStorage.getItem("amirQuranSurahListCache") || "null");
             } catch (storageError) {
                 cachedSurahs = null;
             }
 
-            if (
-                Array.isArray(cachedSurahs) &&
-                cachedSurahs.length === 114
-            ) {
+            if (Array.isArray(cachedSurahs) && cachedSurahs.length === 114) {
                 state.surahs = cachedSurahs;
                 renderSurahs();
 
                 const notice = document.createElement("p");
                 notice.className = "quran-cache-notice";
-                notice.textContent =
-                    "تعذر الاتصال بالخدمة؛ عُرضت قائمة السور المحفوظة على هذا الجهاز.";
+                notice.textContent = "تعذر الاتصال بالخدمة؛ عُرضت قائمة السور المحفوظة على هذا الجهاز.";
                 list.prepend(notice);
-                return;
+            } else {
+                list.innerHTML = `
+                    <div class="quran-empty">
+                        <div class="quran-empty-icon">⚠️</div>
+                        <strong>تعذر تحميل بيانات القرآن</strong>
+                        <p>تأكد من وجود ملف data/quran-uthmani.txt في التطبيق، ثم أعد المحاولة.</p>
+                        <button type="button" class="primary-button" id="quranRetry">إعادة المحاولة</button>
+                    </div>
+                `;
+
+                $("#quranRetry")?.addEventListener("click", loadSurahs);
             }
-
-            list.innerHTML = `
-                <div class="quran-empty">
-                    <div class="quran-empty-icon">⚠️</div>
-                    <strong>تعذر تحميل القرآن</strong>
-                    <p>
-                        تحقق من اتصال الإنترنت ثم حاول مرة أخرى.
-                        إذا استمرت المشكلة، فقد تكون خدمة القرآن غير متاحة مؤقتًا.
-                    </p>
-                    <button
-                        type="button"
-                        class="primary-button"
-                        id="quranRetry"
-                    >
-                        إعادة المحاولة
-                    </button>
-                </div>
-            `;
-
-            const retry = $("#quranRetry");
-
-            if (retry) {
-                retry.addEventListener("click", loadSurahs);
-            }
-
         } finally {
             state.loading = false;
         }
@@ -369,20 +425,24 @@
                     createElement(
                         "span",
                         "quran-surah-details",
-                        `${surah.englishName} • ${surah.numberOfAyahs} آية`
+                        surah.englishName
+                            ? `${surah.englishName} • ${surah.numberOfAyahs} آية`
+                            : `${surah.numberOfAyahs} آية`
                     );
 
                 info.appendChild(name);
                 info.appendChild(details);
 
-                const type =
-                    createElement(
-                        "span",
-                        "quran-surah-type",
-                        surah.revelationType === "Meccan"
-                            ? "مكية"
-                            : "مدنية"
-                    );
+                const typeLabel =
+                    surah.revelationType === "Meccan"
+                        ? "مكية"
+                        : surah.revelationType === "Medinan"
+                            ? "مدنية"
+                            : "";
+
+                const type = typeLabel
+                    ? createElement("span", "quran-surah-type", typeLabel)
+                    : null;
 
                 const favorite =
                     createElement(
@@ -403,7 +463,7 @@
 
                 card.appendChild(number);
                 card.appendChild(info);
-                card.appendChild(type);
+                if (type) card.appendChild(type);
                 card.appendChild(favorite);
 
                 card.addEventListener(
@@ -442,39 +502,21 @@
        OPEN SURAH
        ===================================================== */
 
-    async function openSurah(
-        surahNumber
-    ) {
+    async function openSurah(surahNumber) {
 
-        const reader =
-            $("#quranReader");
+        const reader = $("#quranReader");
+        if (!reader) return;
 
-        if (!reader) {
-            return;
-        }
-
-        state.currentSurah =
-            Number(surahNumber);
-
+        const number = Number(surahNumber);
+        state.currentSurah = number;
         reader.hidden = false;
 
-        const list =
-            $("#quranSurahList");
+        const list = $("#quranSurahList");
+        if (list) list.hidden = true;
 
-        if (list) {
-            list.hidden = true;
-        }
-
-        const search =
-            $("#quranSearch");
-
+        const search = $("#quranSearch");
         if (search) {
-            search.closest(
-                ".quran-toolbar"
-            )?.setAttribute(
-                "hidden",
-                ""
-            );
+            search.closest(".quran-toolbar")?.setAttribute("hidden", "");
         }
 
         reader.innerHTML = `
@@ -484,95 +526,58 @@
             </div>
         `;
 
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
+        window.scrollTo({ top: 0, behavior: "smooth" });
 
         try {
+            let surahData = null;
 
-            const response =
-                await fetch(
-                    `${API_URL}/surah/${surahNumber}/${state.currentEdition}`
-                );
+            /* القراءة من البيانات المحلية أولًا */
+            if (state.localAyahs[number] && state.localAyahs[number].length) {
+                const metadata = state.surahs.find(item => Number(item.number) === number);
+                if (!metadata) throw new Error("بيانات السورة غير موجودة");
 
-            if (!response.ok) {
-                throw new Error(
-                    "فشل تحميل السورة"
-                );
+                surahData = {
+                    ...metadata,
+                    ayahs: state.localAyahs[number]
+                };
+            } else {
+                /* احتياط للنسخ القديمة أو عند غياب ملف القرآن المحلي */
+                const response = await fetch(`${API_URL}/surah/${number}/${state.currentEdition}`);
+                if (!response.ok) throw new Error("فشل تحميل السورة");
+
+                const json = await response.json();
+                if (!json || json.code !== 200 || !json.data) {
+                    throw new Error("بيانات السورة غير صالحة");
+                }
+                surahData = json.data;
             }
 
-            const json =
-                await response.json();
-
-            if (
-                !json ||
-                json.code !== 200 ||
-                !json.data
-            ) {
-                throw new Error(
-                    "بيانات السورة غير صالحة"
-                );
-            }
-
-            renderReader(
-                json.data
-            );
-
+            renderReader(surahData);
             saveLastRead({
-                surahNumber:
-                    json.data.number,
-
-                surahName:
-                    json.data.name,
-
-                ayahNumber: 1
+                surahNumber: surahData.number,
+                surahName: surahData.name,
+                ayahNumber: state.lastRead &&
+                    Number(state.lastRead.surahNumber) === number
+                    ? Number(state.lastRead.ayahNumber) || 1
+                    : 1
             });
+            renderLastRead();
 
         } catch (error) {
-
-            console.error(
-                "Surah error:",
-                error
-            );
+            console.error("Surah error:", error);
 
             reader.innerHTML = `
                 <div class="quran-empty">
                     <div class="quran-empty-icon">⚠️</div>
                     <strong>تعذر فتح السورة</strong>
-                    <p>
-                        تحقق من اتصال الإنترنت وحاول مرة أخرى.
-                    </p>
-
-                    <button
-                        type="button"
-                        class="primary-button"
-                        id="quranReaderRetry"
-                    >
-                        إعادة المحاولة
-                    </button>
-
-                    <button
-                        type="button"
-                        class="secondary-button"
-                        id="quranBackRetry"
-                    >
-                        العودة للسور
-                    </button>
+                    <p>تعذر قراءة السورة من الملف المحلي. تحقق من وجود ملف القرآن في التطبيق، أو اتصل بالإنترنت للمحاولة الاحتياطية.</p>
+                    <button type="button" class="primary-button" id="quranReaderRetry">إعادة المحاولة</button>
+                    <button type="button" class="secondary-button" id="quranBackRetry">العودة للسور</button>
                 </div>
             `;
 
-            $("#quranReaderRetry")
-                ?.addEventListener(
-                    "click",
-                    () => openSurah(surahNumber)
-                );
-
-            $("#quranBackRetry")
-                ?.addEventListener(
-                    "click",
-                    closeReader
-                );
+            $("#quranReaderRetry")?.addEventListener("click", () => openSurah(number));
+            $("#quranBackRetry")?.addEventListener("click", closeReader);
         }
     }
 
@@ -626,16 +631,13 @@
                 surah.name
             );
 
-        const meta =
-            createElement(
-                "span",
-                "",
-                `${surah.englishName} • ${surah.numberOfAyahs} آية • ${
-                    surah.revelationType === "Meccan"
-                        ? "مكية"
-                        : "مدنية"
-                }`
-            );
+        const metaParts = [];
+        if (surah.englishName) metaParts.push(surah.englishName);
+        metaParts.push(`${surah.numberOfAyahs} آية`);
+        if (surah.revelationType === "Meccan") metaParts.push("مكية");
+        else if (surah.revelationType === "Medinan") metaParts.push("مدنية");
+
+        const meta = createElement("span", "", metaParts.join(" • "));
 
         title.appendChild(arabicName);
         title.appendChild(meta);
@@ -1095,8 +1097,7 @@
                     </strong>
 
                     <span class="quran-surah-details">
-                        ${escapeHTML(surah.englishName)}
-                        •
+                        ${surah.englishName ? escapeHTML(surah.englishName) + " • " : ""}
                         ${surah.numberOfAyahs} آية
                     </span>
                 `;
