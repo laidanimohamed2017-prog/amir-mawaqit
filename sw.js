@@ -3,7 +3,7 @@
    Service Worker
    ========================================================= */
 
-const CACHE_NAME = "amir-mawaqit-v16";
+const CACHE_NAME = "amir-mawaqit-v17";
 
 const APP_FILES = [
     "./",
