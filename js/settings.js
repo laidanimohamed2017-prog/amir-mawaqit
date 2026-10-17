@@ -21,7 +21,7 @@
     city: "ain_oussera",
     calculationMethod: "19",
     madhhab: "0",
-    theme: "auto",
+    theme: "light",
     adhanEnabled: true,
     adhanTiming: "at",
     adhanSound: true,
