@@ -1,0 +1,63 @@
+name: Build Amir Mawaqit APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "index.html"
+      - "manifest.json"
+      - "sw.js"
+      - "css/**"
+      - "js/**"
+      - "data/**"
+      - "icon-*.png"
+      - "adhan1.mp3"
+      - ".github/workflows/build-android-apk.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Prepare Capacitor project
+        run: |
+          mkdir -p www
+          rsync -av --exclude='.git' --exclude='.github' --exclude='android' --exclude='node_modules' --exclude='www' ./ www/
+          npm init -y
+          npm install @capacitor/core@6 @capacitor/android@6 @capacitor/cli@6
+          npx cap init "Amir Mawaqit" com.amir.mawaqit --web-dir=www
+          npx cap add android
+          npx cap sync android
+
+      - name: Build debug APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Amir-Mawaqit-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
