@@ -155,7 +155,7 @@
         const list =
             $("#quranSurahList");
 
-        if (!list) {
+        if (!list || state.loading) {
             return;
         }
 
@@ -169,41 +169,78 @@
         `;
 
         try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(
+                () => controller.abort(),
+                12000
+            );
 
-            const response =
-                await fetch(
-                    `${API_URL}/surah`
-                );
+            let response;
 
-            if (!response.ok) {
-                throw new Error(
-                    "فشل تحميل السور"
+            try {
+                response = await fetch(
+                    `${API_URL}/surah`,
+                    { signal: controller.signal }
                 );
+            } finally {
+                clearTimeout(timeoutId);
             }
 
-            const json =
-                await response.json();
+            if (!response.ok) {
+                throw new Error("فشل تحميل السور");
+            }
+
+            const json = await response.json();
 
             if (
                 !json ||
                 json.code !== 200 ||
-                !json.data
+                !Array.isArray(json.data) ||
+                json.data.length !== 114
             ) {
-                throw new Error(
-                    "بيانات غير صالحة"
-                );
+                throw new Error("بيانات غير صالحة");
             }
 
             state.surahs = json.data;
 
+            try {
+                localStorage.setItem(
+                    "amirQuranSurahListCache",
+                    JSON.stringify(state.surahs)
+                );
+            } catch (storageError) {
+                console.warn("تعذر حفظ قائمة السور محليًا:", storageError);
+            }
+
             renderSurahs();
 
         } catch (error) {
+            console.error("Quran API error:", error);
 
-            console.error(
-                "Quran API error:",
-                error
-            );
+            let cachedSurahs = null;
+
+            try {
+                cachedSurahs = JSON.parse(
+                    localStorage.getItem("amirQuranSurahListCache") || "null"
+                );
+            } catch (storageError) {
+                cachedSurahs = null;
+            }
+
+            if (
+                Array.isArray(cachedSurahs) &&
+                cachedSurahs.length === 114
+            ) {
+                state.surahs = cachedSurahs;
+                renderSurahs();
+
+                const notice = document.createElement("p");
+                notice.className = "quran-cache-notice";
+                notice.textContent =
+                    "تعذر الاتصال بالخدمة؛ عُرضت قائمة السور المحفوظة على هذا الجهاز.";
+                list.prepend(notice);
+                return;
+            }
 
             list.innerHTML = `
                 <div class="quran-empty">
@@ -211,6 +248,7 @@
                     <strong>تعذر تحميل القرآن</strong>
                     <p>
                         تحقق من اتصال الإنترنت ثم حاول مرة أخرى.
+                        إذا استمرت المشكلة، فقد تكون خدمة القرآن غير متاحة مؤقتًا.
                     </p>
                     <button
                         type="button"
@@ -222,14 +260,10 @@
                 </div>
             `;
 
-            const retry =
-                $("#quranRetry");
+            const retry = $("#quranRetry");
 
             if (retry) {
-                retry.addEventListener(
-                    "click",
-                    loadSurahs
-                );
+                retry.addEventListener("click", loadSurahs);
             }
 
         } finally {
