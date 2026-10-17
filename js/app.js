@@ -812,6 +812,21 @@
   }
 
   /* =========================================================
+     Theme shortcut
+     ========================================================= */
+
+  function setupThemeShortcut() {
+    const button = $("#themeButton");
+    if (!button) return;
+
+    button.addEventListener("click", function () {
+      showSection("settingsSection", true);
+      const themeSelect = $("#themeSelect");
+      if (themeSelect) themeSelect.focus();
+    });
+  }
+
+  /* =========================================================
      Global Events
      ========================================================= */
 
@@ -918,6 +933,8 @@
     setupNavigation();
 
     setupQuickActions();
+
+    setupThemeShortcut();
 
     setupNetworkStatus();
 
