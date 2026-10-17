@@ -78,6 +78,10 @@
 
   function showSection(section, updateHistory) {
     const targetId = normalizeSection(section);
+    const previousSection =
+      document.body.dataset.activeSection ||
+      document.querySelector(".page-section.active")?.id ||
+      null;
     const target = document.getElementById(targetId);
 
     if (!target) {
@@ -164,10 +168,13 @@
       }
     }
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
+    /* لا تقفز إلى أعلى الصفحة عند إعادة اختيار القسم نفسه */
+    if (previousSection !== targetId) {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
 
     return true;
   }
