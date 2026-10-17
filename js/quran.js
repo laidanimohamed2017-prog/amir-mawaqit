@@ -251,6 +251,7 @@
             const localText = await localResponse.text();
             state.surahs = parseLocalQuran(localText);
             renderSurahs();
+            state.loading = false;
             return;
 
         } catch (localError) {
