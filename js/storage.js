@@ -95,7 +95,7 @@
      --------------------------------------------------------- */
 
   function getTheme() {
-    return get(KEYS.THEME, "auto");
+    return get(KEYS.THEME, "light");
   }
 
   function setTheme(theme) {
