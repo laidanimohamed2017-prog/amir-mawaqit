@@ -218,6 +218,37 @@
         return surahs;
     }
 
+    /* تحميل محلي مشترك: يمنع إعادة جلب/تحليل ملف القرآن عند كل فتح سورة */
+    let localQuranPromise = null;
+
+    async function ensureLocalQuranLoaded() {
+        if (
+            state.surahs.length === 114 &&
+            Object.keys(state.localAyahs).length === 114
+        ) {
+            return state.surahs;
+        }
+
+        if (!localQuranPromise) {
+            localQuranPromise = (async () => {
+                const response = await fetch(LOCAL_QURAN_URL);
+                if (!response.ok) {
+                    throw new Error("تعذر قراءة ملف القرآن المحلي");
+                }
+
+                const text = await response.text();
+                const surahs = parseLocalQuran(text);
+                state.surahs = surahs;
+                return surahs;
+            })().catch(error => {
+                localQuranPromise = null;
+                throw error;
+            });
+        }
+
+        return localQuranPromise;
+    }
+
     /* =====================================================
        LOAD SURAHS
        ===================================================== */
@@ -240,16 +271,7 @@
 
         try {
             /* النص المحلي هو المصدر الأساسي ويعمل دون إنترنت */
-            const localResponse = await fetch(LOCAL_QURAN_URL, {
-                cache: "no-store"
-            });
-
-            if (!localResponse.ok) {
-                throw new Error("تعذر قراءة ملف القرآن المحلي");
-            }
-
-            const localText = await localResponse.text();
-            state.surahs = parseLocalQuran(localText);
+            await ensureLocalQuranLoaded();
             renderSurahs();
             state.loading = false;
             return;
@@ -532,17 +554,24 @@
         try {
             let surahData = null;
 
-            /* القراءة من البيانات المحلية أولًا */
-            if (state.localAyahs[number] && state.localAyahs[number].length) {
+            /* حاول دائمًا تجهيز القرآن المحلي أولًا، حتى لو لم تُحمّل القائمة قبل ذلك */
+            try {
+                await ensureLocalQuranLoaded();
                 const metadata = state.surahs.find(item => Number(item.number) === number);
-                if (!metadata) throw new Error("بيانات السورة غير موجودة");
+                const ayahs = state.localAyahs[number];
+
+                if (!metadata || !Array.isArray(ayahs) || !ayahs.length) {
+                    throw new Error("بيانات السورة المحلية غير موجودة");
+                }
 
                 surahData = {
                     ...metadata,
-                    ayahs: state.localAyahs[number]
+                    ayahs
                 };
-            } else {
-                /* احتياط للنسخ القديمة أو عند غياب ملف القرآن المحلي */
+            } catch (localError) {
+                console.warn("تعذر فتح السورة محليًا، ستجرب الخدمة الاحتياطية:", localError);
+
+                /* احتياط عبر الإنترنت فقط إذا تعذر الملف المحلي */
                 const response = await fetch(`${API_URL}/surah/${number}/${state.currentEdition}`);
                 if (!response.ok) throw new Error("فشل تحميل السورة");
 
@@ -550,6 +579,7 @@
                 if (!json || json.code !== 200 || !json.data) {
                     throw new Error("بيانات السورة غير صالحة");
                 }
+
                 surahData = json.data;
             }
 
