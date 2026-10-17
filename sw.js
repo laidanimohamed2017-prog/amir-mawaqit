@@ -3,7 +3,7 @@
    Service Worker
    ========================================================= */
 
-const CACHE_NAME = "amir-mawaqit-v14";
+const CACHE_NAME = "amir-mawaqit-v15";
 
 const APP_FILES = [
     "./",
@@ -23,6 +23,7 @@ const APP_FILES = [
     "./js/quran.js",
     "./js/settings.js",
     "./js/storage.js",
+    "./data/quran-uthmani.txt",
 
     "./adhan1.mp3",
 
