@@ -2483,3 +2483,46 @@ input::placeholder, textarea::placeholder { color: #84948b !important; }
   .bottom-nav { border-radius: 20px 20px 0 0; }
 }
 
+
+
+/* Home page install button */
+.home-install-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 18px 0;
+  padding: 16px;
+  border: 1px solid #d7e8dd;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #f3fbf5, #ffffff);
+  box-shadow: 0 8px 24px rgba(14, 88, 55, 0.08);
+}
+.home-install-text {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.home-install-text strong {
+  color: #075c3b;
+  font-size: 15px;
+}
+.home-install-text small {
+  color: #60766a;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.home-install-button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+@media (max-width: 420px) {
+  .home-install-card {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .home-install-button {
+    width: 100%;
+  }
+}
