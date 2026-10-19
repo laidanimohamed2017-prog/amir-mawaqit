@@ -517,6 +517,13 @@
       return;
     }
 
+    const homeButton = $("#homeInstallButton");
+    if (homeButton) {
+      homeButton.addEventListener("click", function () {
+        button.click();
+      });
+    }
+
     window.addEventListener(
       "beforeinstallprompt",
       function (event) {
@@ -588,6 +595,8 @@
 
     if (isStandalone()) {
       banner.hidden = true;
+      const homeCard = $("#homeInstallCard");
+      if (homeCard) homeCard.hidden = true;
     } else if (isIOS()) {
       setTimeout(function () {
         banner.hidden = false;
