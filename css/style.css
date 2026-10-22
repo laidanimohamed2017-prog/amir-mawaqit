@@ -3027,3 +3027,116 @@ input, select, textarea,
   .bottom-nav .nav-button { min-height: 51px; font-size: 9px; }
   .bottom-nav .nav-button .nav-icon { font-size: 18px; }
 }
+
+
+/* AMIR MAWAQIT — GREEN + GOLD + BLACK, CLEARER TYPE */
+:root {
+  color-scheme: dark;
+  --bg: #080b09;
+  --surface: #111713;
+  --surface-soft: #1a241d;
+  --text: #fffdf5;
+  --muted: #ded8c8;
+  --line: #344537;
+  --emerald: #1f8a50;
+  --emerald-deep: #2eaa68;
+  --emerald-soft: #163d29;
+  --gold: #e2bd62;
+  --gold-light: #ffe8a0;
+  --shadow: 0 10px 30px rgba(0,0,0,.32);
+}
+html, body { background: #080b09 !important; color: #fffdf5 !important; }
+body {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(31,138,80,.18), transparent 32rem),
+    #080b09 !important;
+}
+.top-header {
+  background: rgba(8,11,9,.97) !important;
+  border-bottom: 1px solid rgba(226,189,98,.34) !important;
+}
+.account-top-button {
+  background: linear-gradient(135deg,#174c30,#10251a) !important;
+  color: #ffe8a0 !important;
+  border: 1px solid rgba(226,189,98,.72) !important;
+  font-size: 15px !important;
+}
+.hero {
+  background:
+    radial-gradient(circle at 10% 10%,rgba(226,189,98,.12),transparent 14rem),
+    linear-gradient(135deg,#17472e 0%,#10281b 48%,#080b09 100%) !important;
+  border: 1px solid rgba(226,189,98,.55) !important;
+}
+.next-prayer {
+  background: rgba(0,0,0,.28) !important;
+  border-color: rgba(226,189,98,.38) !important;
+}
+.countdown, .prayer-time, .counter-value, #tasbihCount, .qibla-degree {
+  color: #ffe8a0 !important;
+}
+.progress-bar { background: linear-gradient(90deg,#167341,#e2bd62) !important; }
+.prayer-card, .quick-card, .content-card, .quran-reader,
+.quran-last-read, .quran-surah-card, .surah-card, .zikr-card, .settings-card {
+  background: linear-gradient(160deg,#151d17,#0e120f) !important;
+  border-color: #344d3a !important;
+  color: #fffdf5 !important;
+}
+.prayer-card::before { background: linear-gradient(90deg,transparent,#e2bd62,transparent) !important; }
+.quick-icon {
+  background: linear-gradient(145deg,#1c5835,#102b1c) !important;
+  border: 1px solid rgba(226,189,98,.4) !important;
+}
+.quick-card strong, .section-title h2, .content-card h3,
+.account-hero h2, .account-form-card h3 { color: #ffe8a0 !important; }
+.section-title p, .section-title > span, .account-note { color: #ded8c8 !important; }
+input, select, textarea, #settingsSection input, #settingsSection select,
+#settingsSection textarea, .account-form-card input {
+  background: #080b09 !important;
+  color: #fffdf5 !important;
+  border-color: #46634d !important;
+  font-size: 16px !important;
+}
+input::placeholder, textarea::placeholder { color: #bcb6a7 !important; opacity: 1; }
+.primary-button, .install-button, .home-install-button {
+  background: linear-gradient(135deg,#e2bd62,#f5d98f) !important;
+  color: #11150f !important;
+  border: 1px solid #ffe8a0 !important;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+}
+.secondary-button {
+  background: #163d29 !important;
+  color: #ffe8a0 !important;
+  border: 1px solid #56815c !important;
+  font-size: 15px !important;
+}
+.bottom-nav {
+  background: rgba(7,12,9,.98) !important;
+  border-color: rgba(226,189,98,.58) !important;
+}
+.bottom-nav .nav-button {
+  color: #e4e0d5 !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  min-height: 58px !important;
+}
+.bottom-nav .nav-button.active,
+.bottom-nav .nav-button[aria-current="page"] {
+  background: linear-gradient(145deg,#1c5835,#123321) !important;
+  color: #ffe8a0 !important;
+  border-color: rgba(226,189,98,.6) !important;
+}
+.bottom-nav .nav-button .nav-icon { font-size: 22px !important; }
+.app { padding-bottom: calc(126px + env(safe-area-inset-bottom)) !important; }
+#amirToast {
+  background: #112318 !important;
+  color: #ffe8a0 !important;
+  border-color: #b18d3d !important;
+}
+p, .setting-info small, .prayer-name, .prayer-label, .account-form-card label {
+  color: #f0eadc;
+}
+@media (max-width: 420px) {
+  .bottom-nav .nav-button { font-size: 11px !important; min-height: 55px !important; }
+  .bottom-nav .nav-button .nav-icon { font-size: 20px !important; }
+}
