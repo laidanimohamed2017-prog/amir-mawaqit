@@ -3,7 +3,7 @@
    Service Worker
    ========================================================= */
 
-const CACHE_NAME = "amir-mawaqit-v24";
+const CACHE_NAME = "amir-mawaqit-v25";
 
 const APP_FILES = [
     "./",
@@ -17,7 +17,7 @@ const APP_FILES = [
 
     "./js/app.js?v=20261022-dark1",
     "./js/prayer.js",
-    "./js/adhan.js?v=20261022-quiet1",
+    "./js/adhan.js?v=20261022-quiet2",
     "./js/qibla.js",
     "./js/azkar.js",
     "./js/quran.js?v=20261017-offlinefix1",
