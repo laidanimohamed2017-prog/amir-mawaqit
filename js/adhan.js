@@ -232,6 +232,16 @@
   }
 
   function notify(title, body) {
+    let notificationsEnabled = false;
+    try {
+      notificationsEnabled = window.AmirSettings && typeof window.AmirSettings.getNotificationsEnabled === "function"
+        ? window.AmirSettings.getNotificationsEnabled()
+        : localStorage.getItem("amirNotifications") === "true";
+    } catch (error) {
+      notificationsEnabled = false;
+    }
+    if (!notificationsEnabled) return false;
+
     if (!("Notification" in window)) {
       return false;
     }
