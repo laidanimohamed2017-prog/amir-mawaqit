@@ -39,7 +39,7 @@ jobs:
         uses: android-actions/setup-android@v3
         with:
           accept-android-sdk-licenses: true
-          tools: "platform-tools"
+          tools: ""
 
       - name: Install Android SDK packages
         run: |
