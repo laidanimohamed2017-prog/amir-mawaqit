@@ -71,7 +71,9 @@
       qiblaSection: "qiblaSection",
 
       settings: "settingsSection",
-      settingsSection: "settingsSection"
+      settingsSection: "settingsSection",
+      account: "accountSection",
+      accountSection: "accountSection"
     };
 
     return aliases[section] || section;
@@ -802,6 +804,9 @@
             "settingsSection",
             true
           );
+        }
+        if (event.key === "6") {
+          showSection("accountSection", true);
         }
       }
     );
