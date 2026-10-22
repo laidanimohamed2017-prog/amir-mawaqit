@@ -568,3 +568,11 @@ body.dark-mode .quran-ayah.quran-last-read {
     }
 }
 ```
+
+
+/* Clean up malformed markdown wrappers and align Quran UI with new theme */
+#quranSection .quran-surah-card { background:#fffdf7; color:#1d3027; border-color:#d8e2d5; }
+#quranSection .quran-surah-name, #quranSection .quran-reader-title h2 { color:#104b35; }
+#quranSection .quran-surah-number, #quranSection .quran-back-button { background:#e4f0e6; color:#176747; }
+#quranSection .quran-ayah-text { color:#1d3027; }
+#quranSection .quran-empty { background:#fffdf7; border-color:#d8e2d5; }
