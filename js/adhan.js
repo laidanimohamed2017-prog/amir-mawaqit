@@ -12,6 +12,21 @@
   let audio = null;
   let schedulerTimer = null;
   let lastTriggered = {};
+  const QUIET_STORAGE_KEY = "amirQuietUntil";
+
+  function isQuietMode() {
+    try { return Date.now() < Number(localStorage.getItem(QUIET_STORAGE_KEY) || 0); }
+    catch (error) { return false; }
+  }
+
+  function startQuietMode() {
+    try {
+      const enabled = window.AmirSettings && typeof window.AmirSettings.getQuietAfterAdhan === "function"
+        ? window.AmirSettings.getQuietAfterAdhan()
+        : localStorage.getItem("amirQuietAfterAdhan") === "true";
+      if (enabled) localStorage.setItem(QUIET_STORAGE_KEY, String(Date.now() + 15 * 60 * 1000));
+    } catch (error) { console.warn("تعذر تفعيل وضع الهدوء:", error); }
+  }
 
   const PRAYER_NAMES = {
     Fajr: "الفجر",
@@ -248,6 +263,7 @@
      ========================================================= */
 
   function showToast(message, type) {
+    if (isQuietMode()) return;
     const toast =
       document.getElementById("amirToast");
 
@@ -362,6 +378,8 @@
         : "حان الآن موعد صلاة " +
             PRAYER_NAMES[prayer.key]
     );
+
+    if (beforeMinutes === 0) startQuietMode();
 
     showToast(
       beforeMinutes > 0
@@ -506,6 +524,7 @@
 
     requestNotificationPermission,
     notify,
+    isQuietMode,
 
     reschedule,
     refresh,
