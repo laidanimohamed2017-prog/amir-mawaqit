@@ -373,7 +373,8 @@
 
     lastTriggered[triggerKey] = true;
 
-    if (settings.sound) {
+    // لا نشغّل صوت الأذان قبل الوقت؛ التنبيه المبكر إشعار فقط.
+    if (beforeMinutes === 0 && settings.sound) {
       setVolume(settings.volume);
       await play();
     }
@@ -440,10 +441,7 @@
         settings.timing === "before" ||
         settings.timing === "both"
       ) {
-        if (
-          difference === 10 &&
-          currentSeconds < 10
-        ) {
+        if (difference === 10) {
           triggerPrayer(prayer, 10);
         }
       }
@@ -452,10 +450,7 @@
         settings.timing === "at" ||
         settings.timing === "both"
       ) {
-        if (
-          difference === 0 &&
-          currentSeconds < 10
-        ) {
+        if (difference === 0) {
           triggerPrayer(prayer, 0);
         }
       }
