@@ -889,6 +889,21 @@
   }
 
   /* =========================================================
+     Account UI — waiting for secure auth provider configuration
+     ========================================================= */
+  function setupAccountForm() {
+    ["accountRegisterButton", "accountLoginButton"].forEach(function (id) {
+      const button = document.getElementById(id);
+      if (!button) return;
+      button.addEventListener("click", function () {
+        showToast("التسجيل لم يُفعّل بعد. يجب ربط خدمة حسابات آمنة أولًا؛ لم يتم حفظ بياناتك.");
+        const password = document.getElementById("accountPassword");
+        if (password) password.value = "";
+      });
+    });
+  }
+
+  /* =========================================================
      Initialize Modules
      ========================================================= */
 
@@ -971,6 +986,8 @@
     setupKeyboardShortcuts();
 
     setupGlobalEvents();
+
+    setupAccountForm();
 
     setupInitialSection();
 
