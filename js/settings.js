@@ -21,12 +21,13 @@
     city: "ain_oussera",
     calculationMethod: "19",
     madhhab: "0",
-    theme: "light",
+    theme: "dark",
     adhanEnabled: true,
     adhanTiming: "at",
     adhanSound: true,
     adhanVolume: 0.8,
-    notifications: false
+    notifications: false,
+    quietAfterAdhan: false
   };
 
   let initialized = false;
@@ -164,6 +165,16 @@
     );
 
     return settings;
+  }
+
+  function getQuietAfterAdhan() {
+    try { return localStorage.getItem("amirQuietAfterAdhan") === "true"; }
+    catch (error) { return DEFAULTS.quietAfterAdhan; }
+  }
+
+  function setQuietAfterAdhan(value) {
+    try { localStorage.setItem("amirQuietAfterAdhan", JSON.stringify(Boolean(value))); return true; }
+    catch (error) { return false; }
   }
 
   function getNotificationsEnabled() {
@@ -320,6 +331,8 @@
   }
 
   function loadNotificationUI() {
+    const quietToggle = document.getElementById("quietAfterAdhan");
+    if (quietToggle) quietToggle.checked = getQuietAfterAdhan();
     const enabled = document.getElementById(
       "notificationsEnabled"
     );
@@ -713,6 +726,8 @@
     const notificationsEnabled =
       document.getElementById("notificationsEnabled");
 
+    const quietAfterAdhan = document.getElementById("quietAfterAdhan");
+
     const enableNotificationsButton =
       document.getElementById("enableNotifications");
 
@@ -803,6 +818,15 @@
         "click",
         stopAdhan
       );
+    }
+
+    if (quietAfterAdhan) {
+      quietAfterAdhan.addEventListener("change", function () {
+        setQuietAfterAdhan(quietAfterAdhan.checked);
+        showToast(quietAfterAdhan.checked
+          ? "سيتم كتم تنبيهات التطبيق الأخرى لمدة 15 دقيقة بعد الأذان"
+          : "تم إيقاف كتم تنبيهات التطبيق");
+      });
     }
 
     if (notificationsEnabled) {
@@ -920,6 +944,8 @@
     saveAdhanSettings,
     getNotificationsEnabled,
     setNotificationsEnabled,
+    getQuietAfterAdhan,
+    setQuietAfterAdhan,
     applyTheme,
     loadUI,
     exportSettings,
