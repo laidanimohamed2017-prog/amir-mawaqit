@@ -25,6 +25,7 @@
   }
 
   function showToast(message, duration) {
+    if (window.AmirAdhan && typeof window.AmirAdhan.isQuietMode === "function" && window.AmirAdhan.isQuietMode()) return;
     const toast = $("#amirToast");
 
     if (!toast) return;
