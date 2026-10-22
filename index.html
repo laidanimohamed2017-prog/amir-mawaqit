@@ -8,7 +8,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-    <meta name="theme-color" content="#f5f7f4">
+    <meta name="theme-color" content="#0b1510">
 
     <meta name="description"
           content="أمير مواقيت - تطبيق احترافي لمواقيت الصلاة والأذان والقبلة والأذكار والقرآن الكريم">
@@ -32,7 +32,7 @@
     <link rel="stylesheet" href="./css/responsive.css">
     <link rel="stylesheet" href="./css/animations.css">
     <link rel="stylesheet" href="./css/quran.css">
-    <link rel="stylesheet" href="./css/style.css?v=20261022-dark1">
+    <link rel="stylesheet" href="./css/style.css?v=20261022-redesign1">
 
 </head>
 
@@ -1546,6 +1546,27 @@
 
         </section>
 
+        <!-- ACCOUNT SECTION -->
+        <section id="accountSection" class="page-section">
+            <div class="account-hero content-card">
+                <div class="account-avatar">👤</div>
+                <h2>حسابي</h2>
+                <p>أنشئ حسابك للاحتفاظ بملفك الشخصي ومتابعة استخدام أمير مواقيت عبر أجهزتك.</p>
+            </div>
+            <div class="content-card account-form-card">
+                <h3>إنشاء حساب أو تسجيل الدخول</h3>
+                <p class="account-note">يتطلب التسجيل الحقيقي خدمة حسابات آمنة قبل تفعيل إنشاء الحسابات وإحصاء المستخدمين.</p>
+                <label for="accountName">الاسم</label>
+                <input id="accountName" type="text" autocomplete="name" placeholder="اكتب اسمك" />
+                <label for="accountEmail">البريد الإلكتروني</label>
+                <input id="accountEmail" type="email" autocomplete="email" placeholder="name@example.com" />
+                <label for="accountPassword">كلمة المرور</label>
+                <input id="accountPassword" type="password" autocomplete="new-password" placeholder="8 أحرف على الأقل" />
+                <button id="accountRegisterButton" class="primary-button" type="button">إنشاء حساب</button>
+                <button id="accountLoginButton" class="secondary-button" type="button">لدي حساب بالفعل</button>
+            </div>
+        </section>
+
     </main>
 
 
@@ -1620,6 +1641,14 @@
 
             </button>
 
+
+            <button
+                class="nav-button"
+                type="button"
+                data-section="account">
+                <span class="nav-icon">👤</span>
+                <span>حسابي</span>
+            </button>
 
             <button
                 class="nav-button"
@@ -1710,12 +1739,12 @@
 
 <script src="./js/storage.js"></script>
 <script src="./js/prayer.js"></script>
-<script src="./js/adhan.js?v=20261022-quiet2"></script>
+<script src="./js/adhan.js?v=20261022-adhanfix1"></script>
 <script src="./js/qibla.js"></script>
 <script src="./js/azkar.js"></script>
 <script src="./js/quran.js?v=20261017-offlinefix1"></script>
 <script src="./js/settings.js?v=20261022-dark1"></script>
-<script src="./js/app.js?v=20261022-dark1"></script>
+<script src="./js/app.js?v=20261022-redesign1"></script>
 
 </body>
 </html>
