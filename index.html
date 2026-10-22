@@ -32,7 +32,7 @@
     <link rel="stylesheet" href="./css/responsive.css">
     <link rel="stylesheet" href="./css/animations.css">
     <link rel="stylesheet" href="./css/quran.css">
-    <link rel="stylesheet" href="./css/style.css?v=20261022-redesign1">
+    <link rel="stylesheet" href="./css/style.css?v=20261022-full1">
 
 </head>
 
@@ -438,25 +438,34 @@
              QURAN
              ================================================= -->
 
-        <section
-            id="quranSection"
-            class="page-section">
-
-            <div class="section-title">
+        <section id="quranSection" class="page-section">
+            <div class="section-title quran-heading">
                 <div>
                     <h2>📖 القرآن الكريم</h2>
-                    <p>نعمل على تحسين تجربة قراءة القرآن الكريم</p>
+                    <p>اقرأ القرآن الكريم دون الحاجة إلى الإنترنت</p>
                 </div>
+                <span class="quran-badge">مصحف إلكتروني</span>
             </div>
 
-            <div class="content-card quran-maintenance-card" role="status" aria-live="polite">
-                <div class="quran-maintenance-icon" aria-hidden="true">🛠️</div>
-                <h3>قسم القرآن قيد التعديل</h3>
-                <p>نعمل حاليًا على تطوير هذا القسم وتحسينه ليكون أفضل وأسهل في الاستخدام.</p>
-                <p>سيعود قريبًا بإذن الله. شكرًا لصبركم وتفهمكم.</p>
-                <span class="quran-maintenance-badge">قيد التطوير</span>
+            <div class="quran-toolbar content-card">
+                <div class="quran-tools-row">
+                    <label class="quran-search-wrap" for="quranSearch">🔎
+                        <input id="quranSearch" type="search" placeholder="ابحث عن سورة..." autocomplete="off">
+                    </label>
+                    <button class="secondary-button" type="button" id="quranContinueButton">▶ متابعة القراءة</button>
+                </div>
+                <div class="quran-tools-row quran-filter-row">
+                    <button class="secondary-button active" type="button" id="quranAllButton">كل السور</button>
+                    <button class="secondary-button" type="button" id="quranFavoritesButton">⭐ المفضلة <span id="quranFavoriteCount">0</span></button>
+                    <button class="secondary-button" type="button" id="quranLastReadButton">آخر قراءة</button>
+                </div>
+                <div id="quranLastRead" class="quran-last-read"></div>
             </div>
 
+            <div id="quranReader" class="quran-reader content-card" hidden></div>
+            <div id="quranSurahList" class="quran-surah-grid" aria-live="polite">
+                <div class="quran-loading"><span class="quran-spinner"></span><span>جاري تجهيز القرآن...</span></div>
+            </div>
         </section>
 
 
@@ -1739,12 +1748,12 @@
 
 <script src="./js/storage.js"></script>
 <script src="./js/prayer.js"></script>
-<script src="./js/adhan.js?v=20261022-adhanfix1"></script>
+<script src="./js/adhan.js?v=20261022-full1"></script>
 <script src="./js/qibla.js"></script>
 <script src="./js/azkar.js"></script>
 <script src="./js/quran.js?v=20261017-offlinefix1"></script>
 <script src="./js/settings.js?v=20261022-dark1"></script>
-<script src="./js/app.js?v=20261022-redesign1"></script>
+<script src="./js/app.js?v=20261022-full1"></script>
 
 </body>
 </html>
