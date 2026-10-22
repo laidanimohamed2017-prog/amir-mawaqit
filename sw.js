@@ -3,21 +3,21 @@
    Service Worker
    ========================================================= */
 
-const CACHE_NAME = "amir-mawaqit-v31";
+const CACHE_NAME = "amir-mawaqit-v32";
 
 const APP_FILES = [
     "./",
     "./index.html",
     "./manifest.json",
 
-    "./css/style.css?v=20261022-blackgold-nav1",
+    "./css/style.css?v=20261022-green-gold-black2",
     "./css/quran.css",
     "./css/responsive.css",
     "./css/animations.css",
 
-    "./js/app.js?v=20261022-blackgold-nav1",
+    "./js/app.js?v=20261022-green-gold-black2",
     "./js/prayer.js",
-    "./js/adhan.js?v=20261022-blackgold-nav1",
+    "./js/adhan.js?v=20261022-green-gold-black2",
     "./js/qibla.js",
     "./js/azkar.js",
     "./js/quran.js?v=20261017-offlinefix1",
