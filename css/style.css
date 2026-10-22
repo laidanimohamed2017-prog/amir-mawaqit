@@ -2538,3 +2538,23 @@ html[data-theme="dark"] .section-title h2, html[data-theme="dark"] .setting-info
 html[data-theme="dark"] input, html[data-theme="dark"] select, html[data-theme="dark"] textarea { background: #102219; border-color: #2b4635; color: #edf5ed; }
 html[data-theme="dark"] .nav-button.active { color: #d9bd79; }
 html[data-theme="dark"] .nav-button.active .nav-icon { filter: drop-shadow(0 0 8px rgba(217,189,121,.22)); }
+
+
+/* V2 REDESIGN — PREMIUM DARK EMERALD */
+:root { --bg:#08120d; --surface:#102018; --surface-soft:#172b20; --text:#f1f5ef; --muted:#a5b7aa; --line:rgba(190,216,196,.15); --emerald:#25a675; --emerald-dark:#0b5c40; --emerald-soft:#193a2a; --gold:#d9bd79; color-scheme:dark; }
+html,body { background:#08120d; color:var(--text); } body { background-image:radial-gradient(ellipse at 50% -10%,rgba(31,105,72,.32),transparent 42%); }
+.app { background:transparent; } .top-header { background:rgba(8,18,13,.9); border-bottom:1px solid var(--line); backdrop-filter:blur(18px); }
+.brand-icon { background:linear-gradient(145deg,#1b6a49,#0e3021); border:1px solid rgba(217,189,121,.35); box-shadow:0 8px 24px rgba(0,0,0,.22); } .brand-text h1 { color:#f3e8c8; }
+.hero { background:linear-gradient(145deg,#174a33 0%,#0d2b1d 58%,#0a1c13 100%); border:1px solid rgba(217,189,121,.25); box-shadow:0 20px 48px rgba(0,0,0,.25); }
+.next-prayer { background:rgba(3,15,9,.28); border:1px solid rgba(255,255,255,.08); } .countdown { color:#f0dba7; font-variant-numeric:tabular-nums; }
+.content-card,.prayer-card,.quick-card,.home-install-card,.quran-surah-card,.zikr-card { background:linear-gradient(150deg,#14271c,#0e1d14); border:1px solid var(--line); box-shadow:0 12px 30px rgba(0,0,0,.16); color:var(--text); }
+.section-title h2,.content-card h2,.content-card h3 { color:#f1f5ef; } .bottom-nav { background:rgba(8,18,13,.95); border-top:1px solid var(--line); backdrop-filter:blur(18px); padding-bottom:max(8px,env(safe-area-inset-bottom)); }
+.nav-inner { gap:4px; } .nav-button { color:#a5b7aa; border-radius:15px; min-width:0; } .nav-button.active { background:rgba(37,166,117,.13); color:var(--gold); }
+.primary-button,.install-button { background:linear-gradient(135deg,#1c9669,#0d6344); color:#fff; border:1px solid rgba(217,189,121,.2); border-radius:14px; box-shadow:0 8px 20px rgba(0,0,0,.15); }
+.secondary-button,.hero-button { background:#172d20; border:1px solid var(--line); color:#e8f0e8; border-radius:13px; } .setting-item { background:#102018; border:1px solid var(--line); border-radius:15px; }
+.setting-info strong { color:#f1f5ef; } input,select,textarea,.setting-select { background:#0b1911; border:1px solid #2b4835; color:#f1f5ef; border-radius:12px; } input::placeholder,textarea::placeholder { color:#829688; }
+.amir-toast { background:#183526; border:1px solid rgba(217,189,121,.24); color:#f5f4eb; } .account-hero { text-align:center; padding:28px 22px; margin-bottom:18px; }
+.account-avatar { width:76px; height:76px; border-radius:24px; margin:0 auto 14px; display:grid; place-items:center; font-size:34px; background:linear-gradient(145deg,#1a6848,#102c1e); border:1px solid rgba(217,189,121,.28); }
+.account-hero p,.account-note { color:var(--muted); line-height:1.8; } .account-form-card { display:grid; gap:12px; } .account-form-card label { color:#d5e4d8; font-weight:700; margin-top:4px; }
+.account-form-card input { width:100%; padding:13px 14px; box-sizing:border-box; } .account-form-card button { width:100%; padding:13px; margin-top:5px; } #accountSection { padding-bottom:100px; }
+@media(max-width:420px){.nav-button{font-size:11px;padding:9px 3px}.nav-icon{font-size:18px}.hero{border-radius:22px}}
