@@ -2558,3 +2558,159 @@ html,body { background:#08120d; color:var(--text); } body { background-image:rad
 .account-hero p,.account-note { color:var(--muted); line-height:1.8; } .account-form-card { display:grid; gap:12px; } .account-form-card label { color:#d5e4d8; font-weight:700; margin-top:4px; }
 .account-form-card input { width:100%; padding:13px 14px; box-sizing:border-box; } .account-form-card button { width:100%; padding:13px; margin-top:5px; } #accountSection { padding-bottom:100px; }
 @media(max-width:420px){.nav-button{font-size:11px;padding:9px 3px}.nav-icon{font-size:18px}.hero{border-radius:22px}}
+
+
+
+/* =========================================================
+   AMIR MAWAQIT — FULL UI REFRESH 2026-10-22
+   Consistent responsive design, navigation and account forms
+   ========================================================= */
+:root {
+  --bg: #07130f;
+  --surface: #10221b;
+  --surface-soft: #173126;
+  --text: #f0f7f2;
+  --muted: #a3b8ac;
+  --line: rgba(184, 215, 195, .15);
+  --emerald: #20b77c;
+  --emerald-deep: #08744d;
+  --emerald-soft: rgba(32, 183, 124, .12);
+  --gold: #e5bd68;
+  --gold-light: #f5e5bd;
+  --shadow: 0 14px 38px rgba(0,0,0,.20);
+  --shadow-strong: 0 22px 60px rgba(0,0,0,.3);
+  color-scheme: dark;
+}
+body {
+  background:
+    radial-gradient(ellipse at 85% -10%, rgba(32,183,124,.15), transparent 34rem),
+    radial-gradient(ellipse at 0% 45%, rgba(229,189,104,.06), transparent 28rem),
+    var(--bg);
+  color: var(--text);
+}
+.top-header {
+  background: rgba(7,19,15,.88);
+  border-bottom-color: var(--line);
+}
+.brand-text h1 { color: #f2fff7; }
+.brand-text span, .section-title > span { color: var(--muted); }
+main { padding: clamp(12px, 3vw, 24px); }
+.hero {
+  border: 1px solid rgba(229,189,104,.28);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(229,189,104,.16), transparent 16rem),
+    linear-gradient(135deg,#126d4d 0%,#0c4936 54%,#09291f 100%);
+  box-shadow: 0 22px 54px rgba(0,0,0,.25);
+}
+.next-prayer { background: rgba(3,20,14,.32); border-color: rgba(255,255,255,.14); }
+.content-card, .prayer-card, .quick-card, .home-install-card,
+.azkar-card, .zikr-card, .setting-item, .qibla-container {
+  background: linear-gradient(145deg, rgba(19,42,32,.98), rgba(13,31,23,.98));
+  color: var(--text);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+.prayer-card { border-radius: 20px; padding: 18px 10px; }
+.prayer-card.active, .prayer-card.next, .prayer-card.current {
+  border-color: rgba(229,189,104,.65);
+  box-shadow: 0 0 0 1px rgba(229,189,104,.12), var(--shadow);
+}
+.prayer-name { color: var(--muted); }
+.prayer-time { color: #f6fff8; font-weight: 800; }
+.section-title { margin-top: 30px; }
+.section-title h2 { color: #f2fff7; letter-spacing: -.2px; }
+button, input, select, textarea { color: inherit; }
+.primary-button, .install-button, .hero-button, .secondary-button,
+.nav-button, .quick-card, .icon-button, .tasbih-button {
+  border-radius: 15px;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+.primary-button, .install-button {
+  background: linear-gradient(135deg,#24c786,#0a8a5a);
+  color: #04170f;
+  border: 1px solid rgba(229,189,104,.38);
+  font-weight: 900;
+  box-shadow: 0 8px 20px rgba(13,164,104,.18);
+}
+.secondary-button, .icon-button {
+  background: #152c22;
+  color: #effaf2;
+  border: 1px solid var(--line);
+}
+.secondary-button.active, .nav-button.active {
+  color: #f5d993;
+  border-color: rgba(229,189,104,.55);
+  background: rgba(229,189,104,.10);
+}
+.hero-button {
+  color: #f7fff9;
+  background: rgba(4,28,19,.42);
+  border: 1px solid rgba(255,255,255,.17);
+  padding: 11px 14px;
+  font-weight: 700;
+}
+button:hover:not(:disabled) { border-color: rgba(229,189,104,.7); filter: brightness(1.06); }
+.quick-card { min-height: 122px; padding: 18px 12px; }
+.quick-card strong { color: #f4fff7; }
+.quick-card small { color: var(--muted); }
+input, select, textarea {
+  background: #091a13 !important;
+  border: 1px solid rgba(184,215,195,.22) !important;
+  color: #f2fff7 !important;
+  border-radius: 13px;
+  padding: 12px 14px;
+}
+input::placeholder, textarea::placeholder { color: #829b8d; }
+.settings-list { gap: 10px; }
+.setting-item { border-radius: 17px; padding: 15px; }
+.nav-bar, .bottom-nav, .app-nav {
+  background: rgba(7,19,15,.95);
+  border-color: var(--line);
+  backdrop-filter: blur(18px);
+}
+.nav-button { color: #a7bdb0; }
+.nav-button.active { color: #f5d993; }
+.page-section { animation: amirFullEnter .22s ease both; }
+@keyframes amirFullEnter { from { opacity:0; transform:translateY(5px) } to { opacity:1; transform:translateY(0) } }
+#accountSection .content-card { max-width: 620px; margin-inline: auto; }
+#accountSection input { width: 100%; min-height: 48px; }
+#accountSection label { display:block; color:var(--muted); font-size:13px; margin:12px 0 6px; }
+.account-actions, .quran-tools-row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+.account-actions > button { flex:1 1 150px; min-height:48px; }
+.account-note { color:var(--muted); font-size:12px; line-height:1.8; }
+.quran-toolbar { border-radius:22px; padding:15px; margin-bottom:15px; }
+.quran-tools-row { margin-bottom:10px; }
+.quran-tools-row:last-child { margin-bottom:0; }
+.quran-search-wrap { display:flex; align-items:center; gap:8px; flex:1 1 240px; }
+.quran-search-wrap input { width:100%; }
+.quran-filter-row .secondary-button { flex:1 1 auto; }
+.quran-last-read { color:var(--muted); font-size:13px; }
+.quran-surah-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.quran-surah-card, .quran-surah-item, .surah-card {
+  background:linear-gradient(145deg,#132b20,#0d2118);
+  border:1px solid var(--line); border-radius:17px; padding:15px;
+}
+.quran-reader { padding:clamp(16px,4vw,28px); margin-bottom:15px; }
+.quran-reader[hidden] { display:none !important; }
+.quran-badge { color:var(--gold); font-size:12px; border:1px solid rgba(229,189,104,.35); border-radius:30px; padding:5px 10px; white-space:nowrap; }
+.quran-loading { display:flex; align-items:center; justify-content:center; gap:12px; min-height:100px; color:var(--muted); }
+.quran-spinner { width:22px; height:22px; border:2px solid var(--line); border-top-color:var(--gold); border-radius:50%; animation:amirSpin .8s linear infinite; }
+@keyframes amirSpin { to { transform:rotate(360deg) } }
+@media (max-width:540px) {
+  .header-inner { padding:10px 13px; }
+  .brand-icon { width:43px; height:43px; flex-basis:43px; }
+  .brand-text h1 { font-size:18px; }
+  .hero { padding:17px; border-radius:23px; }
+  .next-prayer { padding:18px 12px; }
+  .next-prayer-name { font-size:26px; }
+  .prayer-grid { gap:8px; }
+  .prayer-card { padding:13px 5px; border-radius:15px; }
+  .prayer-time { font-size:15px; }
+  .quick-grid { gap:10px; }
+  .quran-surah-grid { grid-template-columns:1fr; }
+  .account-actions > button { flex-basis:100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; scroll-behavior:auto !important; }
+}
