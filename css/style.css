@@ -3140,3 +3140,99 @@ p, .setting-info small, .prayer-name, .prayer-label, .account-form-card label {
   .bottom-nav .nav-button { font-size: 11px !important; min-height: 55px !important; }
   .bottom-nav .nav-button .nav-icon { font-size: 20px !important; }
 }
+
+
+/* AMIR MAWAQIT — NEW IVORY / EMERALD / GOLD DESIGN (v3) */
+:root {
+  color-scheme: light;
+  --bg: #f4f1e8;
+  --surface: #fffdf7;
+  --surface-soft: #eaf2e9;
+  --text: #1d3027;
+  --muted: #53685c;
+  --line: #d8e2d5;
+  --emerald: #176747;
+  --emerald-deep: #104b35;
+  --emerald-soft: #e4f0e6;
+  --gold: #b58a36;
+  --gold-light: #f2e2b7;
+}
+html, body { background: #f4f1e8 !important; color: #1d3027 !important; }
+body {
+  background:
+    radial-gradient(ellipse at 90% 0%, rgba(181,138,54,.13), transparent 24rem),
+    #f4f1e8 !important;
+  font-family: Tahoma, Arial, sans-serif;
+}
+.top-header {
+  background: rgba(255,253,247,.96) !important;
+  border-bottom: 1px solid #d8c99f !important;
+  box-shadow: 0 5px 18px rgba(29,48,39,.07) !important;
+}
+.header-inner { padding-block: 11px !important; }
+.account-top-button {
+  background: #e4f0e6 !important; color: #104b35 !important;
+  border: 1px solid #b58a36 !important;
+}
+.icon-button { background: #fffdf7 !important; color: #176747 !important; border-color: #d8c99f !important; }
+.hero {
+  background: linear-gradient(140deg,#1d7650 0%,#14563b 65%,#10412f 100%) !important;
+  border: 2px solid #c7a65b !important;
+  border-radius: 30px !important;
+  box-shadow: 0 15px 32px rgba(16,75,53,.18) !important;
+}
+.next-prayer { background: rgba(255,255,255,.10) !important; border-color: rgba(242,226,183,.6) !important; }
+.countdown { color: #f7e7b5 !important; }
+.progress-bar { background: linear-gradient(90deg,#f2e2b7,#c69b45) !important; }
+.hero-button, .hero-actions > button {
+  background: #fffdf7 !important; color: #14563b !important;
+  border: 1px solid #e0c779 !important; border-radius: 13px !important; font-weight: 800 !important;
+}
+.prayer-card, .quick-card, .content-card, .quran-reader, .quran-last-read,
+.quran-surah-card, .surah-card, .zikr-card, .settings-card {
+  background: #fffdf7 !important; color: #1d3027 !important;
+  border: 1px solid #d8e2d5 !important; border-radius: 19px !important;
+  box-shadow: 0 7px 20px rgba(29,48,39,.07) !important;
+}
+.prayer-card::before { background: linear-gradient(90deg,transparent,#b58a36,transparent) !important; }
+.prayer-time, .counter-value, #tasbihCount, .qibla-degree { color: #176747 !important; }
+.quick-icon { background: #e4f0e6 !important; border: 1px solid #c7dcca !important; }
+.quick-card strong, .section-title h2, .content-card h3 { color: #104b35 !important; }
+.section-title p, .section-title > span { color: #53685c !important; }
+input, select, textarea, #settingsSection input, #settingsSection select, #settingsSection textarea {
+  background: #fffdf7 !important; color: #1d3027 !important; border-color: #cbd9cd !important;
+  font-size: 16px !important;
+}
+input::placeholder, textarea::placeholder { color: #66796d !important; opacity: 1; }
+.primary-button, .install-button, .home-install-button {
+  background: linear-gradient(135deg,#176747,#104b35) !important;
+  color: #fffdf7 !important; border: 1px solid #b58a36 !important; font-weight: 900 !important;
+}
+.secondary-button { background: #e4f0e6 !important; color: #104b35 !important; border: 1px solid #bfd3c2 !important; }
+.secondary-button.active { background: #176747 !important; color: #fffdf7 !important; }
+.bottom-nav {
+  background: rgba(255,253,247,.98) !important;
+  border: 1px solid #c7a65b !important;
+  box-shadow: 0 10px 30px rgba(29,48,39,.16) !important;
+}
+.bottom-nav .nav-button { color: #53685c !important; font-weight: 800 !important; }
+.bottom-nav .nav-button.active, .bottom-nav .nav-button[aria-current="page"] {
+  background: #e4f0e6 !important; color: #104b35 !important; border-color: #b58a36 !important;
+}
+#amirToast { background: #104b35 !important; color: #fffdf7 !important; border-color: #c7a65b !important; }
+.quran-development-note {
+  margin: 10px 0 16px; padding: 12px 15px; border-radius: 14px;
+  background: #fff8e5; color: #624a16; border: 1px solid #e2cc8e;
+  font-size: 14px; line-height: 1.8;
+}
+.quran-badge { background: #fff1c9 !important; color: #684b0f !important; border: 1px solid #d6b65e !important; }
+#quranSection .quran-surah-card { grid-template-columns: 42px minmax(0,1fr) auto auto; }
+#quranSection .quran-surah-name { color: #104b35 !important; }
+#quranSection .quran-surah-number { background: #e4f0e6 !important; color: #176747 !important; }
+#quranSection .quran-ayah-text { color: #1d3027 !important; }
+#quranSection .quran-reader-header { background: rgba(255,253,247,.97) !important; }
+@media (max-width: 420px) {
+  main { padding: 13px !important; }
+  .hero { padding: 17px !important; }
+  .bottom-nav .nav-button { font-size: 10px !important; }
+}
