@@ -1,24 +1,19 @@
 {
-  "name": "أمير مواقيت — النسخة التجريبية",
+  "name": "أمير مواقيت",
   "short_name": "أمير مواقيت",
-  "description": "النسخة التجريبية من أمير مواقيت: مواقيت الصلاة والأذان والقبلة والأذكار. قسم القرآن الكريم قيد التطوير.",
+  "description": "أمير مواقيت: مواقيت الصلاة والأذان والقبلة والقرآن الكريم والأذكار، مع دعم القراءة دون اتصال بالإنترنت.",
   "lang": "ar",
   "dir": "rtl",
-
   "start_url": "./",
   "scope": "./",
-
   "display": "standalone",
   "orientation": "portrait",
-
   "background_color": "#f5f7f4",
   "theme_color": "#176747",
-
   "categories": [
     "lifestyle",
     "education"
   ],
-
   "icons": [
     {
       "src": "./icon-192.png",
