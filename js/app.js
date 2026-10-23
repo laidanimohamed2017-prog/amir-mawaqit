@@ -974,9 +974,7 @@
     setupThemeShortcut();
 
     setupNetworkStatus();
-
-    setupInstallPrompt();
-
+    // Install UI removed from the published interface.
     setupLiveClock();
 
     setupButtonFeedback();
