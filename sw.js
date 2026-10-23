@@ -11,7 +11,8 @@ const APP_FILES = [
     "./manifest.json",
 
     "./css/style.css?v=20261022-quran-closed1",
-    "./css/quran.css?v=20261023-quran-css-fix",\n    "./css/v3-polish.css?v=20261023-1",
+    "./css/quran.css?v=20261023-quran-css-fix",
+    "./css/v3-polish.css?v=20261023-1",
     "./css/responsive.css",
     "./css/animations.css",
 
