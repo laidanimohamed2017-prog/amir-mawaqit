@@ -37,9 +37,14 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: ''
 
       - name: Install Android build packages
+        shell: bash
         run: |
+          set -euo pipefail
+          yes | sdkmanager --licenses >/dev/null || true
           sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
       - name: Prepare Capacitor project
