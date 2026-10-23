@@ -8,8 +8,9 @@
 }
 body {
   background:
-    radial-gradient(ellipse at 90% 0%, rgba(204, 171, 97, .10), transparent 30rem),
-    linear-gradient(180deg, #f7faf6 0%, #f0f5f0 100%);
+    radial-gradient(ellipse at 90% 0%, rgba(204, 171, 97, .08), transparent 30rem),
+    var(--bg, #f5f7f3);
+  color: var(--text, #172a22);
   letter-spacing: 0;
 }
 .app { max-width: 1040px; }
@@ -22,8 +23,8 @@ body {
   border: 1px solid var(--v3-border);
   border-radius: 999px;
   padding: 8px 13px;
-  background: #fff;
-  color: var(--v3-ink);
+  background: var(--surface, #fff);
+  color: var(--text, var(--v3-ink));
   font-weight: 700;
   box-shadow: 0 3px 12px rgba(20,61,41,.04);
 }
@@ -74,10 +75,27 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .section-title { margin-top: 24px; }
   .prayer-card { min-height: 108px; }
   .bottom-nav {
-    background: rgba(255,255,255,.96);
+    background: var(--surface, rgba(255,255,255,.96));
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
   }
+}
+body.dark .account-top-button,
+body.dark-mode .account-top-button,
+body.theme-dark .account-top-button,
+body[data-theme="dark"] .account-top-button,
+html[data-theme="dark"] .account-top-button {
+  background: var(--surface, #14231a);
+  color: var(--text, #edf5ed);
+  border-color: var(--line, rgba(255,255,255,.12));
+}
+body.dark .bottom-nav,
+body.dark-mode .bottom-nav,
+body.theme-dark .bottom-nav,
+body[data-theme="dark"] .bottom-nav,
+html[data-theme="dark"] .bottom-nav {
+  background: var(--surface, rgba(20,35,26,.96));
+  border-color: var(--line, rgba(255,255,255,.12));
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; scroll-behavior: auto !important; }
