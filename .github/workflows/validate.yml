@@ -33,6 +33,7 @@ jobs:
             echo "Checking $file"
             node --check "$file"
           done < <(find js -type f -name '*.js' -print | sort)
+          node --check sw.js
 
       - name: Validate JSON files
         shell: bash
