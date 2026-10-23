@@ -974,9 +974,7 @@
     setupThemeShortcut();
 
     setupNetworkStatus();
-
-    setupInstallPrompt();
-
+    // PWA install UI removed by design; no install banner or button is initialized.
     setupLiveClock();
 
     setupButtonFeedback();
