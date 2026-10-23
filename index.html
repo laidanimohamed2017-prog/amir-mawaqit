@@ -31,7 +31,7 @@
     <!-- CSS -->
     <link rel="stylesheet" href="./css/responsive.css">
     <link rel="stylesheet" href="./css/animations.css">
-    <link rel="stylesheet" href="./css/quran.css?v=20261023-quran-css-fix">
+    <link rel="stylesheet" href="./css/quran.css?v=20261023-quran-offline1">
     <link rel="stylesheet" href="./css/style.css?v=20261022-quran-closed1">
     <link rel="stylesheet" href="./css/v3-polish.css?v=20261023-1">
 
@@ -426,14 +426,31 @@
              ================================================= -->
 
         <section id="quranSection" class="page-section">
-            <div class="quran-closed-card content-card" role="status" aria-live="polite">
-                <div class="quran-closed-icon" aria-hidden="true">📖</div>
-                <h2>القرآن الكريم</h2>
-                <span class="quran-badge">🔧 جاري التطوير</span>
-                <p>قسم القرآن الكريم مغلق مؤقتًا حتى إكمال التطوير وتحسين عرض السور والآيات.</p>
-                <p class="quran-closed-note">نعتذر عن الإزعاج، وسيُعاد فتح القسم بعد اكتمال التحسينات.</p>
-                <button type="button" class="primary-button" data-go-section="home">العودة إلى الرئيسية</button>
+            <div class="section-title">
+                <h2>📖 القرآن الكريم</h2>
+                <span>يعمل النص القرآني محليًا دون إنترنت</span>
             </div>
+
+            <div class="content-card quran-last-read-card" id="quranLastRead">
+                <div class="quran-last-read-empty">جارٍ تجهيز القرآن الكريم…</div>
+            </div>
+
+            <div class="content-card quran-toolbar">
+                <label class="quran-search-label" for="quranSearch">البحث في السور</label>
+                <input type="search" id="quranSearch" class="quran-search"
+                       placeholder="ابحث باسم السورة…" aria-label="البحث في سور القرآن">
+                <div class="quran-toolbar-actions">
+                    <button type="button" class="secondary-button active" id="quranAllButton">كل السور</button>
+                    <button type="button" class="secondary-button" id="quranFavoritesButton">المفضلة <span id="quranFavoriteCount">0</span></button>
+                    <button type="button" class="secondary-button" id="quranLastReadButton">متابعة القراءة</button>
+                </div>
+            </div>
+
+            <div id="quranSurahList" class="quran-surah-list" aria-live="polite">
+                <div class="quran-loading"><div class="quran-spinner"></div><span>جاري تجهيز القرآن الكريم…</span></div>
+            </div>
+
+            <div id="quranReader" class="quran-reader" hidden></div>
         </section>
 
 
@@ -1711,7 +1728,7 @@
 <script src="./js/adhan.js?v=20261022-final-beta1"></script>
 <script src="./js/qibla.js"></script>
 <script src="./js/azkar.js"></script>
-<script src="./js/quran.js?v=20261022-quran-closed1"></script>
+<script src="./js/quran.js?v=20261023-quran-offline1"></script>
 <script src="./js/settings.js?v=20261022-dark1"></script>
 <script src="./js/app.js?v=20261022-final-beta1"></script>
 
