@@ -1,0 +1,93 @@
+name: Validate Amir Mawaqit
+
+on:
+  push:
+    branches:
+      - main
+      - redesign-v3
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Static validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r file; do
+            echo "Checking $file"
+            node --check "$file"
+          done < <(find js -type f -name '*.js' -print | sort)
+
+      - name: Validate JSON files
+        shell: bash
+        run: |
+          set -euo pipefail
+          node -e "JSON.parse(require('fs').readFileSync('manifest.json', 'utf8')); console.log('manifest.json: valid JSON')"
+
+      - name: Check local application assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const html = fs.readFileSync('index.html', 'utf8');
+          const refs = [...html.matchAll(/(?:src|href)="(\.\/[^"]+)"/g)]
+            .map(match => match[1])
+            .filter(ref => !ref.includes('://'))
+            .map(ref => ref.split('?')[0]);
+          const missing = [...new Set(refs)]
+            .filter(ref => !fs.existsSync(ref.replace(/^\.\//, '')))
+            .filter(ref => !ref.endsWith('.mp3'));
+          if (missing.length) {
+            console.error('Missing local assets:', missing.join(', '));
+            process.exit(1);
+          }
+          console.log('HTML local references: checked');
+          NODE
+
+      - name: Validate offline Quran text structure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('data/quran-uthmani.txt')
+          if not path.is_file():
+              raise SystemExit('Missing data/quran-uthmani.txt')
+          counts = [0] * 114
+          total = 0
+          for raw in path.read_text(encoding='utf-8').splitlines():
+              if not raw or raw.startswith('#'):
+                  continue
+              parts = raw.split('|', 2)
+              if len(parts) != 3:
+                  raise SystemExit('Invalid Quran data line format')
+              surah, ayah, text = parts
+              try:
+                  s, a = int(surah), int(ayah)
+              except ValueError:
+                  raise SystemExit('Non-numeric surah/ayah index')
+              if not 1 <= s <= 114 or a != counts[s - 1] + 1 or not text:
+                  raise SystemExit(f'Invalid Quran sequence at {s}:{a}')
+              counts[s - 1] += 1
+              total += 1
+          if total != 6236 or any(count == 0 for count in counts):
+              raise SystemExit(f'Unexpected Quran data totals: {total} ayahs, {sum(c > 0 for c in counts)} surahs')
+          print(f'Quran text: {total} ayahs across 114 surahs')
+          PY
