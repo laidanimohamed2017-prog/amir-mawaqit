@@ -100,3 +100,67 @@ html[data-theme="dark"] .bottom-nav {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+
+/* V3.1 — cohesive in-app controls */
+:root {
+  --v3-control-radius: 14px;
+  --v3-control-shadow: 0 5px 14px rgba(6, 75, 56, .10);
+}
+button {
+  font-family: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.primary-button,
+.secondary-button,
+.counter-button,
+.hero-button,
+.icon-button,
+.quick-card,
+.nav-button,
+.account-top-button {
+  font-family: inherit;
+  letter-spacing: 0;
+  border-radius: var(--v3-control-radius);
+  transition: color .18s ease, background .18s ease, border-color .18s ease,
+    box-shadow .18s ease, transform .18s ease;
+}
+.primary-button {
+  background: linear-gradient(145deg, #0b805a, #064b38);
+  border: 1px solid rgba(201,155,66,.42);
+  color: #fff;
+  box-shadow: var(--v3-control-shadow);
+}
+.secondary-button {
+  background: var(--surface, #fff);
+  border: 1px solid var(--v3-border);
+  color: var(--text, var(--v3-ink));
+  box-shadow: 0 2px 8px rgba(20,61,41,.035);
+}
+.secondary-button.active {
+  background: #e2f2e9;
+  border-color: rgba(8,118,83,.32);
+  color: #064b38;
+}
+.counter-button {
+  background: #e2f2e9;
+  border: 1px solid rgba(8,118,83,.18);
+  color: #064b38;
+}
+.icon-button {
+  background: var(--surface, #fff);
+  border: 1px solid var(--v3-border);
+  box-shadow: 0 3px 10px rgba(20,61,41,.045);
+}
+button:active:not(:disabled) { transform: scale(.975); }
+button:focus-visible { outline: 3px solid rgba(201,155,66,.65); outline-offset: 3px; }
+body.dark .secondary-button.active,
+body.dark-mode .secondary-button.active,
+body.theme-dark .secondary-button.active,
+body[data-theme="dark"] .secondary-button.active,
+html[data-theme="dark"] .secondary-button.active {
+  background: rgba(8,118,83,.23);
+  border-color: rgba(201,155,66,.38);
+  color: #e4f4e9;
+}
