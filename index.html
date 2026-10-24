@@ -32,7 +32,7 @@
     <link rel="stylesheet" href="./css/responsive.css">
     <link rel="stylesheet" href="./css/animations.css">
     <link rel="stylesheet" href="./css/quran.css">
-    <link rel="stylesheet" href="./css/style.css?v=20261024-settings-azkar2">
+    <link rel="stylesheet" href="./css/style.css?v=20261024-nav-four-tabs1">
 
 </head>
 
@@ -1327,7 +1327,7 @@
          BOTTOM NAVIGATION
          ===================================================== -->
 
-    <nav class="bottom-nav">
+    <nav class="bottom-nav" aria-label="التنقل الرئيسي">
 
         <div class="nav-inner">
 
@@ -1335,29 +1335,32 @@
                 class="nav-button active"
                 type="button"
                 data-section="home">
+                <span class="nav-icon">🏠</span>
+                <span>الرئيسية</span>
+            </button>
 
-                <span class="nav-icon">
-                    🏠
-                </span>
+            <button
+                class="nav-button"
+                type="button"
+                data-section="azkar">
+                <span class="nav-icon">📿</span>
+                <span>الأذكار</span>
+            </button>
 
-                <span>
-                    الرئيسية
-                </span>
+            <button
+                class="nav-button"
+                type="button"
+                data-section="quran">
+                <span class="nav-icon">📖</span>
+                <span>القرآن</span>
+            </button>
 
-            </button> 
-<button
+            <button
                 class="nav-button"
                 type="button"
                 data-section="settings">
-
-                <span class="nav-icon">
-                    ⚙️
-                </span>
-
-                <span>
-                    الإعدادات
-                </span>
-
+                <span class="nav-icon">⚙️</span>
+                <span>الإعدادات</span>
             </button>
 
         </div>
