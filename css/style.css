@@ -233,3 +233,69 @@ input:focus,select:focus,textarea:focus{border-color:#d6b160;box-shadow:0 0 0 3p
 #amirToast{background:#e6c77d;color:#111b2a}
 #offlineStatus{background:#2b2630;color:#f0d28a;border-color:rgba(214,177,96,.35)}
 @media(max-width:700px){.next-prayer{padding:23px 17px 20px}}
+
+
+/* ==========================================================
+   Soft daylight layout + vertical prayer list
+   Visual layer only; existing IDs and JS hooks are preserved.
+   ========================================================== */
+:root{
+ --bg:#f4f6fa;--surface:#ffffff;--surface-soft:#f8f9fc;
+ --ink:#1b2a40;--muted:#68778d;--line:#e2e7ef;
+ --green:#23466f;--green-2:#386a9e;--mint:#e8eef7;
+ --gold:#c39a4b;--shadow:0 8px 26px rgba(24,42,68,.07);
+ --shadow-lg:0 18px 42px rgba(24,42,68,.12);
+}
+html,body{background:linear-gradient(180deg,#eef3fa 0%,#f8f9fc 48%,#f3f5f9 100%);color:var(--ink)}
+.top-header{background:rgba(250,252,255,.93);border-bottom-color:#e1e8f1}
+.account-top-button{background:#fff;color:#23466f;border-color:#dce4ef}
+.hero{background:linear-gradient(135deg,#e8f0fa 0%,#d6e3f3 48%,#f7f3e9 100%);border-color:#d7e1ef;box-shadow:0 16px 42px rgba(35,70,111,.12)}
+.hero:before{background:linear-gradient(90deg,transparent,#d6b56c,#f0dfb0,transparent)}
+.hero:after{border-color:rgba(195,154,75,.15);box-shadow:0 0 0 22px rgba(195,154,75,.035),0 0 0 48px rgba(195,154,75,.025)}
+.location,.today-date{color:#5f7188}
+.location strong,.today-date strong{color:#1d3e64}
+.next-prayer{background:linear-gradient(125deg,#fdfefe 0%,#edf3fb 60%,#f8f2e5 100%);border-color:#d9c28c;box-shadow:inset 0 1px 0 #fff,0 12px 28px rgba(35,70,111,.1)}
+.next-prayer:after{background:linear-gradient(90deg,transparent,#d1ad61,transparent)}
+.next-prayer-label{color:#8a6a2c}
+.next-prayer-name{color:#1d3e64;text-shadow:none}
+.countdown{color:#9a742d;text-shadow:none}
+.progress-container{background:#dce5f0}
+.progress-bar{background:linear-gradient(90deg,#c6a35a,#ead69c,#8ba8cc);box-shadow:none}
+.hero-button{background:rgba(255,255,255,.76);color:#25496f;border-color:#d2deed}
+.hero-button:hover{background:#fff;border-color:#c5a65f}
+.section-title h2{color:#203d61}
+.section-title span{color:#718198}
+.prayer-grid{grid-template-columns:1fr;gap:9px}
+.prayer-card{display:grid;grid-template-columns:48px minmax(0,1fr) auto;grid-template-areas:"icon name time";align-items:center;justify-items:stretch;gap:12px;padding:12px 16px;background:rgba(255,255,255,.94);border-color:#e0e6ef;border-radius:16px;box-shadow:0 5px 15px rgba(24,42,68,.045)}
+.prayer-card:hover{transform:translateY(-1px);border-color:#d6bd7e;box-shadow:0 9px 22px rgba(24,42,68,.08)}
+.prayer-icon{grid-area:icon;width:42px;height:42px;margin:0;background:#edf2f9;border:1px solid #e0e8f3;color:#31577f}
+.prayer-name{grid-area:name;align-self:center;text-align:right;color:#52647b;font-size:14px;font-weight:600}
+.prayer-time{grid-area:time;margin:0;color:#1e426b;font-size:19px;font-weight:800}
+.quick-card{background:#fff;border-color:#e0e6ef;box-shadow:0 7px 20px rgba(24,42,68,.055)}
+.quick-card strong{color:#203d61}
+.quick-card small{color:#718198}
+.quick-icon{background:#edf2f9;border-color:#e0e8f3}
+.content-card,.zikr-card{background:#fff;border-color:#e2e7ef;color:#1b2a40}
+.content-card h3,.zikr-text{color:#203d61}
+.primary-button,.counter-button{background:linear-gradient(135deg,#315b87,#1e426b);border-color:#315b87;color:#fff}
+.primary-button:hover{background:#1c3b60}
+.secondary-button{background:#fff;color:#315477;border-color:#dce4ef}
+.secondary-button:hover,.secondary-button.active{background:#edf3fa;color:#23466f;border-color:#b9cbe1}
+input:not([type=checkbox]):not([type=range]),select,textarea{background:#fff;color:#1b2a40;border-color:#dce4ef}
+input::placeholder,textarea::placeholder{color:#91a0b3}
+input:focus,select:focus,textarea:focus{border-color:#8aa9cd;box-shadow:0 0 0 3px rgba(49,91,135,.12)}
+.setting-item,.azkar-summary-item{background:#f7f9fc;border-color:#e2e7ef}
+.azkar-summary-item strong,.counter-value{color:#315b87}
+.azkar-progress{background:#e6ebf2}
+.azkar-progress span{background:linear-gradient(90deg,#315b87,#c7a45a)}
+.compass{border-color:#d6e0ed;background:radial-gradient(circle,#fff 0 53%,#f1f5fa 54% 66%,#e0e9f5 67% 68%,#fff 69%);box-shadow:inset 0 0 0 10px #f8fafd,0 10px 30px rgba(24,42,68,.08)}
+.compass:before,.qibla-arrow,.qibla-degree{color:#315b87}
+#quranSection .quran-development-card{background:linear-gradient(145deg,#fff,#f3f6fb)}
+#quranSection .quran-development-badge{background:#faf4e5;border-color:#ead9ad;color:#8a6a2c}
+.bottom-nav{background:rgba(255,255,255,.95);border-color:#e0e6ef;box-shadow:0 12px 36px rgba(24,42,68,.13)}
+.bottom-nav .nav-button{color:#78869a}
+.bottom-nav .nav-button.active{background:#edf3fa;color:#23466f;border-color:#dce6f2}
+#installBanner,.modal-content,.dialog-content{background:#fff;color:#1b2a40;border-color:#e0e6ef}
+#amirToast{background:#23466f;color:#fff}
+#offlineStatus{background:#faf4e5;color:#8a6a2c;border-color:#ead9ad}
+@media(max-width:700px){.prayer-card{grid-template-columns:42px minmax(0,1fr) auto;padding:11px 12px}.prayer-time{font-size:18px}.prayer-name{font-size:13px}}
