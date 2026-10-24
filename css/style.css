@@ -3617,3 +3617,115 @@ button:disabled { opacity:.55; cursor:not-allowed; }
 @media (prefers-reduced-motion: reduce) {
   *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; scroll-behavior:auto !important; }
 }
+
+
+/* PATCH 2026-10-24 — spacing, left account button, native settings controls */
+.header-inner {
+  direction:ltr !important;
+  justify-content:flex-start !important;
+  padding-inline:20px !important;
+}
+.account-top-button {
+  margin:0 !important;
+  flex:0 0 50px;
+}
+.header-actions { display:none !important; }
+.bottom-nav {
+  display:block !important;
+  padding:9px !important;
+  overflow:visible !important;
+}
+.bottom-nav .nav-inner {
+  display:grid !important;
+  grid-template-columns:repeat(5,minmax(0,1fr)) !important;
+  align-items:stretch;
+  gap:9px !important;
+  width:100%;
+}
+.bottom-nav .nav-button {
+  min-width:0 !important;
+  width:100%;
+  min-height:64px !important;
+  padding:9px 4px !important;
+  border-radius:16px !important;
+  border:1px solid #e0e9e1 !important;
+  background:linear-gradient(155deg,#fff,#f7faf6) !important;
+  box-shadow:0 3px 9px rgba(12,55,36,.045) !important;
+  color:#6b7f73 !important;
+  gap:5px !important;
+}
+.bottom-nav .nav-button .nav-icon { font-size:19px; line-height:1.1; }
+.bottom-nav .nav-button > span:last-child { white-space:nowrap; font-size:11px !important; }
+.bottom-nav .nav-button.active {
+  background:linear-gradient(145deg,#0b7654,#064632) !important;
+  color:#fff !important;
+  border-color:#c5a45c !important;
+  box-shadow:0 5px 12px rgba(6,70,48,.18) !important;
+}
+#settingsSection .content-card {
+  margin:0 0 16px !important;
+  padding:18px !important;
+  border-radius:22px !important;
+  border:1px solid #dce7de !important;
+  background:linear-gradient(160deg,#fff,#f8faf6) !important;
+  box-shadow:0 8px 22px rgba(10,50,34,.055) !important;
+}
+#settingsSection .content-card > h3 {
+  display:flex; align-items:center; gap:9px;
+  padding-bottom:12px; margin:0 0 14px !important;
+  border-bottom:1px solid #e7eee8;
+  color:#124a34 !important; font-size:16px !important; font-weight:900;
+}
+#settingsSection .settings-list {
+  display:grid !important;
+  gap:11px !important;
+}
+#settingsSection .setting-item {
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:14px !important;
+  padding:14px !important;
+  margin:0 !important;
+  min-height:76px;
+  border-radius:17px !important;
+  border:1px solid #e0e9e1 !important;
+  background:linear-gradient(145deg,#fff,#f7faf6) !important;
+  box-shadow:0 4px 12px rgba(12,55,36,.045) !important;
+}
+#settingsSection .setting-info { flex:1 1 auto; min-width:0; }
+#settingsSection .setting-info strong {
+  display:block; color:#173e2e !important; font-size:14px !important; font-weight:850;
+  line-height:1.6;
+}
+#settingsSection .setting-info small {
+  display:block; color:#718176 !important; font-size:12px !important;
+  line-height:1.7; margin-top:3px;
+}
+#settingsSection .setting-select {
+  flex:0 1 48%; min-width:120px; max-width:220px;
+  padding:10px 30px 10px 10px !important;
+  border-radius:12px !important;
+  background-color:#edf5ee !important;
+  border:1px solid #cbded0 !important;
+  color:#164b35 !important; font-weight:750 !important;
+}
+#settingsSection input[type="checkbox"] { accent-color:#0b7654; }
+#settingsSection .switch { flex:0 0 auto; }
+#settingsSection input[type="range"] { accent-color:#0b7654; min-height:28px; }
+#settingsSection .adhan-buttons {
+  display:flex !important; flex-wrap:wrap; gap:10px !important;
+  align-items:center;
+}
+#settingsSection .adhan-buttons > button { flex:1 1 145px; }
+#settingsSection .content-card p { line-height:1.9; }
+@media (max-width:420px) {
+  .header-inner { min-height:68px; padding-inline:14px !important; }
+  .bottom-nav { inset-inline:6px !important; padding:7px !important; }
+  .bottom-nav .nav-inner { gap:6px !important; }
+  .bottom-nav .nav-button { min-height:60px !important; padding:7px 2px !important; }
+  .bottom-nav .nav-button > span:last-child { font-size:10px !important; }
+  #settingsSection .content-card { padding:14px !important; }
+  #settingsSection .setting-item { padding:12px !important; gap:9px !important; }
+  #settingsSection .setting-select { min-width:110px; max-width:52%; font-size:12px !important; }
+}
