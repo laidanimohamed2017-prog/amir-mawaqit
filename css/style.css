@@ -156,3 +156,80 @@ small,.muted{color:var(--muted)}
  .azkar-summary-item{padding:11px 4px}
 }
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+
+/* ==========================================================
+   Royal navy & gold visual refresh — presentation only
+   Keeps all existing HTML hooks and JavaScript behavior.
+   ========================================================== */
+:root{
+ --bg:#07111f;
+ --surface:#101d30;
+ --surface-soft:#14243a;
+ --ink:#f4f0e5;
+ --muted:#b0bbca;
+ --line:rgba(214,177,96,.22);
+ --green:#d6b160;
+ --green-2:#f0d28a;
+ --mint:rgba(214,177,96,.12);
+ --gold:#e4c477;
+ --shadow:0 12px 34px rgba(0,0,0,.24);
+ --shadow-lg:0 22px 54px rgba(0,0,0,.34);
+}
+html,body{background:radial-gradient(ellipse at 50% -15%,#1b3150 0%,#0b1729 44%,#060d18 100%);color:var(--ink)}
+.top-header{background:rgba(7,17,31,.88);border-bottom-color:rgba(214,177,96,.18)}
+.account-top-button{background:linear-gradient(135deg,#1a2c46,#0e192a);color:#f3d995;border:1px solid rgba(214,177,96,.35)}
+.hero{
+ position:relative;overflow:hidden;
+ background:linear-gradient(135deg,#203a5d 0%,#122641 48%,#091525 100%);
+ border:1px solid rgba(226,194,122,.42);
+ box-shadow:0 24px 65px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.08);
+}
+.hero:before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,transparent,#f3d58d,#b88a38,transparent);pointer-events:none}
+.hero:after{content:"";position:absolute;width:230px;height:230px;left:-95px;top:-120px;border:1px solid rgba(240,210,138,.12);border-radius:50%;box-shadow:0 0 0 22px rgba(240,210,138,.025),0 0 0 48px rgba(240,210,138,.02);pointer-events:none}
+.next-prayer{position:relative;overflow:hidden;padding:26px 22px 22px;border:1px solid rgba(240,210,138,.46);border-radius:24px;background:linear-gradient(125deg,rgba(30,54,83,.98),rgba(9,20,36,.98) 72%);box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 15px 34px rgba(0,0,0,.2)}
+.next-prayer:after{content:"";position:absolute;inset:auto 12% 0;height:1px;background:linear-gradient(90deg,transparent,#e7c779,transparent)}
+.next-prayer-label{color:#e6c982;letter-spacing:.3px}
+.next-prayer-name{color:#fff5d9;text-shadow:0 2px 18px rgba(228,196,119,.18)}
+.countdown{color:#f0d28a;text-shadow:0 0 26px rgba(228,196,119,.18);font-variant-numeric:tabular-nums}
+.progress-container{background:rgba(255,255,255,.12)}
+.progress-bar{background:linear-gradient(90deg,#a77a2d,#f5db98,#c79b48);box-shadow:0 0 14px rgba(228,196,119,.24)}
+.location,.today-date{color:#c2ccda}
+.location strong,.today-date strong{color:#f3d995}
+.hero-button{background:rgba(7,17,31,.5);color:#f2dfb0;border:1px solid rgba(226,194,122,.34)}
+.hero-button:hover{background:rgba(214,177,96,.13);border-color:#d6b160}
+.section-title h2{color:#f4e6c0}
+.section-title span{color:#aebbd0}
+.prayer-card{background:linear-gradient(155deg,#172942,#0e1a2b);border-color:rgba(214,177,96,.2);box-shadow:0 10px 26px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.035)}
+.prayer-card:hover{border-color:rgba(240,210,138,.65);box-shadow:0 15px 32px rgba(0,0,0,.28)}
+.prayer-icon,.quick-icon{background:linear-gradient(145deg,rgba(214,177,96,.2),rgba(214,177,96,.06));border:1px solid rgba(214,177,96,.22);color:#f0d28a}
+.prayer-name{color:#b7c2d1}
+.prayer-time{color:#f0d28a}
+.quick-card{background:linear-gradient(155deg,#172942,#0e1a2b);border-color:rgba(214,177,96,.2);color:var(--ink);box-shadow:0 10px 26px rgba(0,0,0,.2)}
+.quick-card:hover{border-color:rgba(240,210,138,.65);box-shadow:var(--shadow-lg)}
+.quick-card strong{color:#f4e6c0}
+.quick-card small{color:#aebbd0}
+.content-card,.zikr-card{background:linear-gradient(150deg,#14243a,#0d192a);border-color:rgba(214,177,96,.18);color:var(--ink)}
+.content-card h3,.zikr-text{color:#f4e6c0}
+.primary-button,.counter-button{background:linear-gradient(135deg,#e6c77d,#b88a38);border-color:#e6c77d;color:#111b2a;box-shadow:0 7px 18px rgba(0,0,0,.22)}
+.primary-button:hover{background:linear-gradient(135deg,#f3dda0,#c79b48)}
+.secondary-button{background:#14243a;color:#e7d5a5;border-color:rgba(214,177,96,.28)}
+.secondary-button:hover,.secondary-button.active{background:rgba(214,177,96,.14);color:#f3d995;border-color:rgba(240,210,138,.6)}
+input:not([type=checkbox]):not([type=range]),select,textarea{background:#0b1728;color:#f4f0e5;border-color:rgba(214,177,96,.24)}
+input::placeholder,textarea::placeholder{color:#8e9db1}
+input:focus,select:focus,textarea:focus{border-color:#d6b160;box-shadow:0 0 0 3px rgba(214,177,96,.13)}
+.setting-item,.azkar-summary-item{background:#101e31;border-color:rgba(214,177,96,.18)}
+.azkar-summary-item strong,.counter-value{color:#f0d28a}
+.azkar-progress{background:#26344a}
+.azkar-progress span{background:linear-gradient(90deg,#a77a2d,#f5db98)}
+.compass{border-color:rgba(214,177,96,.38);background:radial-gradient(circle,#182941 0 53%,#122139 54% 66%,#263650 67% 68%,#0d192a 69%);box-shadow:inset 0 0 0 10px #14243a,0 10px 30px rgba(0,0,0,.24)}
+.compass:before,.qibla-arrow,.qibla-degree{color:#f0d28a}
+#quranSection .quran-development-card{background:linear-gradient(145deg,#172942,#0d192a)}
+#quranSection .quran-development-badge{background:rgba(214,177,96,.12);border-color:rgba(214,177,96,.28);color:#f0d28a}
+.bottom-nav{background:rgba(9,20,35,.94);border-color:rgba(214,177,96,.24);box-shadow:0 14px 40px rgba(0,0,0,.42)}
+.bottom-nav .nav-button{color:#9eacc0}
+.bottom-nav .nav-button.active{background:linear-gradient(135deg,rgba(214,177,96,.2),rgba(214,177,96,.08));color:#f3d995;border-color:rgba(214,177,96,.24)}
+#installBanner,.modal-content,.dialog-content{background:#101d30;color:var(--ink);border-color:rgba(214,177,96,.24)}
+#amirToast{background:#e6c77d;color:#111b2a}
+#offlineStatus{background:#2b2630;color:#f0d28a;border-color:rgba(214,177,96,.35)}
+@media(max-width:700px){.next-prayer{padding:23px 17px 20px}}
