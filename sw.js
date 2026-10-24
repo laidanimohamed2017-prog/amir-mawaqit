@@ -10,7 +10,7 @@ const APP_FILES = [
     "./index.html",
     "./manifest.json",
 
-    "./css/style.css?v=20261024-daily-reminder2",
+    "./css/style.css?v=20261024-settings-azkar2",
     "./css/quran.css",
     "./css/responsive.css",
     "./css/animations.css",
