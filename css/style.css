@@ -3748,3 +3748,78 @@ button:disabled { opacity:.55; cursor:not-allowed; }
   .bottom-nav .nav-inner { gap: 9px !important; }
   .bottom-nav .nav-button { padding-inline: 2px !important; }
 }
+
+
+/* =========================================================
+   AMIR MAWAQIT — PREMIUM DARK UI REFRESH (2026-10-24)
+   Unified dark surfaces, emerald accents, gold highlights.
+   ========================================================= */
+:root {
+  color-scheme: dark;
+  --amir-bg: #0b1110;
+  --amir-surface: #121b19;
+  --amir-surface-2: #172320;
+  --amir-surface-3: #1d2c27;
+  --amir-border: rgba(180, 205, 190, .13);
+  --amir-text: #f2f6f2;
+  --amir-muted: #a5b5ad;
+  --amir-green: #43b887;
+  --amir-green-strong: #23845f;
+  --amir-gold: #d8b56b;
+  --amir-shadow: 0 18px 45px rgba(0,0,0,.24);
+}
+html { background: var(--amir-bg) !important; color-scheme: dark; }
+body { background: radial-gradient(ellipse at 50% -10%, rgba(35,132,95,.18), transparent 42%), var(--amir-bg) !important; color: var(--amir-text) !important; }
+.app { background: transparent !important; color: var(--amir-text) !important; }
+main { color: var(--amir-text) !important; }
+.top-header { background: rgba(11,17,16,.88) !important; border-bottom: 1px solid var(--amir-border) !important; backdrop-filter: blur(18px); }
+.hero, .next-prayer, .prayer-card, .quick-card, .content-card, .setting-card, .settings-card, .account-card, .quran-toolbar, .quran-last-read-card, .quran-development-card, .azkar-card, .dhikr-card, .qibla-card, .modal-content, .dialog-content, .settings-group, .setting-item {
+  background: linear-gradient(145deg, rgba(25,39,34,.98), rgba(17,27,24,.98)) !important;
+  color: var(--amir-text) !important;
+  border: 1px solid var(--amir-border) !important;
+  box-shadow: var(--amir-shadow);
+}
+.hero { border-radius: 28px !important; overflow: hidden; }
+.hero::before, .hero::after { opacity: .16; }
+.section-title h1, .section-title h2, h1, h2, h3, .prayer-name, .quick-card strong, .setting-title, .quran-reader-title h2 { color: var(--amir-text) !important; }
+.section-title span, .muted, small, .setting-description, .quick-card small, .location, .today-date { color: var(--amir-muted) !important; }
+.next-prayer-name, .countdown, .prayer-time, .quran-surah-name { color: var(--amir-gold) !important; }
+.prayer-card, .quick-card { border-radius: 20px !important; transition: transform .2s ease, border-color .2s ease, background .2s ease; }
+.prayer-card:hover, .quick-card:hover { transform: translateY(-2px); border-color: rgba(67,184,135,.42) !important; }
+button, input, select, textarea { font: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+.primary-button, .hero-button, .secondary-button, .account-top-button, .nav-button, .quran-back-button, .quran-toolbar-actions button {
+  transition: transform .18s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.primary-button, .hero-button { background: linear-gradient(135deg, #23845f, #176747) !important; color: #fff !important; border: 1px solid rgba(98,213,162,.2) !important; border-radius: 14px !important; box-shadow: 0 8px 20px rgba(22,103,71,.2); }
+.secondary-button, .quran-toolbar-actions button { background: var(--amir-surface-3) !important; color: var(--amir-text) !important; border: 1px solid var(--amir-border) !important; border-radius: 13px !important; }
+.secondary-button.active, .quran-toolbar-actions button.active { background: rgba(35,132,95,.25) !important; color: #76e0b1 !important; border-color: rgba(67,184,135,.45) !important; }
+button:active { transform: scale(.98); }
+input, select, textarea, .quran-search { background: #0e1714 !important; color: var(--amir-text) !important; border: 1px solid var(--amir-border) !important; border-radius: 13px !important; }
+input::placeholder, textarea::placeholder { color: #788b81 !important; }
+input:focus, select:focus, textarea:focus { outline: 2px solid rgba(67,184,135,.35) !important; border-color: var(--amir-green) !important; }
+.bottom-nav { background: rgba(13,21,18,.94) !important; border: 1px solid var(--amir-border) !important; box-shadow: 0 15px 40px rgba(0,0,0,.42) !important; backdrop-filter: blur(22px); }
+.bottom-nav .nav-button { color: #9aaba2 !important; background: transparent !important; border: 1px solid transparent !important; }
+.bottom-nav .nav-button.active { color: #76e0b1 !important; background: rgba(35,132,95,.19) !important; border-color: rgba(67,184,135,.2) !important; }
+.account-top-button { background: var(--amir-surface-2) !important; color: var(--amir-text) !important; border: 1px solid var(--amir-border) !important; }
+.progress-container { background: #263630 !important; }
+.progress-bar { background: linear-gradient(90deg, var(--amir-green), var(--amir-gold)) !important; }
+#quranSection .quran-surah-card, #quranSection .quran-empty, #quranSection .quran-reader, #quranSection .quran-ayah, #quranSection .quran-last-read-card { background: var(--amir-surface) !important; color: var(--amir-text) !important; border-color: var(--amir-border) !important; }
+#quranSection .quran-surah-name, #quranSection .quran-reader-title h2, #quranSection .quran-ayah-text { color: var(--amir-text) !important; }
+#quranSection .quran-surah-number, #quranSection .quran-back-button { background: var(--amir-surface-3) !important; color: var(--amir-green) !important; }
+#quranSection .quran-development-card { text-align: center; padding: 30px 22px; border-radius: 24px; }
+#quranSection .quran-development-icon { font-size: 42px; margin-bottom: 12px; }
+#quranSection .quran-development-card p { color: var(--amir-muted) !important; line-height: 1.9; }
+#quranSection .quran-development-badge { display: inline-flex; margin-top: 12px; padding: 8px 13px; border-radius: 999px; background: rgba(216,181,107,.12); color: var(--amir-gold); border: 1px solid rgba(216,181,107,.22); font-size: 12px; }
+#azkarSection .dhikr-card, #azkarSection .azkar-card { line-height: 2; }
+hr, .divider { border-color: var(--amir-border) !important; }
+.page-section { animation: amirFadeIn .28s ease both; }
+@keyframes amirFadeIn { from { opacity: .4; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 600px) {
+  main { padding-inline: 12px !important; }
+  .hero { border-radius: 23px !important; }
+  .section-title { margin-top: 22px; }
+  .prayer-card, .quick-card { border-radius: 17px !important; }
+  .bottom-nav { border-radius: 22px !important; }
+}
+@media (prefers-reduced-motion: reduce) { .page-section { animation: none; } }
