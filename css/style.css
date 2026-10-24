@@ -3729,3 +3729,22 @@ button:disabled { opacity:.55; cursor:not-allowed; }
   #settingsSection .setting-item { padding:12px !important; gap:9px !important; }
   #settingsSection .setting-select { min-width:110px; max-width:52%; font-size:12px !important; }
 }
+
+
+/* PATCH 2026-10-24 — increase bottom navigation breathing room */
+.bottom-nav {
+  padding: 11px !important;
+}
+.bottom-nav .nav-inner {
+  gap: 13px !important;
+}
+.bottom-nav .nav-button {
+  min-height: 66px !important;
+  padding: 10px 5px !important;
+  border-radius: 17px !important;
+}
+@media (max-width:420px) {
+  .bottom-nav { padding: 8px !important; }
+  .bottom-nav .nav-inner { gap: 9px !important; }
+  .bottom-nav .nav-button { padding-inline: 2px !important; }
+}
