@@ -791,7 +791,38 @@
     };
   }
 
+  function setupQuickCounters() {
+    document.querySelectorAll("[data-zikr]").forEach(function (button) {
+      if (button.dataset.quickCounterReady === "true") return;
+      button.dataset.quickCounterReady = "true";
+      button.addEventListener("click", function () {
+        const id = String(button.dataset.zikr || "");
+        const countElement = document.getElementById("zikr" + id);
+        if (!countElement) return;
+        const key = "amirQuickZikrCount" + id;
+        let count = Number(countElement.textContent) || 0;
+        try {
+          count = Number(localStorage.getItem(key)) || count;
+        } catch (error) {}
+        count += 1;
+        countElement.textContent = String(count);
+        try {
+          localStorage.setItem(key, String(count));
+        } catch (error) {}
+        if (navigator.vibrate) navigator.vibrate(15);
+      });
+      const id = String(button.dataset.zikr || "");
+      const countElement = document.getElementById("zikr" + id);
+      if (countElement) {
+        try {
+          countElement.textContent = localStorage.getItem("amirQuickZikrCount" + id) || countElement.textContent || "0";
+        } catch (error) {}
+      }
+    });
+  }
+
   function init() {
+    setupQuickCounters();
     if (initialized) return;
     initialized = true;
 
