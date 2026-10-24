@@ -296,13 +296,44 @@
                     <span class="daily-reminder-kicker">لحظة طمأنينة</span>
                 </div>
                 <h2 id="dailyReminderTitle">تذكير اليوم</h2>
-                <p class="daily-reminder-verse">﴿ أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ ﴾</p>
-                <p class="daily-reminder-source">سورة الرعد — الآية ٢٨</p>
+                <p class="daily-reminder-verse" id="dailyReminderText">﴿ أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ ﴾</p>
+                <p class="daily-reminder-source" id="dailyReminderSource">سورة الرعد — الآية ٢٨</p>
                 <div class="daily-reminder-footer">
                     <span>اجعل لسانك عامرًا بذكر الله</span>
                     <button class="daily-reminder-button" type="button" data-go-section="azkar">افتح الأذكار <span aria-hidden="true">←</span></button>
                 </div>
             </section>
+
+            <script>
+            (function () {
+                "use strict";
+                var reminders = [
+                    { text: "﴿ أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ ﴾", source: "سورة الرعد — الآية ٢٨" },
+                    { text: "﴿ فَاذْكُرُونِي أَذْكُرْكُمْ ﴾", source: "سورة البقرة — الآية ١٥٢" },
+                    { text: "﴿ وَهُوَ مَعَكُمْ أَيْنَ مَا كُنْتُمْ ﴾", source: "سورة الحديد — الآية ٤" },
+                    { text: "﴿ وَقُلْ رَبِّ زِدْنِي عِلْمًا ﴾", source: "سورة طه — الآية ١١٤" },
+                    { text: "﴿ إِنَّ مَعَ الْعُسْرِ يُسْرًا ﴾", source: "سورة الشرح — الآية ٦" },
+                    { text: "﴿ وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ ﴾", source: "سورة الطلاق — الآية ٣" },
+                    { text: "﴿ رَبِّ اشْرَحْ لِي صَدْرِي ﴾", source: "سورة طه — الآية ٢٥" },
+                    { text: "﴿ وَاللَّهُ خَيْرٌ حَافِظًا وَهُوَ أَرْحَمُ الرَّاحِمِينَ ﴾", source: "سورة يوسف — الآية ٦٤" },
+                    { text: "﴿ إِنَّ اللَّهَ مَعَ الصَّابِرِينَ ﴾", source: "سورة البقرة — الآية ١٥٣" },
+                    { text: "﴿ وَمَا تَوْفِيقِي إِلَّا بِاللَّهِ ﴾", source: "سورة هود — الآية ٨٨" },
+                    { text: "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ", source: "ذكر صحيح — صحيح البخاري وصحيح مسلم" },
+                    { text: "اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ", source: "الصلاة على النبي ﷺ" },
+                    { text: "أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ", source: "ذكر الاستغفار" },
+                    { text: "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", source: "ذكر صحيح — صحيح البخاري وصحيح مسلم" }
+                ];
+                var now = new Date();
+                var dayNumber = Math.floor(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 86400000);
+                var reminder = reminders[((dayNumber % reminders.length) + reminders.length) % reminders.length];
+                var textElement = document.getElementById("dailyReminderText");
+                var sourceElement = document.getElementById("dailyReminderSource");
+                if (textElement && sourceElement) {
+                    textElement.textContent = reminder.text;
+                    sourceElement.textContent = reminder.source;
+                }
+            })();
+            </script>
 
         </section>
 
