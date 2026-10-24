@@ -407,3 +407,30 @@ html[data-theme="dark"] #settingsSection .setting-select{background:#141e2c;colo
 #azkarSection .zikr-card .counter-button:active{transform:scale(.96)}
 @media(max-width:520px){#settingsSection>.content-card{padding:15px;border-radius:18px}#settingsSection .setting-item{align-items:flex-start;padding:12px;gap:10px}#settingsSection .setting-select{width:46%;min-width:125px}#settingsSection .setting-info small{font-size:11px}}
 
+
+
+/* Compact, centered four-item bottom navigation */
+.bottom-nav{
+  width:min(440px,calc(100% - 32px));
+  padding:6px 8px;
+  border-radius:18px;
+}
+.bottom-nav .nav-inner{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:3px;
+}
+.bottom-nav .nav-button{
+  min-height:48px;
+  padding:5px 3px;
+  gap:2px;
+  border-radius:12px;
+  font-size:10px;
+}
+.bottom-nav .nav-button>span:first-child{font-size:17px;line-height:1.2}
+@media(max-width:520px){
+  .bottom-nav{width:min(390px,calc(100% - 36px));padding:5px 6px;bottom:10px}
+  .bottom-nav .nav-inner{gap:2px}
+  .bottom-nav .nav-button{min-height:45px;font-size:9px;padding:4px 2px}
+  .bottom-nav .nav-button>span:first-child{font-size:16px}
+}
