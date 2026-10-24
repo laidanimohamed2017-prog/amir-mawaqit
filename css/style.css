@@ -3407,3 +3407,213 @@ input::placeholder, textarea::placeholder { color: #819187 !important; }
 @media (prefers-color-scheme: dark) {
   html, body { background: #f4f7f5 !important; color: #18352a !important; }
 }
+
+
+/* =========================================================
+   AMIR MAWAQIT — SIGNATURE REDESIGN / 2026-10
+   Premium emerald, deep forest, warm ivory and muted gold.
+   Preserve every existing HTML id and JavaScript hook.
+   ========================================================= */
+:root {
+  color-scheme: light;
+  --background: #f2f5f1;
+  --bg: #f2f5f1;
+  --surface: #ffffff;
+  --surface-soft: #f7f8f3;
+  --text: #17352a;
+  --muted: #6d8075;
+  --line: #dce6dd;
+  --accent: #0b7654;
+  --accent-dark: #064632;
+  --gold: #c5a45c;
+  --shadow: 0 12px 32px rgba(9, 48, 34, .09);
+  --v3-ink: #17352a;
+  --v3-border: #dce6dd;
+}
+html { background: #f2f5f1 !important; }
+body {
+  margin: 0;
+  background:
+    radial-gradient(ellipse at 92% 0%, rgba(197,164,92,.11), transparent 28rem),
+    #f2f5f1 !important;
+  color: #17352a !important;
+  font-family: "Tajawal", "Cairo", system-ui, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+.app { max-width: 760px; margin-inline: auto; padding-bottom: calc(104px + env(safe-area-inset-bottom)); }
+.top-header {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(242,245,241,.9) !important;
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  border: 0 !important; box-shadow: 0 1px 0 rgba(20,60,42,.07);
+}
+.header-inner {
+  min-height: 76px; padding: 12px 18px;
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+}
+.header-actions { display:flex; align-items:center; gap:10px; }
+.account-top-button {
+  width: 50px !important; height: 50px !important; min-width:50px;
+  padding: 0 !important; border-radius: 50% !important;
+  display: inline-grid !important; place-items:center;
+  position: relative; overflow: hidden;
+  background: linear-gradient(145deg,#147e5b,#063e2d) !important;
+  color: #fff !important; border: 2px solid rgba(197,164,92,.9) !important;
+  box-shadow: 0 7px 18px rgba(6,70,48,.23), inset 0 1px 0 rgba(255,255,255,.2) !important;
+  font-size: 0 !important; line-height: 1;
+}
+.account-top-avatar { font-size: 23px !important; line-height:1; }
+.account-top-button span:not(.account-top-avatar) { display:none !important; }
+.icon-button {
+  width: 44px; height: 44px; min-width:44px; padding:0 !important;
+  border-radius: 15px !important; display:inline-grid; place-items:center;
+  background: #fff !important; color:#174b37 !important;
+  border:1px solid #dce6dd !important; box-shadow:0 4px 12px rgba(10,50,34,.06) !important;
+  font-size:19px; cursor:pointer;
+}
+main { padding: 18px 16px 28px; }
+.page-section { animation: amirSectionIn .28s ease both; }
+@keyframes amirSectionIn { from {opacity:0; transform:translateY(7px)} to {opacity:1;transform:translateY(0)} }
+.hero {
+  position:relative; isolation:isolate; overflow:hidden;
+  padding: 22px !important; border-radius: 28px !important;
+  background: linear-gradient(135deg,#073d2c 0%,#0a6044 56%,#13815b 100%) !important;
+  color:#fff !important; border:1px solid rgba(197,164,92,.48) !important;
+  box-shadow: 0 18px 38px rgba(5,60,40,.2) !important;
+}
+.hero:before {
+  content:""; position:absolute; z-index:-1; width:240px; height:240px;
+  inset-inline-end:-105px; top:-120px; border-radius:50%;
+  border:1px solid rgba(230,203,139,.23);
+  box-shadow:0 0 0 22px rgba(255,255,255,.025),0 0 0 46px rgba(255,255,255,.02);
+}
+.hero:after {
+  content:""; position:absolute; z-index:-1; width:120px; height:120px;
+  inset-inline-start:-70px; bottom:-72px; border-radius:50%;
+  background:rgba(197,164,92,.12); filter:blur(2px);
+}
+.hero :is(.location,.today-date,.location strong,.today-date strong,.next-prayer-label,.next-prayer-name,.countdown) { color:#fff !important; }
+.hero-top { gap:14px; align-items:flex-start; }
+.location, .today-date { font-size:13px; line-height:1.8; }
+.location strong, .today-date strong { display:block; font-weight:800; }
+.next-prayer {
+  margin-top:22px; padding:22px 16px !important; text-align:center;
+  border-radius:22px !important; background:rgba(2,35,25,.32) !important;
+  border:1px solid rgba(255,255,255,.16) !important; color:#fff !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07);
+}
+.next-prayer-label { opacity:.84; font-size:13px; }
+.next-prayer-name { font-size:clamp(23px,5vw,32px); font-weight:900; margin:6px 0; }
+.countdown {
+  font-variant-numeric:tabular-nums; letter-spacing:1px;
+  font-size:clamp(30px,7vw,42px) !important; font-weight:900; line-height:1.35;
+  color:#f2d99a !important; text-shadow:0 3px 20px rgba(0,0,0,.15);
+}
+.progress-container { height:6px !important; margin-top:17px; border-radius:99px; background:rgba(255,255,255,.16) !important; overflow:hidden; }
+.progress-bar { border-radius:99px; background:linear-gradient(90deg,#d7bd78,#f4e4b7) !important; }
+.hero-actions { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; margin-top:18px; }
+.hero-button {
+  min-height:46px; padding:10px 8px !important; border-radius:14px !important;
+  background:rgba(255,255,255,.11) !important; color:#fff !important;
+  border:1px solid rgba(255,255,255,.2) !important;
+  font-size:12px !important; font-weight:800 !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+.section-title { display:flex; align-items:center; justify-content:space-between; gap:10px; margin:26px 3px 14px !important; }
+.section-title h2 { color:#173d2e !important; font-size:19px !important; font-weight:900 !important; margin:0; }
+.section-title:before { content:""; width:4px; height:23px; border-radius:5px; background:linear-gradient(#c5a45c,#e4d19b); margin-inline-end:2px; }
+.section-title h2 { margin-inline-end:auto !important; }
+.prayer-grid { gap:10px !important; }
+.prayer-card {
+  position:relative; padding:16px 8px !important; border-radius:19px !important;
+  background:linear-gradient(160deg,#fff,#f9fbf7) !important;
+  border:1px solid #e0e8df !important; box-shadow:0 7px 20px rgba(10,50,34,.055) !important;
+  color:#17352a !important; transition:transform .18s ease,border-color .18s ease;
+}
+.prayer-icon { font-size:23px !important; margin-bottom:8px; }
+.prayer-name { color:#64776c !important; font-size:13px !important; font-weight:700; }
+.prayer-time { color:#123e2c !important; font-size:19px !important; font-weight:900 !important; font-variant-numeric:tabular-nums; }
+.prayer-card.active,.prayer-card.next,.prayer-card.current {
+  background:linear-gradient(150deg,#e3f3e8,#f8f7eb) !important;
+  border:1px solid #c5a45c !important; box-shadow:0 8px 22px rgba(9,92,60,.11) !important;
+}
+.quick-grid { gap:12px !important; margin-top:18px; }
+.quick-card {
+  min-height:108px; padding:18px 12px !important; border-radius:20px !important;
+  background:linear-gradient(145deg,#fff,#f8faf6) !important; color:#174631 !important;
+  border:1px solid #dce7de !important; box-shadow:0 8px 22px rgba(10,50,34,.06) !important;
+  font-weight:800; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+}
+.primary-button,.secondary-button,.counter-button {
+  min-height:44px; padding:11px 16px !important; border-radius:14px !important;
+  font-family:inherit !important; font-weight:800 !important; font-size:14px !important;
+  cursor:pointer; -webkit-appearance:none; appearance:none;
+}
+.primary-button {
+  color:#fff !important; background:linear-gradient(135deg,#0b805a,#064632) !important;
+  border:1px solid rgba(197,164,92,.65) !important;
+  box-shadow:0 6px 15px rgba(6,78,52,.18),inset 0 1px 0 rgba(255,255,255,.14) !important;
+}
+.secondary-button {
+  color:#244a38 !important; background:#fff !important; border:1px solid #d8e4da !important;
+  box-shadow:0 3px 10px rgba(12,55,36,.045) !important;
+}
+.secondary-button.active {
+  color:#064632 !important; background:#e2f1e6 !important; border-color:#9fcab0 !important;
+  box-shadow:inset 0 0 0 1px rgba(11,118,84,.06) !important;
+}
+.counter-button { background:#e2f1e6 !important; color:#07523a !important; border:1px solid #c4dfcd !important; }
+.content-card,.azkar-card,.zikr-card,.setting-item,.settings-card,.qibla-container,.quran-reader,.quran-surah-card,.quran-surah-item,.surah-card {
+  border-radius:20px !important; border:1px solid #dfe8e0 !important;
+  background:linear-gradient(150deg,#fff,#fbfcf9) !important;
+  color:#17352a !important; box-shadow:0 8px 24px rgba(10,50,34,.055) !important;
+}
+input,select,textarea {
+  min-height:44px; border-radius:13px !important; border:1px solid #d6e2d8 !important;
+  background:#fff !important; color:#17352a !important; font:inherit !important;
+  box-shadow:inset 0 1px 2px rgba(10,50,34,.025) !important;
+}
+input:focus,select:focus,textarea:focus { outline:3px solid rgba(11,118,84,.13) !important; border-color:#16815b !important; }
+.bottom-nav {
+  position:fixed !important; z-index:100; inset-inline:12px; bottom:calc(10px + env(safe-area-inset-bottom));
+  width:auto !important; max-width:736px; margin-inline:auto;
+  display:grid !important; grid-template-columns:repeat(5,minmax(0,1fr)); gap:4px;
+  padding:8px !important; border-radius:23px !important;
+  background:rgba(255,255,255,.94) !important; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(204,220,207,.95) !important;
+  box-shadow:0 14px 36px rgba(8,48,32,.16) !important;
+}
+.nav-button {
+  min-width:0; min-height:54px; padding:7px 3px !important; border:1px solid transparent !important;
+  border-radius:16px !important; display:flex !important; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+  background:transparent !important; color:#718278 !important; font-size:11px !important; font-weight:800 !important;
+}
+.nav-button.active {
+  color:#07543b !important; background:linear-gradient(145deg,#e3f2e7,#f2f7ed) !important;
+  border-color:#c9dfce !important; box-shadow:inset 0 0 0 1px rgba(11,118,84,.035) !important;
+}
+button { font-family:inherit; -webkit-appearance:none; appearance:none; touch-action:manipulation; }
+button:active:not(:disabled) { transform:scale(.975); }
+button:focus-visible { outline:3px solid rgba(197,164,92,.8); outline-offset:3px; }
+button:disabled { opacity:.55; cursor:not-allowed; }
+@media (min-width:700px) {
+  main { padding:24px 22px 36px; }
+  .hero { padding:28px !important; }
+  .hero-actions { max-width:520px; margin-inline:auto; margin-top:22px; }
+}
+@media (max-width:390px) {
+  .header-inner { min-height:68px; padding:9px 13px; }
+  .account-top-button { width:46px !important; height:46px !important; min-width:46px; }
+  main { padding:13px 11px 22px; }
+  .hero { padding:17px !important; border-radius:23px !important; }
+  .hero-actions { gap:6px; }
+  .hero-button { font-size:11px !important; padding-inline:4px !important; }
+  .prayer-grid { gap:7px !important; }
+  .prayer-card { padding:13px 5px !important; }
+  .prayer-time { font-size:17px !important; }
+  .bottom-nav { inset-inline:7px; padding:6px !important; }
+  .nav-button { font-size:10px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; scroll-behavior:auto !important; }
+}
