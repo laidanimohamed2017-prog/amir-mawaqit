@@ -3,14 +3,14 @@
    Service Worker
    ========================================================= */
 
-const CACHE_NAME = "amir-mawaqit-v38";
+const CACHE_NAME = "amir-mawaqit-v39";
 
 const APP_FILES = [
     "./",
     "./index.html",
     "./manifest.json",
 
-    "./css/style.css?v=20261024-signature1",
+    "./css/style.css?v=20261024-signature2",
     "./css/quran.css",
     "./css/responsive.css",
     "./css/animations.css",
