@@ -381,3 +381,29 @@ html[data-theme="dark"] .daily-reminder-footer{border-top-color:#344258}
 html[data-theme="dark"] .daily-reminder-button{background:#315b87;border-color:#5278a2;color:#fff}
 @media(max-width:520px){.daily-reminder{padding:20px 18px}.daily-reminder-footer{align-items:flex-start;flex-direction:column}.daily-reminder-button{align-self:flex-start}}
 
+/* Settings refresh: clearer grouped panels and modern controls */
+#settingsSection{padding-bottom:24px}
+#settingsSection>.section-title{margin-bottom:18px}
+#settingsSection>.section-title h2{display:flex;align-items:center;gap:10px;font-size:25px}
+#settingsSection>.content-card{position:relative;margin:0 0 16px;padding:20px;border:1px solid #dce5f0;border-radius:22px;background:linear-gradient(145deg,#fff,#f6f9fd);box-shadow:0 8px 24px rgba(31,59,91,.055)}
+#settingsSection>.content-card>h3{display:flex;align-items:center;gap:9px;margin:0 0 16px!important;padding-bottom:13px;border-bottom:1px solid #e5ebf3;color:#23466f;font-size:17px}
+#settingsSection .settings-list{display:grid;gap:10px}
+#settingsSection .setting-item{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 15px;border:1px solid #e1e8f1;border-radius:16px;background:#f9fbfe;transition:border-color .2s,transform .2s}
+#settingsSection .setting-item:focus-within{border-color:#9db8d7}
+#settingsSection .setting-info{display:flex;flex:1;flex-direction:column;gap:5px;min-width:0}
+#settingsSection .setting-info strong{color:#203d61;font-size:14px}
+#settingsSection .setting-info small{color:#7b899d;font-size:12px;line-height:1.7}
+#settingsSection .setting-select{width:min(48%,240px);min-height:43px;padding:9px 12px;border:1px solid #d4dfed;border-radius:12px;background:#fff;color:#23466f;font:inherit;font-size:13px}
+#settingsSection .switch{flex-shrink:0}
+#settingsSection input[type="range"]{accent-color:#315b87}
+#settingsSection .primary-button,#settingsSection .secondary-button{min-height:42px;border-radius:12px}
+html[data-theme="dark"] #settingsSection>.content-card{background:linear-gradient(145deg,#192434,#202d40);border-color:#344258}
+html[data-theme="dark"] #settingsSection>.content-card>h3{color:#d9e8fb;border-bottom-color:#344258}
+html[data-theme="dark"] #settingsSection .setting-item{background:#141e2c;border-color:#344258}
+html[data-theme="dark"] #settingsSection .setting-info strong{color:#e7eef8}
+html[data-theme="dark"] #settingsSection .setting-info small{color:#a5b2c5}
+html[data-theme="dark"] #settingsSection .setting-select{background:#141e2c;color:#edf2fa;border-color:#3b4a60}
+#azkarSection .zikr-card .counter-button{min-width:46px;min-height:42px;border-radius:12px;font-size:20px;cursor:pointer}
+#azkarSection .zikr-card .counter-button:active{transform:scale(.96)}
+@media(max-width:520px){#settingsSection>.content-card{padding:15px;border-radius:18px}#settingsSection .setting-item{align-items:flex-start;padding:12px;gap:10px}#settingsSection .setting-select{width:46%;min-width:125px}#settingsSection .setting-info small{font-size:11px}}
+
