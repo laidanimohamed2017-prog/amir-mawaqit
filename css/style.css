@@ -361,3 +361,23 @@ html[data-theme="dark"] #amirToast{background:#263950;color:#fff}
 html[data-theme="dark"] #offlineStatus{background:#393322;color:#f0d28e;border-color:#71603b}
 html[data-theme="dark"] .settings-list,html[data-theme="dark"] .settings-list *{color:inherit}
 
+/* Home: daily reminder card replacing the quick-services grid */
+.daily-reminder{position:relative;overflow:hidden;margin-top:30px;padding:24px 26px;border:1px solid #d9e3f0;border-radius:24px;background:linear-gradient(125deg,#fff 0%,#eef4fb 68%,#f8f2e5 100%);box-shadow:0 10px 28px rgba(24,42,68,.07)}
+.daily-reminder:after{content:"";position:absolute;width:170px;height:170px;left:-55px;bottom:-90px;border:1px solid rgba(195,154,75,.25);border-radius:50%;box-shadow:0 0 0 18px rgba(195,154,75,.045),0 0 0 38px rgba(195,154,75,.03);pointer-events:none}
+.daily-reminder-top{display:flex;align-items:center;gap:9px;color:#8b6b31;font-size:12px;font-weight:700}
+.daily-reminder-icon{display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:#f7f0df;font-size:18px}
+.daily-reminder h2{margin:14px 0 8px;color:#203d61;font-size:19px}
+.daily-reminder-verse{position:relative;z-index:1;margin:0;color:#23466f;font-size:clamp(19px,3vw,25px);font-weight:700;line-height:1.9}
+.daily-reminder-source{margin:4px 0 0;color:#7b8798;font-size:12px}
+.daily-reminder-footer{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:18px;padding-top:15px;border-top:1px solid #dfe6ef;color:#66778d;font-size:12px}
+.daily-reminder-button{display:inline-flex;align-items:center;gap:8px;padding:10px 15px;border:1px solid #c8d7e8;border-radius:12px;background:#23466f;color:#fff;font-size:12px;font-weight:700}
+.daily-reminder-button:hover{background:#315b87}
+html[data-theme="dark"] .daily-reminder{background:linear-gradient(125deg,#192434 0%,#203047 68%,#353244 100%);border-color:#3b4a60;box-shadow:0 10px 28px rgba(0,0,0,.2)}
+html[data-theme="dark"] .daily-reminder-top{color:#e0bf78}
+html[data-theme="dark"] .daily-reminder-icon{background:#393322}
+html[data-theme="dark"] .daily-reminder h2,html[data-theme="dark"] .daily-reminder-verse{color:#e7eef8}
+html[data-theme="dark"] .daily-reminder-source,html[data-theme="dark"] .daily-reminder-footer{color:#a5b2c5}
+html[data-theme="dark"] .daily-reminder-footer{border-top-color:#344258}
+html[data-theme="dark"] .daily-reminder-button{background:#315b87;border-color:#5278a2;color:#fff}
+@media(max-width:520px){.daily-reminder{padding:20px 18px}.daily-reminder-footer{align-items:flex-start;flex-direction:column}.daily-reminder-button{align-self:flex-start}}
+
